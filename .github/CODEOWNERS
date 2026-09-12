@@ -1,0 +1,11 @@
+# Default repository owner
+* @Mobin-Karam
+
+# Security-sensitive configuration and automation
+/.github/ @Mobin-Karam
+/laptop_guard/ @Mobin-Karam
+/install.sh @Mobin-Karam
+/run.sh @Mobin-Karam
+/doctor.sh @Mobin-Karam
+/pyproject.toml @Mobin-Karam
+/requirements.txt @Mobin-Karam
