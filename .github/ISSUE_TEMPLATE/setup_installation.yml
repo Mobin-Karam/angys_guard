@@ -1,0 +1,113 @@
+name: Installation / setup / doctor problem
+description: Report install, first-run, setup wizard, configuration, doctor, or service onboarding problems
+title: "[SETUP] "
+labels:
+  - type:bug
+  - area:setup
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form when AngysGuard cannot be installed, configured, diagnosed, or started cleanly.
+
+        **Sanitize all output. Never post bot tokens, chat IDs, OS passwords, private keys, secret files, or private evidence.**
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "Example: 11.1.0 or commit abc1234"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS / distribution and version
+      placeholder: "Example: Ubuntu 26.04 x86_64"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "Example: Python 3.13.2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Failing stage
+      options:
+        - Clone / download
+        - Virtual environment / dependencies
+        - install.sh
+        - run.sh / first startup
+        - Guided setup wizard
+        - Provider / owner pairing
+        - doctor
+        - Service installation
+        - Autostart / automatic arming
+        - Reconfiguration / upgrade
+        - Other / unsure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Installation method
+      options:
+        - Repository scripts
+        - Python editable/source install
+        - Existing environment upgraded in place
+        - Package / release artifact
+        - Other / unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps that led to the problem
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Sanitized error/output
+      description: Paste only the smallest relevant failure output after removing secrets and private information.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Sanitized doctor/status output
+      description: Optional output from `./run.sh doctor`, `./run.sh status`, or service status after sanitization.
+      render: shell
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected setup behavior
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Reporter checklist
+      options:
+        - label: I searched existing setup/install issues first.
+          required: true
+        - label: I removed credentials, secret-file contents, OS passwords, private evidence, and other sensitive data.
+          required: true
