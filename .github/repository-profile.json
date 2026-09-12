@@ -1,11 +1,12 @@
 {
-  "description": "AngysGuard (Angel of System Guard): owner-controlled Linux device security today, with Bale/Telegram controls, bounded evidence, guided setup, and planned Windows/Android apps plus optional managed multi-device control.",
+  "description": "AngysGuard (Angel of System Guard): owner-controlled endpoint security and device protection platform, Linux-first today with Bale/Telegram controls, bounded evidence, guided setup, and planned Windows/Android apps plus optional managed multi-device control.",
   "homepage": null,
   "topics": [
     "angysguard",
     "linux",
     "laptop-security",
     "endpoint-security",
+    "device-protection",
     "intrusion-detection",
     "python",
     "opencv",
@@ -23,7 +24,9 @@
     "cross-platform",
     "graphify"
   ],
-  "social_preview_source": "docs/assets/laptop-guard-overview.svg",
+  "social_preview_source": "docs/assets/brand/angysguard-readme-hero.svg",
+  "social_preview_render_target": "docs/assets/brand/angysguard-social-preview.png",
+  "brand_guide": "docs/BRAND_GUIDE.md",
   "version_source": "pyproject.toml",
   "readme_source": "README.md",
   "maintenance_guide": "docs/README_MAINTENANCE.md"
