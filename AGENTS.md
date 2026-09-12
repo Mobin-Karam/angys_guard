@@ -15,10 +15,13 @@ Do not trade away security/privacy boundaries for convenience.
 ## Read only what the task needs
 
 - Architecture/current risks: `docs/SYSTEM_AUDIT.md`
-- Add or extend a feature: `docs/EXTENDING.md`
+- Add/change/remove/fix a feature: `docs/FEATURE_LIFECYCLE.md`
+- Feature module contracts/templates: `docs/EXTENDING.md`
+- Find/triage/fix a bug or GitHub issue: `docs/BUG_TRIAGE_AND_FIXING.md`
 - Find a file/module: `docs/FILE_REFERENCE.md`
 - Configuration/secrets: `docs/CONFIGURATION.md`, `docs/SECURITY.md`
 - Testing/target-device checks: `docs/TESTING.md`
+- AI roles/skills/task recipes: `docs/AI_AGENT_WORKFLOW.md`
 - Current execution roadmap: `docs/ROADMAP.md`
 - GitHub/release process: `CONTRIBUTING.md`, `.github/REPOSITORY_SETTINGS.md`
 
@@ -74,13 +77,15 @@ explain the conflict, and propose the safest compatible design.
 1. Run/inspect `git status --short` before editing. Preserve unrelated changes.
 2. Identify the issue/acceptance criteria when the task references GitHub work.
 3. Read the smallest relevant source/document set.
-4. For non-trivial changes, state the intended change boundary before editing.
-5. Implement the smallest coherent patch; avoid opportunistic rewrites.
-6. Add or update focused tests for behavior and failure modes.
-7. Run targeted checks first, then the broader verification required below.
-8. Review the diff for security/privacy regressions and accidental secrets.
-9. Report what changed, what was validated, and any target-device checks still
-   required.
+4. For feature work, follow `docs/FEATURE_LIFECYCLE.md`; for defects, follow
+   `docs/BUG_TRIAGE_AND_FIXING.md` and reproduce before changing code when practical.
+5. For non-trivial changes, state the intended change boundary before editing.
+6. Implement the smallest coherent patch; avoid opportunistic rewrites.
+7. Add or update focused tests for behavior and failure modes.
+8. Run targeted checks first, then the broader verification required below.
+9. Review the diff for security/privacy regressions and accidental secrets.
+10. Report what changed, what was validated, and any target-device checks still
+    required.
 
 Do not reset, clean, force checkout, overwrite unrelated work, or use destructive
 Git recovery commands. Do not commit/push/merge unless the user or task explicitly
