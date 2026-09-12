@@ -1,29 +1,98 @@
-# Laptop Guard 11.1
+# AngysGuard / Laptop Guard documentation
 
-Laptop Guard is an owner-controlled Linux security agent. It watches camera and
-input activity, records local evidence, presents a five-second fullscreen warning,
-can lock the desktop, and exposes a constrained Bale control surface. It deliberately
-does not expose a remote shell, suppress capture indicators, or delete user data.
+The repository-level landing page is [`../README.md`](../README.md). This file is the task-oriented documentation index for users, maintainers and contributors.
 
-The repository-level product landing page is [`../README.md`](../README.md). This
-`docs/README.md` is the task-oriented documentation index for maintainers and
-contributors.
+**AngysGuard — Angel of System Guard** is the planned public product identity. Current package/repository compatibility identifiers remain `laptop-guard`, `laptop_guard` and `laptop_guard_v3` until issue #30 executes a safe migration.
 
-## Before reading the repository broadly: use Graphify
+## Start here by goal
 
-For humans and AI agents, repository discovery is Graphify-first. Read
-[Graphify navigation](GRAPHIFY_NAVIGATION.md) before trying to understand where
-behavior lives or how files/symbols connect.
+| Goal | Read first |
+|---|---|
+| Understand AngysGuard quickly | [Root README](../README.md) |
+| See product direction and future apps | [AngysGuard product vision](ANGYSGUARD_PRODUCT_VISION.md) |
+| Know which OSes work today / are planned | [Platform support](PLATFORM_SUPPORT.md) |
+| Understand Bale, Telegram, self-hosted and managed control | [Control modes](CONTROL_MODES.md) |
+| Request another operating system/platform | [Platform support](PLATFORM_SUPPORT.md#request-support-for-another-os) + Platform / OS request issue form |
+| Install/use current Linux release | [Root README quick start](../README.md#quick-start--linux-today) |
+| Navigate files/symbols/callers/tests with minimal context | [Graphify navigation](GRAPHIFY_NAVIGATION.md) |
+| Understand architecture | [Architecture](ARCHITECTURE.md) |
+| See current source-level architecture evidence | [System audit](SYSTEM_AUDIT.md) |
+| Review architecture boundaries/evolution | [Architecture notes](architecture/) |
+| Read architecture decisions | [ADRs](adr/) |
+| Add/change/remove a feature | [Feature lifecycle](FEATURE_LIFECYCLE.md) |
+| Add a feature module | [Extending](EXTENDING.md) |
+| Find/fix a bug | [Bug triage and fixing](BUG_TRIAGE_AND_FIXING.md) |
+| Configuration/secrets/setup | [Configuration](CONFIGURATION.md) |
+| Security/trust/privacy rules | [Product security](SECURITY.md) |
+| Testing/manual platform validation | [Testing](TESTING.md) |
+| Use AI agents/skills/prompts | [AI agent workflow](AI_AGENT_WORKFLOW.md) |
+| See file ownership | [File reference](FILE_REFERENCE.md) |
+| See current + future roadmap | [Roadmap](ROADMAP.md) |
+| Understand milestones/labels/Project views | [Project management](PROJECT_MANAGEMENT.md) |
+| Maintain root README/About/version/support claims | [README maintenance](README_MAINTENANCE.md) |
+| Run repository/release maintenance | [Maintainer checklist](MAINTAINER_CHECKLIST.md) |
+| Configure GitHub repository settings | [GitHub setup](GITHUB_SETUP.md) |
+| Review release/migration history | [History](HISTORY.md) |
+
+## Current vs future
+
+### Current product
+
+Today the product is Linux-first and includes the Python security agent, guided setup, doctor, CLI/service flows, camera/input/screen/audio/security features, event history and Bale/Telegram-style owner-control/provider paths.
+
+Use `PLATFORM_SUPPORT.md` before assuming a distro/session/provider is release-supported.
+
+### Future product
+
+The long-term AngysGuard roadmap adds:
+
+- public AngysGuard identity (#30);
+- user platform-request intake (#31);
+- Linux desktop app/tray (#32);
+- cross-platform capability adapters (#33);
+- Windows native agent/app (#34);
+- Android companion app (#35);
+- Android protected-device feasibility research (#36);
+- simpler self-hosted Bale/Telegram pairing (#37);
+- optional managed AngysGuard service (#38/#42);
+- passwordless device-scoped authorization/local privilege (#39);
+- multi-device account/dashboard (#40);
+- provider parity/capability guidance (#41).
+
+Future items are **not current support claims**.
+
+## Control-mode summary
 
 ```text
-question
-  -> check Graphify freshness
-  -> graphify query / explain / path
-  -> identify minimal relevant files/symbols/tests/docs
-  -> inspect those authoritative files
+Current / always-important
+├── local CLI + guided setup
+├── Bale bot/provider surface
+└── Telegram-style provider surface
+
+Planned
+├── Linux desktop app
+├── self-hosted bot + one-time device pairing
+├── optional managed AngysGuard bot/service
+├── Android companion app
+└── Windows desktop app
 ```
 
-Useful examples:
+The managed-service design must never require the protected computer's OS password to be sent through Bale/Telegram or stored in the AngysGuard backend. Read `CONTROL_MODES.md` and ADR 0007.
+
+## Platform summary
+
+| Platform | Status |
+|---|---|
+| Linux / Ubuntu-oriented desktop | Current primary target |
+| Other Linux distros | Best effort until validated |
+| Windows | Planned |
+| Android companion | Planned |
+| Android protected-device mode | Research |
+| Other platforms | Request-driven candidates |
+
+## Graphify-first repository discovery
+
+Before broad repository reads/searches:
 
 ```bash
 graphify query "where is owner authorization enforced?"
@@ -31,169 +100,40 @@ graphify explain "LaptopGuard"
 graphify path "InputMonitor" "EventStore"
 ```
 
-Do not open the full `graphify-out/graph.json` manually for normal investigation;
-query it through Graphify. `graphify-out/graph.html` is available for human visual
-exploration, and `GRAPH_REPORT.md` gives a high-level overview/freshness record.
+Use Graphify to select the smallest relevant source/tests/docs, then confirm important facts against current source. Do not load all of `graphify-out/graph.json` into normal chat context. See `GRAPHIFY_NAVIGATION.md`.
 
-## Start here
+## Architecture decisions relevant to future platforms
 
-Choose the document by what you are trying to do **after Graphify narrows the
-scope**:
-
-| Goal | Read first |
-|---|---|
-| Understand the product quickly | [Root repository README](../README.md) |
-| Navigate/find files, symbols, callers, tests, or connections | [Graphify navigation](GRAPHIFY_NAVIGATION.md) |
-| Understand the architecture contract/target design | [Architecture](ARCHITECTURE.md) |
-| See current architecture evidence, risks, and limitations | [System audit](SYSTEM_AUDIT.md) |
-| Review dependency rules / staged architecture evolution | [Architecture notes](architecture/) |
-| Understand architecture decisions | [ADRs](adr/) |
-| Use the curated file/module ownership map | [File reference](FILE_REFERENCE.md) |
-| Add, change, fix, or remove a feature | [Feature lifecycle](FEATURE_LIFECYCLE.md) |
-| Find the cause of a bug or fix a GitHub issue | [Bug triage and fixing](BUG_TRIAGE_AND_FIXING.md) |
-| Add a new command/feature module | [Extending](EXTENDING.md) |
-| Work with Codex/AI agents | [AI agent workflow](AI_AGENT_WORKFLOW.md) |
-| Maintain README / GitHub About / version / repository visual | [README & repository presentation maintenance](README_MAINTENANCE.md) |
-| Change setup/config/secrets | [Configuration](CONFIGURATION.md) |
-| Review trust/privacy/security rules | [Security](SECURITY.md) |
-| Run tests or validate hardware/session behavior | [Testing](TESTING.md) |
-| See planned work | [Roadmap](ROADMAP.md) |
-| Understand labels, milestones, releases, and Project views | [Project management](PROJECT_MANAGEMENT.md) |
-| Prepare/maintain the repository | [Maintainer checklist](MAINTAINER_CHECKLIST.md) |
-| Understand previous migrations/releases | [History](HISTORY.md) |
-
-## Architecture at a glance
-
-Laptop Guard is evolving as a **modular monolith with ports/adapters**, not as a
-microservice system. Existing seams such as `RuntimeApi`, `FeatureManager`,
-`FeatureHost`, `GuardRuntimeState`, and the event/outbox store should be strengthened
-incrementally instead of replaced by a flag-day rewrite.
-
-Use Graphify first to map the current runtime relationships, then reconcile them
-with the intended architecture:
-
-- `ARCHITECTURE.md` for the architecture contract;
-- `architecture/BOUNDARIES.md` for allowed dependency direction;
-- `architecture/FLOWS.md` for startup/security/delivery flows;
-- `architecture/EVOLUTION_PLAN.md` for staged refactor order;
-- `adr/` for accepted/proposed architecture decisions.
+- `adr/0007-passwordless-device-pairing.md` — Proposed: remote pairing/device credentials do not transmit OS passwords; local privilege stays local/platform-native.
+- `adr/0008-cross-platform-capability-adapters.md` — Proposed: cross-platform ports/adapters before Windows/Android expansion.
+- existing ADRs remain authoritative for feature registration, RuntimeApi, shared state and modular-monolith evolution.
 
 ## Project and release management
 
-Repository labels, milestones, issue mappings, and release notes are declared under
-`.github/repository-management/` and applied by the repository-management bootstrap
-workflow. `PROJECT_MANAGEMENT.md` defines the canonical GitHub Project v2 fields,
-views, workflow rules, and initial issue mapping.
+Repository labels, milestones and issue mappings are declared under `.github/repository-management/` and applied by the repository-management bootstrap workflow.
 
-Repository landing-page/About metadata has its own canonical source:
-
-- root `README.md` — product/repository landing page;
-- `.github/repository-profile.json` — canonical About description/topics/social-preview source;
-- `README_MAINTENANCE.md` — synchronization and update rules;
-- `assets/laptop-guard-overview.svg` — high-level README product visual.
-
-The first formal GitHub release checkpoint is `v11.1.0`. Future releases should
-create a new semantic-version tag rather than moving an already-published tag.
-
-## Maintenance workflow
-
-For normal engineering work, use this sequence:
+Current future milestones:
 
 ```text
-GitHub issue / user report / feature request
-                |
-                v
-Graphify freshness + query/path/explain
-                |
-                v
-smallest owning files/symbols/tests/docs
-                |
-                v
-classify the task
-  architecture  -> ARCHITECTURE.md + architecture/ + ADRs
-  feature work  -> FEATURE_LIFECYCLE.md
-  defect        -> BUG_TRIAGE_AND_FIXING.md
-                |
-                v
-confirm current source behavior
-                |
-                v
-implement smallest safe change
-                |
-                v
-focused regression tests
-                |
-                v
-TESTING.md + reviewer/security review when needed
-                |
-                v
-if release/version/user-visible/platform/security surface changed:
-README_MAINTENANCE.md / $repository-presentation
-                |
-                v
-refresh Graphify after material relationship changes
-                |
-                v
-PR / release
+v11.2 -> v11.3 -> v12.0
+                    |
+                    +-> v13.0 AngysGuard Self-Hosted UX & Linux App
+                    +-> v14.0 AngysGuard Managed Control
+                    +-> Future Platform Expansion — Windows & Android
 ```
 
-If using Codex in VS Code, `AGENTS.md` is authoritative;
-`docs/AI_AGENT_WORKFLOW.md` explains repo-local agents, skills, hooks, and the
-Graphify-first handoff pattern. `repository_curator` / `$repository-presentation`
-owns README/About/profile synchronization for release or presentation-affecting
-changes.
+The native GitHub Project v2 board requires separate user/organization Projects write permission; `PROJECT_MANAGEMENT.md` remains the canonical board specification.
 
-## Install and run
+## Repository presentation maintenance
 
-```bash
-chmod +x install.sh run.sh doctor.sh
-./install.sh
-./run.sh setup
-./run.sh doctor
-./run.sh
-```
+When a release/change affects current features, OS/platform support, Bale/Telegram behavior, managed/self-hosted control, installation, security boundaries or roadmap commitments, update the smallest relevant set of:
 
-Useful Ubuntu packages:
+- root `README.md`;
+- `PLATFORM_SUPPORT.md`;
+- `CONTROL_MODES.md`;
+- `ANGYSGUARD_PRODUCT_VISION.md`;
+- `ROADMAP.md` / `PROJECT_MANAGEMENT.md`;
+- `.github/repository-profile.json`;
+- release/changelog docs.
 
-```bash
-sudo apt install python3-venv python3-tk ffmpeg vlc gnome-screenshot libnotify-bin
-```
-
-For wlroots-based Wayland desktops, `grim` and `wf-recorder` provide additional
-capture backends. Laptop Guard cannot bypass compositor permission boundaries.
-
-## Main behavior
-
-- Only the configured owner chat ID may issue commands.
-- Configuration is stored under `~/.config/laptop-guard/`; a project `.env` is
-  not required.
-- Unexpected input can trigger evidence collection, owner notification, a bundled
-  1920×1080 MP4 warning, and a desktop lock.
-- Ctrl+C uses local PIN plus Bale owner confirmation. Other termination paths fail
-  closed through the exit-lock watchdog when enabled.
-- Remote power and unlock controls are opt-in and confirmation-gated.
-- Autostart and automatic arming are separate settings.
-- Readable Linux authentication failures generate sanitized owner alerts.
-- Persian speech and automatic RTL/LTR chat rendering are supported.
-
-## Common commands
-
-```text
-./run.sh setup
-./run.sh doctor
-./run.sh status
-./run.sh autostart on
-./run.sh autostart off
-./run.sh autostart status
-./run.sh profile away
-./run.sh events --limit 20
-./run.sh service install
-./run.sh service status
-```
-
-From Bale, `/menu`, `/status`, `/arm`, `/disarm`, `/photo`, `/screen`, `/listen`,
-`/chat`, `/say`, `/events`, `/lock`, `/unlock`, `/stoppin`, and confirmed power
-actions are handled by the current runtime.
-
-The warning media is `laptop_guard/assets/warnings/countdown.mp4`: 1920×1080,
-30 fps, and five seconds.
+Use the repository-curator/product-planning workflows rather than letting marketing/support claims drift from source and issue state.
