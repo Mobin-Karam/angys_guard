@@ -2,6 +2,19 @@
 
 These rules apply under `docs/` in addition to the root `AGENTS.md`.
 
+## Navigate documentation with Graphify first
+
+For questions such as "where is this documented?", "which docs mention/own this
+concept?", or "what docs/source/tests connect to this behavior?", use Graphify
+first following `GRAPHIFY_NAVIGATION.md`. Query/explain/path should narrow the
+relevant document sections before broad documentation reads.
+
+Do not load raw `graphify-out/graph.json` into context. If the graph is stale and
+can be refreshed, refresh it first. Direct current docs/source remain authoritative
+when generated graph output disagrees.
+
+## Documentation rules
+
 - Document current behavior, not planned behavior, unless the section is clearly
   labeled roadmap/proposal.
 - Keep commands copy-pasteable and prefer safe, non-destructive examples.
@@ -16,6 +29,11 @@ These rules apply under `docs/` in addition to the root `AGENTS.md`.
   instead.
 - Keep `ROADMAP.md` focused on planned work and `CHANGELOG.md` focused on shipped
   changes.
+
+## Canonical navigation document
+
+- `GRAPHIFY_NAVIGATION.md` owns graph-first discovery, freshness, token/context
+  discipline, source verification, and fallback rules for humans and AI agents.
 
 ## Canonical architecture documents
 
@@ -32,7 +50,7 @@ These rules apply under `docs/` in addition to the root `AGENTS.md`.
 - `adr/` records accepted/proposed/deprecated/superseded architecture decisions.
 
 When architecture changes, update the smallest canonical set instead of copying
-new architecture prose into many files.
+new architecture prose into many files, then refresh Graphify when available.
 
 ## Canonical maintenance documents
 
@@ -44,7 +62,8 @@ new architecture prose into many files.
   full lifecycle/removal guide.
 - `TESTING.md` owns automated and target-device verification requirements.
 - `AI_AGENT_WORKFLOW.md` owns agent/skill selection and reusable AI task recipes.
-- `FILE_REFERENCE.md` owns file/module responsibility mapping.
+- `FILE_REFERENCE.md` owns the curated file/module responsibility map; Graphify
+  remains the first choice for live connection/dependency discovery.
 
 When adding a new maintenance or architecture guide, update `README.md` so a
 maintainer can reach it by task/goal rather than already knowing its filename.
