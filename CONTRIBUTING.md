@@ -36,6 +36,7 @@ direct fallback search narrow and note why it was needed.
    - add/change/remove/fix a feature -> `docs/FEATURE_LIFECYCLE.md`;
    - investigate/fix a bug -> `docs/BUG_TRIAGE_AND_FIXING.md`;
    - feature module template -> `docs/EXTENDING.md`;
+   - README/GitHub About/version/repository presentation -> `docs/README_MAINTENANCE.md`;
    - AI-assisted workflow -> `docs/AI_AGENT_WORKFLOW.md`.
 5. Keep one focused change per pull request where practical.
 6. Never use real bot/API tokens, chat IDs, private media, or personal logs in code,
@@ -91,7 +92,8 @@ security boundaries, persistence ownership, extension mechanisms, transport
 strategy, concurrency model, or another difficult-to-reverse architectural choice.
 
 A proposed ADR is not permission to merge a runtime change by itself; normal issue,
-implementation, testing, and security review still apply.
+implementation, testing, security review, and repository-presentation impact still
+apply.
 
 ## Feature changes
 
@@ -107,10 +109,15 @@ For AI-assisted work, the recommended flow is:
 navigator (when scope unclear)
         -> architect -> implementer -> tester -> reviewer
                                   \-> security_reviewer when sensitive
+                                  \-> repository_curator when presentation changes
 ```
 
 Small bounded work may use `$safe-implementation` directly. GitHub issue work may
 use `$issue-to-pr`.
+
+If a feature materially changes the root README product story, owner/CLI commands,
+setup, supported environment, or security model, use `$repository-presentation`
+and update the landing page/profile in the same PR when practical.
 
 ## Bug fixes
 
@@ -132,6 +139,36 @@ If a problem cannot yet be reproduced, improve diagnostics or gather the minimum
 evidence needed to distinguish likely causes instead of making speculative broad
 changes.
 
+A bug fix usually does not require README changes unless it corrects a documented
+behavior/support/security claim. When it does, follow `docs/README_MAINTENANCE.md`.
+
+## Repository presentation changes
+
+The root `README.md`, `.github/repository-profile.json`, package metadata,
+`docs/README.md`, and `docs/assets/laptop-guard-overview.svg` are maintained product
+surfaces.
+
+Follow `docs/README_MAINTENANCE.md` / `$repository-presentation` when a change
+materially affects:
+
+- the current version/release status;
+- a major user-visible feature or command;
+- setup, doctor, service/autostart, supported platform/backend requirements;
+- provider or local-only behavior;
+- security/privacy/non-goal wording;
+- repository structure shown in the landing page;
+- project description/topics/license/social-preview identity.
+
+Do not describe roadmap/proposed work as already shipped. Every concrete README
+capability claim should be supported by current source/tests/canonical docs.
+
+Targeted presentation checks:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_repository_presentation.py
+.venv/bin/python -m pytest -q tests/test_documentation_links.py tests/test_graphify_navigation_policy.py
+```
+
 ## Pull requests
 
 A PR should explain:
@@ -142,9 +179,10 @@ A PR should explain:
 - relevant Graphify impact/navigation findings when useful;
 - security/privacy impact;
 - configuration or migration impact;
+- repository-presentation impact when the user-visible/project story changed;
 - automated tests/checks performed;
 - Graphify freshness/refresh status when relationships materially changed;
-- manual target-device validation performed or still required;
+- manual target-device or GitHub About/social-preview validation performed or still required;
 - rollback considerations for risky changes.
 
 The test suite and required GitHub checks should pass before merge.
@@ -166,6 +204,10 @@ Use Graphify to trace the changed surface to these trust boundaries, then verify
 those paths in current source. Do not weaken an authorization/privacy boundary for
 convenience. Use `security_reviewer` / `$security-review` for sensitive final diffs.
 
+Security wording in README/About must stay consistent with the actual trust model;
+never market prohibited behavior such as generic remote shell, keylogging,
+credential collection, or hidden/unbounded capture as a feature.
+
 ## Tests
 
 Use Graphify to identify connected tests first. Add/update tests for behavior
@@ -174,6 +216,9 @@ behavior should be mocked where practical so CI does not depend on a real camera
 microphone, provider account, desktop session, or personal device.
 
 Read `docs/TESTING.md`. Use `$test-and-verify` for AI-assisted verification.
+
+For release/version/repository-presentation work, also run
+`tests/test_repository_presentation.py`.
 
 ## Documentation
 
@@ -185,6 +230,9 @@ When adding/removing files or materially changing responsibility, keep
 `docs/FILE_REFERENCE.md` current and refresh Graphify when available. Architecture
 changes should update canonical architecture/ADR docs rather than duplicating the
 target design elsewhere.
+
+When the change affects the landing page/About/version/project story, use
+`docs/README_MAINTENANCE.md` rather than ad-hoc README edits.
 
 ## Vulnerabilities
 
