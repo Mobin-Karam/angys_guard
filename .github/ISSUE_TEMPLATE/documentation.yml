@@ -1,0 +1,29 @@
+name: Documentation improvement
+description: Report missing, unclear, or outdated documentation
+title: "[DOCS] "
+labels: ["documentation"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Documentation location
+      placeholder: e.g. docs/README.md, install.sh output, setup wizard
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is unclear or missing?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety check
+      options:
+        - label: I did not include credentials or private user/device data.
+          required: true
