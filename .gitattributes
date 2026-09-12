@@ -1,0 +1,9 @@
+# Keep generated Graphify outputs from dominating GitHub language statistics.
+graphify-out/graph.html linguist-generated=true
+graphify-out/graph.json linguist-generated=true
+graphify-out/cache.json linguist-generated=true
+graphify-out/extract.json linguist-generated=true
+graphify-out/GRAPH_REPORT.md linguist-generated=true
+
+# Packaged media is binary documentation/runtime data.
+*.mp4 binary
