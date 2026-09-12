@@ -20,7 +20,7 @@ Unless a prompt says otherwise, the agent should:
 8. Prefer the smallest coherent change and reuse existing abstractions.
 9. Add/update focused tests for behavior changes.
 10. Run targeted verification before broader checks.
-11. For release/version/user-visible/setup/platform/security changes, account for repository presentation and current-vs-future product/support claims.
+11. For release/version/user-visible/setup/platform/security/brand changes, account for repository presentation and current-vs-future product/support claims.
 12. Refresh Graphify after material relationship changes when available.
 13. Distinguish facts, inferred relationships, current support, planned/research targets, risks and manual validation.
 14. Do not commit/push/merge/publish/deploy unless explicitly requested.
@@ -73,7 +73,8 @@ Unless a prompt says otherwise, the agent should:
 - `verify-change.prompt.md`
 - `dependency-upgrade.prompt.md`
 
-### Documentation, presentation and delivery
+### Documentation, brand, presentation and delivery
+- `design-or-refresh-brand.prompt.md` — logo/icon/wordmark/color/hero/social-preview workflow using `docs/BRAND_GUIDE.md` and `$brand-assets`
 - `refresh-repository-presentation.prompt.md` — README/About/version/docs/visual synchronization
 - `update-docs.prompt.md`
 - `explain-code.prompt.md`
@@ -89,4 +90,4 @@ Unless a prompt says otherwise, the agent should:
 
 ## Maintenance rule
 
-Keep prompt text generic. Project-specific policy and changing product facts live in `AGENTS.md`, `docs/GRAPHIFY_NAVIGATION.md`, `docs/README_MAINTENANCE.md`, `docs/ANGYSGUARD_PRODUCT_VISION.md`, `docs/PLATFORM_SUPPORT.md`, and `docs/CONTROL_MODES.md`.
+Keep prompt text generic. Project-specific policy and changing product facts live in `AGENTS.md`, `docs/GRAPHIFY_NAVIGATION.md`, `docs/README_MAINTENANCE.md`, `docs/BRAND_GUIDE.md`, `docs/ANGYSGUARD_PRODUCT_VISION.md`, `docs/PLATFORM_SUPPORT.md`, and `docs/CONTROL_MODES.md`.
