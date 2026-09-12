@@ -6,24 +6,31 @@ description: Execute a Laptop Guard GitHub issue as a bounded branch-to-PR workf
 # Issue to PR
 
 1. Read the target issue completely and extract acceptance criteria, dependencies,
-   and milestone/priority.
+   milestone, labels, and priority.
 2. Run `git status --short`. Preserve unrelated changes; do not reset/clean them.
-3. Confirm the current branch. Create/use a focused branch when Git work is in
-   scope; do not work directly on `main` unless explicitly requested.
-4. Read `AGENTS.md`, applicable nested `AGENTS.md`, and only the docs/source needed
-   for the issue.
-5. For cross-module or security-sensitive work, ask the `architect` agent for a
-   bounded implementation plan. For sensitive trust-boundary changes also use
-   `security_reviewer` before completion.
-6. Implement the smallest coherent patch. Keep acceptance criteria visible while
-   working; avoid unrelated cleanup.
-7. Add focused regression/failure tests and run the `test-and-verify` workflow.
-8. Review `git diff --check`, changed files, and any user-visible docs/config.
-9. Have `reviewer` inspect the final diff for correctness/regressions on non-trivial
-   changes.
-10. If the task explicitly includes GitHub delivery, make focused commits, push the
-    branch, and open a PR that links the issue and states tests/manual checks.
-11. Do not merge unless explicitly requested and required checks are green.
+3. Read `AGENTS.md`, applicable nested `AGENTS.md`, and
+   `docs/GRAPHIFY_NAVIGATION.md`.
+4. Before broad source discovery, use Graphify to map the issue to owning symbols,
+   callers/dependencies, tests, config/state/storage, and relevant docs. Check
+   freshness and refresh when available. If Graphify cannot be used, keep fallback
+   search narrow and state why.
+5. Confirm the graph-identified scope in current authoritative source/tests.
+6. Confirm/create a focused branch when Git work is in scope; do not work directly
+   on `main` unless explicitly requested.
+7. For cross-module/security-sensitive work, use `architect`; use `navigator` first
+   when the issue's ownership/impact is still unclear. Use `security_reviewer`
+   before completion for sensitive trust-boundary changes.
+8. Implement the smallest coherent patch. Keep acceptance criteria visible and
+   avoid unrelated cleanup.
+9. Add focused regression/failure tests; use Graphify to locate connected coverage,
+   then run the `test-and-verify` workflow.
+10. Review `git diff --check`, changed files, user-visible docs/config, and the
+    graph-identified impact surface.
+11. Have `reviewer` inspect non-trivial final diffs for correctness/regressions.
+12. Refresh Graphify after material code/docs relationship changes when available.
+13. If delivery is explicitly in scope, make focused commits, push the branch, and
+    open a PR linking the issue with tests/manual checks/graph freshness.
+14. Do not merge unless explicitly requested and required checks are green.
 
-Never copy credentials, `.env` contents, `secrets.json`, stop PIN material, or
-captured evidence into issue/PR text.
+Never load raw `graphify-out/graph.json` into context or copy credentials, `.env`,
+`secrets.json`, stop PIN material, or captured evidence into issue/PR text.
