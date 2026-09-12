@@ -1,29 +1,78 @@
-name: Documentation improvement
-description: Report missing, unclear, or outdated documentation
+name: Documentation problem / improvement
+description: Report missing, incorrect, outdated, confusing, or broken AngysGuard documentation
 title: "[DOCS] "
-labels: ["documentation"]
+labels:
+  - type:docs
 body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Documentation issue type
+      options:
+        - Incorrect information
+        - Outdated information
+        - Missing documentation
+        - Confusing / hard to follow
+        - Broken link / navigation
+        - Installation / setup guidance
+        - Platform / support claim
+        - Security / privacy guidance
+        - AI / contributor / Graphify guidance
+        - Other
+    validations:
+      required: true
+
   - type: input
     id: location
     attributes:
-      label: Documentation location
-      placeholder: e.g. docs/README.md, install.sh output, setup wizard
+      label: Location
+      description: File, section, command help, setup step, or URL where the documentation lives or should live.
+      placeholder: "Example: README.md > Which OS can I use today?"
     validations:
       required: true
+
   - type: textarea
     id: problem
     attributes:
-      label: What is unclear or missing?
+      label: What is wrong or missing?
+      description: Explain the reader problem. Avoid pasting sensitive logs or private data.
     validations:
       required: true
+
   - type: textarea
-    id: suggestion
+    id: expected
     attributes:
-      label: Suggested improvement
+      label: What should the documentation say or help the reader accomplish?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Primary audience
+      options:
+        - New / non-technical user
+        - Existing AngysGuard user
+        - Contributor / developer
+        - Maintainer / release manager
+        - Security reviewer
+        - AI coding agent
+        - Other / mixed
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: Useful references
+      description: Related issue/PR/doc paths or public references, if any.
+
   - type: checkboxes
     id: checks
     attributes:
-      label: Safety check
+      label: Reporter checklist
       options:
-        - label: I did not include credentials or private user/device data.
+        - label: I checked that this is not already covered by another open documentation issue.
+          required: true
+        - label: I did not include credentials, private user/device data, or captured evidence.
           required: true
