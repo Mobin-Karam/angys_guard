@@ -23,7 +23,7 @@ Generated caches, `.git`, `.venv`, local runtime data, and local
 | `AGENT.md` | Compatibility pointer; `AGENTS.md` remains authoritative. |
 | `CLAUDE.md` | Claude-oriented compatibility entry that defers to `AGENTS.md`. |
 | `GEMINI.md` | Gemini-oriented compatibility entry that defers to `AGENTS.md`. |
-| `CONTRIBUTING.md` | Human contribution, branch, feature/bug, PR, testing, documentation, and vulnerability workflow. |
+| `CONTRIBUTING.md` | Human contribution, architecture, branch, feature/bug, PR, testing, documentation, and vulnerability workflow. |
 | `SECURITY.md` | Repository vulnerability-reporting policy. |
 | `CHANGELOG.md` | Shipped/released changes; do not use for planned roadmap work. |
 
@@ -43,6 +43,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `.github/ISSUE_TEMPLATE/` | Structured bug, feature, documentation, help, and security-report routing forms. |
 | `.github/copilot-instructions.md` | GitHub Copilot repository instructions; defers to `AGENTS.md`. |
 | `.github/instructions/` | Path-scoped Copilot rules for runtime/tests. |
+| `.github/prompts/` | Evergreen reusable engineering prompt library for architecture, planning, features, debugging, review, testing, refactoring, documentation, and releases. |
 | `.github/REPOSITORY_SETTINGS.md` | Settings/branch-protection/security features that must be configured in GitHub UI. |
 
 ## Codex / AI workspace
@@ -73,11 +74,22 @@ Runtime secrets belong in protected user configuration storage described in
 | File | Responsibility |
 |---|---|
 | `docs/README.md` | Product entry point and task-oriented documentation index. |
+| `docs/ARCHITECTURE.md` | Canonical architecture contract: current seams, target modular-monolith/ports-adapters structure, layer responsibilities, state/persistence/concurrency/error/security rules, and architecture review checklist. |
+| `docs/architecture/BOUNDARIES.md` | Dependency/import direction and cross-layer boundary rules. |
+| `docs/architecture/FLOWS.md` | Startup, owner-command, intrusion, protected-stop, delivery, evidence, and configuration flow diagrams. |
+| `docs/architecture/EVOLUTION_PLAN.md` | Staged behavior-preserving architecture migration plan and phase exit criteria. |
+| `docs/adr/README.md` | ADR status/process/index. |
+| `docs/adr/0001-explicit-feature-registration.md` | Accepted decision: explicit feature registration; no filesystem plugin discovery. |
+| `docs/adr/0002-runtime-api-port.md` | Accepted decision: runtime owner transport goes through `RuntimeApi`. |
+| `docs/adr/0003-shared-runtime-state.md` | Accepted decision: shared persisted runtime control state. |
+| `docs/adr/0004-layered-modular-monolith.md` | Proposed decision: incremental modular-monolith architecture with inward dependencies. |
+| `docs/adr/0005-durable-owner-delivery.md` | Proposed decision: durable outbox-backed delivery for important owner notifications. |
+| `docs/adr/0006-compatibility-facade-consolidation.md` | Proposed decision: converge duplicate/compatibility facades rather than adding new paths. |
 | `docs/FEATURE_LIFECYCLE.md` | Canonical add/change/fix/remove-feature process, migration/removal checklist, and AI recipes. |
 | `docs/BUG_TRIAGE_AND_FIXING.md` | Canonical symptom-to-root-cause bug/issue investigation and repair playbook. |
 | `docs/AI_AGENT_WORKFLOW.md` | Codex agents/skills/hooks and task-specific AI handoff recipes. |
 | `docs/EXTENDING.md` | Focused feature-module template and extension contracts. |
-| `docs/SYSTEM_AUDIT.md` | Architecture, control/data flows, current behavior, risks/findings, and evidence boundary. |
+| `docs/SYSTEM_AUDIT.md` | Current architecture evidence, control/data flows, current behavior, risks/findings, and evidence boundary. It is evidence, not the target architecture contract. |
 | `docs/CONFIGURATION.md` | Setup, persisted paths, defaults, secret handling, migration, and service preparation. |
 | `docs/SECURITY.md` | Product trust model, authorization, protected exit, privacy, and residual risks. |
 | `docs/TESTING.md` | Automated checks and target-device/manual validation requirements. |
@@ -110,10 +122,10 @@ Runtime secrets belong in protected user configuration storage described in
 
 | File | Responsibility and status |
 |---|---|
-| `laptop_guard/guard.py` | Main orchestration: polling, authorization, features/menus, monitors, evidence, warning/lock, media, chat, TTS, lifecycle. |
-| `laptop_guard/runtime_api.py` | Runtime owner-communication protocol/factory and local no-token adapter. |
+| `laptop_guard/guard.py` | Main orchestration: polling, authorization, features/menus, monitors, evidence, warning/lock, media, chat, TTS, lifecycle. Current architecture hotspot; target evolution is documented in `docs/ARCHITECTURE.md`. |
+| `laptop_guard/runtime_api.py` | Runtime owner-communication protocol/factory and local no-token adapter. Accepted transport port. |
 | `laptop_guard/features/base.py` | Narrow feature/host protocols. |
-| `laptop_guard/features/manager.py` | Conflict-safe command/callback registry plus deterministic feature lifecycle. |
+| `laptop_guard/features/manager.py` | Conflict-safe command/callback registry plus deterministic feature lifecycle. Accepted extension mechanism. |
 | `laptop_guard/features/system_info.py` | Extracted status/system/help feature. |
 | `laptop_guard/features/failed_login.py` | Journal auth-failure parsing, filtering, dedupe, event/owner alert behavior. |
 | `laptop_guard/features/sound_detection.py` | Sound-triggered detection/recording feature. |
@@ -139,7 +151,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `laptop_guard/camera_devices.py` | Camera discovery/probing/device metadata. |
 | `laptop_guard/input_monitor.py` | Evdev activity classification with pynput fallback; does not retain key identity. |
 | `laptop_guard/screen_capture.py` | Screenshot and bounded screen-recording backends for supported Linux sessions. |
-| `laptop_guard/audio.py` | General recording/playback/TTS support layer. |
+| `laptop_guard/audio.py` | General recording/playback/TTS support layer; compatibility/consolidation candidate. |
 | `laptop_guard/audio_intercom.py` | Current command-backed recording/playback and intercom manager. |
 | `laptop_guard/audio_indicator.py` | Local visible microphone-activity indicator process. |
 | `laptop_guard/persian_speech.py` | Lazy Persian TTS integration, bounded queue, playback. |
@@ -151,12 +163,12 @@ Runtime secrets belong in protected user configuration storage described in
 
 | File | Responsibility and status |
 |---|---|
-| `laptop_guard/warning_sequence.py` | Current fullscreen warning media/player selection and cleanup. |
-| `laptop_guard/warning.py` | Older warning process manager retained for compatibility/tests. |
+| `laptop_guard/warning_sequence.py` | Current fullscreen warning media/player selection and cleanup; active warning path. |
+| `laptop_guard/warning.py` | Older warning process manager retained for compatibility/tests; new behavior should not extend it. |
 | `laptop_guard/warning_screen.py` | UI used by older warning manager. |
 | `laptop_guard/assets/warnings/countdown.mp4` | Packaged five-second warning media. |
-| `laptop_guard/system_actions.py` | Current lock/unlock/suspend/reboot/shutdown and system snapshot helpers. |
-| `laptop_guard/system.py` | Compact compatibility lock/unlock/notification/session helpers used by modular/CLI code. |
+| `laptop_guard/system_actions.py` | Current lock/unlock/suspend/reboot/shutdown and system snapshot helpers; active system-action path. |
+| `laptop_guard/system.py` | Compact compatibility lock/unlock/notification/session helpers used by modular/CLI code; consolidation candidate. |
 | `laptop_guard/exit_watchdog.py` | Detached parent-death monitor and safe-exit token behavior. |
 | `laptop_guard/stop_auth.py` | Protected stop PIN hashing/verification and bounded terminal input. |
 | `laptop_guard/health.py` | System health snapshot/change monitoring. |
@@ -177,7 +189,7 @@ runtime API/state, service/autostart, event/outbox persistence, failed-login
 monitoring, camera capability fallback, input privacy, screen parsing/capture,
 warning behavior/assets, Persian TTS, text direction, stop authorization, app
 allowlisting, local control API, chat persistence, AI workspace configuration,
-and Codex hook policy.
+Codex hook policy, and documentation links/navigation.
 
 Use test names and the owning runtime module together when triaging a failure;
 `docs/BUG_TRIAGE_AND_FIXING.md` explains the workflow.
