@@ -12,7 +12,19 @@
     "description": "Complete regression coverage, platform/support policy, clean-machine validation, packaging/release checks, and measurable release readiness."
   },
   {
+    "title": "v13.0 — AngysGuard Self-Hosted UX & Linux App",
+    "description": "Establish the AngysGuard identity, truthful platform/support request workflow, guided Linux desktop app, simple self-hosted Bale/Telegram pairing, and provider capability parity."
+  },
+  {
+    "title": "v14.0 — AngysGuard Managed Control",
+    "description": "Design and deliver the optional AngysGuard managed account/bot service with passwordless device pairing, revocable device credentials, multi-device control, and official Bale/Telegram bots."
+  },
+  {
+    "title": "Future Platform Expansion — Windows & Android",
+    "description": "Long-horizon cross-platform work: capability adapters, native Windows agent/app, Android companion app, and Android protected-device feasibility research. This is a planning target, not a claim of current support."
+  },
+  {
     "title": "Architecture Evolution — Modular Monolith",
-    "description": "Incrementally move Laptop Guard toward the documented modular-monolith/ports-and-adapters architecture without a flag-day rewrite or security behavior regressions."
+    "description": "Incrementally move AngysGuard/Laptop Guard toward the documented modular-monolith/ports-and-adapters architecture without a flag-day rewrite or security behavior regressions."
   }
 ]
