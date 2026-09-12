@@ -4,33 +4,24 @@ ADRs record architectural decisions that should survive code movement and person
 
 ## Status values
 
-- **Proposed** — design direction not yet implemented/approved as the active architecture.
+- **Proposed** — design direction not yet implemented/approved as active architecture.
 - **Accepted** — current architecture should follow this decision.
-- **Deprecated** — retained for historical context; new work must not follow it.
+- **Deprecated** — retained for history; new work must not follow it.
 - **Superseded** — replaced by another ADR.
 
 ## Rules
 
-Create an ADR when a change materially affects dependency direction, security boundaries, persistence ownership, extension mechanism, transport/provider strategy, concurrency model, or a difficult-to-reverse platform choice.
+Create an ADR when a change materially affects dependency direction, security boundaries, persistence ownership, extension mechanisms, provider strategy, concurrency, device/account pairing, local privilege, or a difficult-to-reverse platform choice.
 
-Do not create ADRs for ordinary implementation details.
-
-An ADR contains:
-
-- context/problem;
-- decision;
-- consequences/tradeoffs;
-- security/privacy implications;
-- migration/compatibility notes;
-- status.
-
-Accepted ADRs describe constraints for new work. Proposed ADRs are not permission to change runtime behavior without a normal issue/PR/review.
+Proposed ADRs are not proof that a feature/platform is shipped. Runtime/product changes still require normal issues, implementation, tests and review.
 
 ## Index
 
-- `0001-explicit-feature-registration.md` — Accepted
-- `0002-runtime-api-port.md` — Accepted
-- `0003-shared-runtime-state.md` — Accepted
-- `0004-layered-modular-monolith.md` — Proposed
-- `0005-durable-owner-delivery.md` — Proposed
-- `0006-compatibility-facade-consolidation.md` — Proposed
+- `0001-explicit-feature-registration.md` — **Accepted** — explicit feature registration; no filesystem plugin auto-discovery.
+- `0002-runtime-api-port.md` — **Accepted** — runtime owner communication through `RuntimeApi`.
+- `0003-shared-runtime-state.md` — **Accepted** — shared persisted runtime control state.
+- `0004-layered-modular-monolith.md` — **Proposed** — incremental modular-monolith / ports-and-adapters direction.
+- `0005-durable-owner-delivery.md` — **Proposed** — durable outbox-backed important owner delivery.
+- `0006-compatibility-facade-consolidation.md` — **Proposed** — converge duplicate/compatibility facades.
+- `0007-passwordless-device-pairing.md` — **Proposed** — remote pairing uses device-scoped credentials; protected-device OS passwords never cross bot/backend boundaries and local privilege remains platform-native.
+- `0008-cross-platform-capability-adapters.md` — **Proposed** — define narrow platform capability ports/adapters before Windows/Android expansion.
