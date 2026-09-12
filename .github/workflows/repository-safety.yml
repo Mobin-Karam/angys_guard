@@ -1,0 +1,50 @@
+name: Repository Safety
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Reject tracked local secret files
+        shell: bash
+        run: |
+          set -euo pipefail
+          blocked="$(git ls-files | grep -E '(^|/)(\.env|secrets\.json|credentials\.json|id_rsa|id_ed25519)$' || true)"
+          if [[ -n "$blocked" ]]; then
+            echo "Blocked secret/local files are tracked:"
+            echo "$blocked"
+            exit 1
+          fi
+
+      - name: Reject private key material
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -n -E -- '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----' -- . ':!*.example' ':!*.md'; then
+            echo "Private key material must never be committed."
+            exit 1
+          fi
+          exit 0
+
+      - name: Confirm example configuration is non-secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .env.example || {
+            echo ".env.example is expected as the non-secret configuration reference."
+            exit 1
+          }
