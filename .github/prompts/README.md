@@ -1,54 +1,43 @@
 # Reusable engineering prompt library
 
-These prompts are intentionally **evergreen and repository-aware**. They avoid
-pinned model names, versions, framework assumptions, and machine-specific commands.
-Project-specific policy stays in `AGENTS.md` and canonical docs.
+These prompts are intentionally **evergreen and repository-aware**. They avoid pinned model names, versions, framework assumptions, and machine-specific commands. Project-specific policy stays in `AGENTS.md` and canonical docs.
 
 ## How to use
 
-In GitHub Copilot-supported IDEs, invoke a prompt file from `.github/prompts/` by
-name. You can also copy/paste a prompt into Codex, Copilot, Claude, Gemini, another
-coding agent, or a normal AI chat.
-
-When a prompt contains placeholders such as `<task>`, `<feature>`, `<bug>`,
-`<issue>`, `<file>`, `<goal>`, or `<change/release/context>`, replace them or add
-context in the same message.
+Invoke a prompt file from `.github/prompts/` in a supported IDE, or copy/paste it into Codex, Copilot, Claude, Gemini, another coding agent, or a normal AI chat.
 
 ## Stable baseline used by every prompt
 
 Unless a prompt says otherwise, the agent should:
 
-1. Read repository-wide/nearest scoped instructions and
-   `docs/GRAPHIFY_NAVIGATION.md` before repository discovery.
-2. Check Graphify freshness and use `graphify query`, `graphify explain`, or
-   `graphify path` before broad grep/search or large file reads.
-3. Use the graph to select the smallest relevant source/tests/docs, then verify
-   important conclusions against those current authoritative files.
-4. Never load the complete `graphify-out/graph.json` into conversation context.
-5. If Graphify is unavailable/stale-and-unrefreshable/insufficient, use a narrow
-   direct fallback and state why.
-6. Preserve unrelated working-tree changes and avoid destructive Git operations.
-7. Never expose secrets, credentials, private keys, personal data, or captured evidence.
-8. Prefer the smallest coherent change that fixes the root cause/acceptance criteria.
-9. Reuse existing abstractions before introducing parallel mechanisms.
-10. Add/update focused tests for behavior changes and meaningful failure/denial paths.
-11. Run targeted verification first, then broader required checks.
-12. For releases/version bumps or material user-visible/setup/platform/security
-    changes, account for `docs/README_MAINTENANCE.md` / repository presentation.
-13. Refresh Graphify after material code/docs relationship changes when available.
-14. Distinguish facts, inferred graph relationships, assumptions, risks, and manual
-    validation still required.
-15. Do not commit/push/merge/publish/deploy/destructively act unless explicitly requested.
+1. Read repository-wide/nearest scoped instructions and `docs/GRAPHIFY_NAVIGATION.md`.
+2. Check Graphify freshness and use `query` / `explain` / `path` before broad search/reads.
+3. Verify important conclusions against current source/tests/docs.
+4. Never load all of `graphify-out/graph.json` into context.
+5. Use the narrowest fallback if Graphify cannot answer the question.
+6. Preserve unrelated changes and avoid destructive Git.
+7. Never expose secrets, credentials, OS passwords, private keys, private evidence, or personal data.
+8. Prefer the smallest coherent change and reuse existing abstractions.
+9. Add/update focused tests for behavior changes.
+10. Run targeted verification before broader checks.
+11. For release/version/user-visible/setup/platform/security changes, account for repository presentation and current-vs-future product/support claims.
+12. Refresh Graphify after material relationship changes when available.
+13. Distinguish facts, inferred relationships, current support, planned/research targets, risks and manual validation.
+14. Do not commit/push/merge/publish/deploy unless explicitly requested.
 
 ## Prompt index
 
 ### Navigate, understand and plan
-- `graphify-navigation.prompt.md` — first choice for finding/understanding repository relationships
+- `graphify-navigation.prompt.md`
 - `understand-repository.prompt.md`
 - `architecture-map.prompt.md`
 - `plan-change.prompt.md`
 - `risk-assessment.prompt.md`
 - `backward-compatibility.prompt.md`
+
+### Product/platform planning
+- `update-product-roadmap.prompt.md` — keep AngysGuard product vision, OS/app targets, Bale/Telegram/self-hosted/managed modes, issues/milestones and current-vs-future claims synchronized
+- `cross-platform-review.prompt.md`
 
 ### Feature lifecycle
 - `add-feature.prompt.md`
@@ -83,10 +72,9 @@ Unless a prompt says otherwise, the agent should:
 - `write-tests.prompt.md`
 - `verify-change.prompt.md`
 - `dependency-upgrade.prompt.md`
-- `cross-platform-review.prompt.md`
 
 ### Documentation, presentation and delivery
-- `refresh-repository-presentation.prompt.md` — README/About/version/docs/visual synchronization after releases and material user-visible changes
+- `refresh-repository-presentation.prompt.md` — README/About/version/docs/visual synchronization
 - `update-docs.prompt.md`
 - `explain-code.prompt.md`
 - `onboard-to-repo.prompt.md`
@@ -97,12 +85,8 @@ Unless a prompt says otherwise, the agent should:
 - `release-notes.prompt.md`
 
 ### General-purpose router
-- `engineering-task.prompt.md` — use when no specialized prompt clearly fits.
+- `engineering-task.prompt.md`
 
 ## Maintenance rule
 
-Keep prompt text generic. The Graphify-first rule, repository-presentation contract,
-and project-specific policy live in `AGENTS.md`, `docs/GRAPHIFY_NAVIGATION.md`, and
-`docs/README_MAINTENANCE.md`; prompts should reference those rather than copying
-changing implementation details. Update a prompt only when the workflow itself
-changes.
+Keep prompt text generic. Project-specific policy and changing product facts live in `AGENTS.md`, `docs/GRAPHIFY_NAVIGATION.md`, `docs/README_MAINTENANCE.md`, `docs/ANGYSGUARD_PRODUCT_VISION.md`, `docs/PLATFORM_SUPPORT.md`, and `docs/CONTROL_MODES.md`.
