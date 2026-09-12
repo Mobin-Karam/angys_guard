@@ -24,13 +24,18 @@ description: Execute a Laptop Guard GitHub issue as a bounded branch-to-PR workf
    avoid unrelated cleanup.
 9. Add focused regression/failure tests; use Graphify to locate connected coverage,
    then run the `test-and-verify` workflow.
-10. Review `git diff --check`, changed files, user-visible docs/config, and the
-    graph-identified impact surface.
-11. Have `reviewer` inspect non-trivial final diffs for correctness/regressions.
-12. Refresh Graphify after material code/docs relationship changes when available.
-13. If delivery is explicitly in scope, make focused commits, push the branch, and
-    open a PR linking the issue with tests/manual checks/graph freshness.
-14. Do not merge unless explicitly requested and required checks are green.
+10. Decide whether the issue changes a release/version, user-visible feature or
+    command, setup/platform requirement, security boundary, or repository structure
+    described by the landing page. If yes, run `$repository-presentation` /
+    `repository_curator` and follow `docs/README_MAINTENANCE.md`.
+11. Review `git diff --check`, changed files, user-visible docs/config, repository
+    presentation when applicable, and the graph-identified impact surface.
+12. Have `reviewer` inspect non-trivial final diffs for correctness/regressions.
+13. Refresh Graphify after material code/docs relationship changes when available.
+14. If delivery is explicitly in scope, make focused commits, push the branch, and
+    open a PR linking the issue with tests/manual checks/graph freshness and
+    presentation impact when relevant.
+15. Do not merge unless explicitly requested and required checks are green.
 
 Never load raw `graphify-out/graph.json` into context or copy credentials, `.env`,
 `secrets.json`, stop PIN material, or captured evidence into issue/PR text.
