@@ -1,267 +1,241 @@
 # Feature lifecycle: add, change, fix, and remove features
 
 Use this guide when a Laptop Guard capability needs to be added, modified,
-deprecated, or removed. It is deliberately tied to the current architecture so a
-maintainer or AI agent does not create a second parallel implementation by
-accident.
+deprecated, or removed. It is tied to the current architecture so maintainers and
+AI agents do not create a second parallel implementation by accident.
 
-Start with the repository-wide rules in `AGENTS.md`. When editing runtime code,
-`laptop_guard/AGENTS.md` also applies. For tests, read `tests/AGENTS.md`.
+Start with `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md`. Runtime edits also
+inherit `laptop_guard/AGENTS.md`; tests inherit `tests/AGENTS.md`.
 
-## 1. Decide what kind of feature this is
+## 1. Map the existing feature neighborhood with Graphify
 
-Before editing code, classify the request. This determines where the change
-belongs.
+Before creating/editing/removing a module, check Graphify freshness and map the
+current feature surface:
 
-| Feature type | First places to inspect |
-|---|---|
-| Bot command/callback feature | `laptop_guard/features/`, `FeatureManager`, `LaptopGuard` installation point |
-| CLI command | `laptop_guard/cli.py` plus the service/module it calls |
-| Setup/configuration option | `models.py`, `config.py`, `setup_wizard.py`, `runtime_config.py` |
-| Provider/API behavior | `runtime_api.py`, `bale_api.py`, `providers/` |
-| Camera/input/audio/screen capability | corresponding module plus `tests_manual.py` and `doctor.py` |
-| Intrusion/warning/lock behavior | `guard.py`, `warning_sequence.py`, `system_actions.py`, state/events |
-| Service/autostart behavior | `service.py`, CLI commands, config startup/security settings |
-| Local control API | `control_api.py`, configuration, authorization/token storage |
-| UI/chat behavior | `chat_surface.py`, `chat_window.py`, `text_direction.py` |
-
-Use `docs/FILE_REFERENCE.md` when the owning module is unclear. Use
-`docs/SYSTEM_AUDIT.md` for the current runtime flow and known architectural
-boundaries.
-
-## 2. Trace the existing path before adding code
-
-Do not start by creating a new module. First trace how the closest existing
-behavior works.
-
-For a bot feature, the normal path is approximately:
-
-```text
-provider message/callback
-        |
-        v
-LaptopGuard authorization/dispatch
-        |
-        v
-FeatureManager
-        |
-        v
-feature handler
-        |
-        v
-narrow host/service capability
+```bash
+graphify query "where is <feature/behavior> implemented?"
+graphify explain "<feature/class/function>"
+graphify query "what depends on <feature/symbol>?"
+graphify query "what tests cover <feature/symbol>?"
+graphify path "<command/input>" "<state/store/side effect>"
 ```
 
-`FeatureManager` owns command names, callback-prefix conflicts, installation
-order, and start/stop lifecycle. Feature command names and callback prefixes must
-remain unique.
+Use the result to identify:
 
-For non-command capabilities, find the existing boundary instead of routing
-around it:
+- owning module/class/function;
+- registration/entry points;
+- callers/downstream dependents;
+- commands/callbacks/UI/help/setup surfaces;
+- configuration/migrations;
+- state/events/storage/outbox/evidence;
+- provider/network/hardware/OS adapters;
+- authorization/privacy/security guards;
+- tests and canonical docs.
 
-- owner/provider communication: `RuntimeApi` / existing provider layer;
-- persistent live state: `GuardRuntimeState` / `RuntimeStateStore`;
-- events/history: event/storage modules;
-- configuration: dataclass model + config persistence/migration;
-- OS actions: fixed functions in `system_actions.py` / `system.py`;
-- app execution: existing allowlisted app manager, never arbitrary shell.
+Then open only those current files/ranges and confirm the relationships. Do not
+load the complete `graphify-out/graph.json` into context. If the graph is stale and
+can be refreshed, run `graphify update .`; otherwise document the narrow fallback.
+
+For removals and security-sensitive changes, graph output alone is insufficient:
+confirm every important caller/guard/migration in current source/tests.
+
+## 2. Decide what kind of feature this is
+
+Graphify should normally identify the owner; this table is a fallback/curated
+orientation map:
+
+| Feature type | Typical owner area |
+|---|---|
+| Bot command/callback feature | `laptop_guard/features/`, `FeatureManager`, runtime installation point |
+| CLI command | `laptop_guard/cli.py` plus called service/module |
+| Setup/configuration option | `models.py`, `config.py`, `setup_wizard.py`, `runtime_config.py` |
+| Provider/API behavior | `runtime_api.py`, provider adapters |
+| Camera/input/audio/screen | subsystem module + `tests_manual.py` + `doctor.py` |
+| Intrusion/warning/lock | runtime orchestration, warning/system-action/state/event boundaries |
+| Service/autostart | `service.py`, CLI, startup/security config |
+| Local control API | `control_api.py`, configuration, auth/token storage |
+| UI/chat behavior | chat/UI/text-direction modules |
+
+Use `docs/FILE_REFERENCE.md` for curated ownership context and
+`docs/ARCHITECTURE.md` / `docs/SYSTEM_AUDIT.md` for intended/current boundaries.
 
 ## 3. Adding a feature
 
-### Step A — define behavior and safety rules
+### A. Define behavior and safety rules
 
 Write down:
 
 1. who can invoke it;
-2. what input it accepts;
-3. what side effects it can cause;
-4. what configuration it needs;
-5. how it fails safely;
-6. what data it reads, records, sends, or stores;
-7. how it can be disabled/rolled back.
+2. accepted inputs;
+3. side effects;
+4. required configuration;
+5. safe failure behavior;
+6. data read/recorded/sent/stored;
+7. disable/rollback behavior.
 
-If the feature touches authentication, remote control, secrets, camera,
-microphone, screen/input capture, subprocesses, networking, service/autostart,
-or OS locking, plan a security review before implementation.
+If it touches authentication, remote control, secrets, capture/input, subprocess,
+networking, service/autostart, or OS locking, plan a security review.
 
-### Step B — extend the narrowest existing abstraction
+### B. Extend the narrowest existing abstraction
 
-For a new bot feature, prefer one module under `laptop_guard/features/`. Follow
-`docs/EXTENDING.md` and existing features such as `system_info.py`,
-`failed_login.py`, or `sound_detection.py`.
+Use the Graphify map to find the current extension point. For bot features,
+prefer one focused module under `laptop_guard/features/` and follow
+`docs/EXTENDING.md`.
 
-Do not add generic filesystem, shell, `eval`, `exec`, or arbitrary command
-surfaces. Remote actions must be fixed, explicit, authorization-gated, and
-bounded.
+Do not add generic filesystem/shell/`eval`/`exec`/arbitrary command surfaces.
+Remote actions must be fixed, explicit, authorization-gated, and bounded.
 
-### Step C — add configuration only when necessary
+### C. Add configuration only when necessary
 
-If configuration is needed:
+When configuration is required:
 
-1. add the field to the appropriate dataclass in `models.py`;
+1. add the field to the owning dataclass;
 2. choose a safe default;
-3. preserve older configurations through `config.py` migration/loading;
-4. expose it through guided setup/reconfiguration when ordinary users need it;
-5. update `doctor.py` if readiness depends on an external package, binary,
-   permission, or device;
-6. never put secrets into normal TOML/log output when they belong in protected
-   secret storage.
+3. preserve older configs through migration/loading;
+4. expose guided setup/reconfiguration when ordinary users need it;
+5. update doctor/readiness checks for external dependencies/capabilities;
+6. keep secrets in protected secret storage, never normal logs/TOML.
 
-### Step D — register the feature explicitly
+### D. Register explicitly
 
 Laptop Guard intentionally avoids filesystem auto-discovery of runtime plugins.
-Install/register the feature explicitly beside the other runtime features.
+Install/register features explicitly beside existing runtime features.
 
-This prevents an unexpected local file from silently becoming executable product
-behavior.
+### E. Add tests
 
-### Step E — add tests before calling it complete
+Use Graphify to locate nearby/connected tests, then cover:
 
-At minimum test:
+- registration/conflicts;
+- authorized success;
+- invalid/bounded input;
+- authorization denial;
+- dependency/provider timeout/failure;
+- cleanup/start/stop for owned resources;
+- config migration/defaults when changed.
 
-- registration and conflicts;
-- authorized success behavior;
-- invalid/empty/bounded input;
-- authorization denial when applicable;
-- timeout/dependency/provider failure;
-- cleanup/start/stop if the feature owns a thread/process/resource;
-- configuration migration/defaults if config changed.
-
-Hardware-facing features should have fake/mocked backend tests and a separate
-manual target-device checklist.
-
-Use `docs/TESTING.md` and the `$test-and-verify` skill.
+Hardware-facing features need fake/mocked backend coverage plus manual target-device
+checks. Use `docs/TESTING.md` and `$test-and-verify`.
 
 ## 4. Changing an existing feature
 
-Treat a modification as a compatibility change, not just an edit.
+Treat a modification as a compatibility change. Use Graphify to map all dependents
+before editing, then confirm them in source/tests.
 
-Before changing behavior, answer:
+Answer:
 
-- Does another command/callback/service call this path?
-- Is persisted configuration/state/event data involved?
-- Does a test encode the old expected behavior?
-- Does the user-visible command/setup/doctor text need updating?
-- Will an older config still start safely?
-- Does the change alter authorization, privacy, or remote-control behavior?
+- which commands/callbacks/services call this path;
+- what persisted config/state/event data is involved;
+- which tests encode existing behavior;
+- which user-visible setup/doctor/help/menu/docs need updating;
+- whether old configs/data still load safely;
+- whether authorization/privacy/remote-control behavior changes.
 
-Prefer changing the owner module rather than adding a special case in
-`guard.py` or another caller.
-
-For larger changes, keep the old and new behavior behind an explicit migration or
-configuration transition only when backward compatibility genuinely requires it.
-Do not keep dead duplicate implementations indefinitely.
+Prefer changing the owner abstraction instead of adding special cases in callers.
+Use explicit migration/compatibility only when genuinely required; do not leave
+permanent duplicate implementations.
 
 ## 5. Fixing a feature
 
-For a defect, use `docs/BUG_TRIAGE_AND_FIXING.md` first. A safe feature fix should
-normally follow this order:
+Use `docs/BUG_TRIAGE_AND_FIXING.md` first.
 
 ```text
-reproduce -> identify owner -> write failing regression test -> smallest fix
--> targeted tests -> security/review if needed -> full verification
+Graphify map -> reproduce -> confirm owner -> failing regression test
+-> smallest root-cause fix -> targeted tests -> review/security review
+-> broader verification -> graph refresh
 ```
 
-A bug fix is not complete if it only suppresses the visible error while leaving
-the incorrect state, authorization path, retry loop, or resource leak in place.
+Do not merely suppress a visible error while incorrect state, authorization,
+retry, persistence, or resource behavior remains.
 
 ## 6. Removing a feature safely
 
-Removal is more than deleting one Python file.
+Removal is more than deleting one file.
 
-### Inventory every reference
+### Inventory every reference with Graphify first
 
-Search for the feature name, command names, callback prefixes, configuration
-fields, docs, tests, setup prompts, doctor checks, menu buttons/text, imports,
-service hooks, event kinds, and migrations.
+Use `query`, `explain`, and `path` to build a removal map covering feature names,
+commands, callbacks, registration, imports/callers, config, migration, docs, tests,
+setup/doctor/help/menu, event kinds, state/storage, provider/hardware adapters, and
+security guards.
 
-`docs/FILE_REFERENCE.md` and the repository search/index are useful here.
+Then verify all important edges with source search/current files. This is one of
+the cases where inferred/missing graph edges must not be trusted blindly.
 
 ### Decide migration behavior
 
-For each removed configuration field:
+For removed configuration/data:
 
-- harmless unknown legacy value: ignore/drop safely during load;
-- field affects a replacement behavior: add an explicit migration;
-- secret field: remove references but do not expose/echo the old value;
-- database/event history: normally preserve historical rows even when no new
-  events are produced.
+- harmless legacy values may be ignored/dropped safely during load;
+- replacement behavior needs explicit migration;
+- secret fields may have references removed but values must never be exposed;
+- historical database/events should normally remain readable unless a deliberate
+  retention/migration decision says otherwise.
 
 ### Remove in dependency order
 
-A typical order is:
+Typical order:
 
-1. stop exposing the command/menu/setup option;
-2. remove runtime registration/startup;
+1. stop exposing command/menu/setup surfaces;
+2. remove registration/startup;
 3. remove callers and implementation;
-4. remove unused config/model fields with migration handling;
+4. migrate/remove config/model fields safely;
 5. remove obsolete doctor/manual-test paths;
-6. delete or rewrite tests;
-7. update user/security docs and `FILE_REFERENCE.md`;
-8. run the full verification suite.
+6. delete/rewrite tests;
+7. update docs/file ownership;
+8. run Graphify again to detect remaining structural references;
+9. run full verification.
 
-Never remove an authorization/privacy guard because the feature using it was
-removed until you have proven no other capability depends on that guard.
+Never remove a shared authorization/privacy guard until all graph/source evidence
+confirms no other capability depends on it.
 
-## 7. AI-agent workflow for feature work
+## 7. AI-agent workflow
 
-Use the repo-local Codex roles and skills instead of asking one agent to do a
-large opaque rewrite.
-
-### Add a feature
+When scope is unclear:
 
 ```text
-Have architect map the smallest implementation for <feature>. Use
-FEATURE_LIFECYCLE.md, EXTENDING.md, FILE_REFERENCE.md, and SYSTEM_AUDIT.md.
-Then implement it with safe-implementation, have tester verify it, and have
-reviewer plus security_reviewer review the final diff if it touches a trust
-boundary.
+navigator -> architect -> implementer -> tester -> reviewer
+                                   \-> security_reviewer when sensitive
 ```
 
-Or:
+Navigator handoff should include graph freshness, queries/paths, owners,
+dependencies, tests/docs, and inferred/uncertain edges. Downstream agents should
+consume that handoff rather than rediscovering the whole repository.
+
+### Add/change
 
 ```text
-$safe-implementation add <feature> using the existing feature/runtime boundaries.
-Then $test-and-verify the change.
+Have navigator Graphify-map <feature>. Have architect plan from that map and the
+feature/architecture docs. Have implementer change only the approved scope. Have
+tester verify graph-connected coverage and reviewer inspect final blast radius.
 ```
 
-### Modify a feature
+### Remove
 
 ```text
-Have architect trace every caller and persisted/config compatibility impact of
-<feature>. Then have implementer make only the bounded change and add regression
-tests. Have reviewer inspect the final diff.
+Have navigator and architect produce a Graphify + source-confirmed removal map for
+<feature>. Do not edit until commands/callbacks/config/migrations/state/events/
+tests/docs/security guards are accounted for. Then remove in dependency order and
+use Graphify again to look for structural leftovers.
 ```
 
-### Remove a feature
+### GitHub issue
 
 ```text
-Have architect produce a removal dependency map for <feature>, including config,
-commands, callbacks, tests, docs, migrations, and security guards. Do not edit
-anything yet. After I review the map, have implementer remove it in dependency
-order and tester verify no references remain.
-```
-
-### Feature work from a GitHub issue
-
-```text
-$issue-to-pr implement issue #<number>. Follow docs/FEATURE_LIFECYCLE.md and use
-security_reviewer for any authorization, secret, capture, network, process, or
-OS-control change.
+$issue-to-pr implement issue #<number>. It must map the issue to code/tests/docs
+with Graphify before implementation and preserve the acceptance criteria.
 ```
 
 ## 8. Completion checklist
 
-A feature change is complete only when all applicable items are true:
-
-- [ ] correct owner module/abstraction used;
-- [ ] no parallel/duplicate execution path was introduced;
+- [ ] Graphify freshness checked and feature neighborhood mapped, or fallback reason recorded;
+- [ ] correct owner abstraction confirmed in current source;
+- [ ] no parallel/duplicate execution path introduced;
 - [ ] authorization/privacy boundaries preserved;
-- [ ] configuration has safe defaults and migration behavior;
-- [ ] setup/doctor/help/menu text matches the new behavior;
-- [ ] focused success/failure tests exist;
-- [ ] target-device checks are identified when hardware/session dependent;
-- [ ] docs and `FILE_REFERENCE.md` are updated;
-- [ ] `pytest`, compile checks, shell syntax, `pip check`, and `git diff --check`
-      pass as applicable;
-- [ ] final reviewer/security review completed for non-trivial sensitive changes.
+- [ ] config has safe defaults/migration behavior;
+- [ ] setup/doctor/help/menu/docs match behavior;
+- [ ] focused success/failure/denial tests exist;
+- [ ] target-device checks identified for hardware/session behavior;
+- [ ] `docs/FILE_REFERENCE.md` updated when ownership changed;
+- [ ] Graphify refreshed after material relationship changes when available;
+- [ ] applicable pytest/compile/shell/pip/diff checks pass;
+- [ ] reviewer/security review completed for non-trivial sensitive changes.
