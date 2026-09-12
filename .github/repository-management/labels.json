@@ -1,0 +1,28 @@
+[
+  {"name":"project","color":"1f6feb","description":"Project-level tracking and coordination"},
+  {"name":"type:bug","color":"d73a4a","description":"Defect, regression, or incorrect behavior"},
+  {"name":"type:feature","color":"1d76db","description":"New user-facing capability or compatible enhancement"},
+  {"name":"type:security","color":"b60205","description":"Security, authorization, secrets, privacy, or hardening work"},
+  {"name":"type:architecture","color":"5319e7","description":"Architecture, boundaries, refactoring, or technical design"},
+  {"name":"type:docs","color":"0075ca","description":"Documentation or developer guidance"},
+  {"name":"type:testing","color":"0e8a16","description":"Automated/manual testing, CI, validation, or test infrastructure"},
+  {"name":"type:maintenance","color":"c5def5","description":"Repository, tooling, dependency, or maintenance work"},
+  {"name":"type:release","color":"fbca04","description":"Release preparation, support policy, packaging, or publication"},
+
+  {"name":"priority:P0","color":"b60205","description":"Critical: security/release blocker; do first"},
+  {"name":"priority:P1","color":"d93f0b","description":"High priority; next important work"},
+  {"name":"priority:P2","color":"fbca04","description":"Medium priority; planned after higher-priority work"},
+  {"name":"priority:P3","color":"0e8a16","description":"Lower priority, cleanup, or opportunistic improvement"},
+
+  {"name":"area:setup","color":"bfdadc","description":"Installer, setup wizard, configuration, doctor, or onboarding"},
+  {"name":"area:runtime","color":"c2e0c6","description":"Core guard runtime, lifecycle, monitoring, or orchestration"},
+  {"name":"area:provider","color":"d4c5f9","description":"Bale/Telegram/local communication transport and provider integration"},
+  {"name":"area:storage","color":"f9d0c4","description":"Events, evidence, state, outbox, retention, or persistence"},
+  {"name":"area:ux","color":"fef2c0","description":"Guided UX, CLI/menu experience, and non-technical usability"},
+  {"name":"area:ci","color":"d4c5f9","description":"CI, repository automation, architecture checks, or validation gates"},
+  {"name":"area:release","color":"fef2c0","description":"Versioning, releases, support matrix, and release validation"},
+
+  {"name":"status:blocked","color":"000000","description":"Blocked by another issue, decision, environment, or external dependency"},
+  {"name":"status:needs-design","color":"7057ff","description":"Requires design/architecture decision before implementation"},
+  {"name":"status:needs-validation","color":"fbca04","description":"Implementation exists but target-device/manual validation remains"}
+]
