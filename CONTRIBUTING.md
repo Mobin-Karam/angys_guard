@@ -7,6 +7,7 @@ Laptop Guard is security-sensitive software. Changes should keep the project und
 1. Check `docs/ROADMAP.md` and existing GitHub issues.
 2. Prefer an existing issue for non-trivial work.
 3. Classify the task:
+   - architecture/cross-module refactor -> `docs/ARCHITECTURE.md`, `docs/architecture/`, relevant ADRs;
    - add/change/remove/fix a feature -> `docs/FEATURE_LIFECYCLE.md`;
    - investigate/fix a bug -> `docs/BUG_TRIAGE_AND_FIXING.md`;
    - feature module template -> `docs/EXTENDING.md`;
@@ -34,11 +35,36 @@ Use descriptive branch names such as:
 
 - `fix/<short-description>`
 - `feature/<short-description>`
+- `refactor/<short-description>`
 - `security/<short-description>`
 - `chore/<short-description>`
 - `docs/<short-description>`
 
 Do not work directly on `main` for non-trivial changes when a focused branch/PR is practical.
+
+## Architecture changes
+
+Read `docs/ARCHITECTURE.md` before a non-trivial cross-module refactor. Use
+`docs/architecture/BOUNDARIES.md` to check dependency direction and
+`docs/architecture/EVOLUTION_PLAN.md` to keep the migration incremental.
+
+Architecture work should normally:
+
+- preserve behavior unless the issue explicitly changes product behavior;
+- extract one cohesive flow/boundary at a time;
+- avoid directory/class reshuffling for appearance alone;
+- reuse or strengthen existing ports before adding another abstraction;
+- keep authorization ahead of privileged side effects;
+- identify the authoritative owner for state/persistence;
+- state which compatibility path is created, migrated, frozen, or removed;
+- include rollback and focused regression verification.
+
+Create/update an ADR when the change materially affects dependency direction,
+security boundaries, persistence ownership, extension mechanisms, transport
+strategy, concurrency model, or another difficult-to-reverse architectural choice.
+
+A proposed ADR is not permission to merge a runtime change by itself; normal issue,
+implementation, testing, and security review still apply.
 
 ## Feature changes
 
@@ -76,7 +102,7 @@ A PR should explain:
 
 - what user problem it solves;
 - issue/acceptance criteria when applicable;
-- root cause for bug fixes, or design boundary for feature changes;
+- root cause for bug fixes, design boundary for feature changes, or migration boundary for architecture changes;
 - security/privacy impact;
 - configuration or migration impact;
 - automated tests/checks performed;
@@ -116,7 +142,7 @@ Read `docs/TESTING.md`. Use `$test-and-verify` for AI-assisted verification.
 
 Update user-facing documentation when behavior, required packages, setup steps, commands, supported platforms, security expectations, architecture ownership, or maintenance workflows change.
 
-When adding/removing files or materially changing responsibility, keep `docs/FILE_REFERENCE.md` current.
+When adding/removing files or materially changing responsibility, keep `docs/FILE_REFERENCE.md` current. Architecture changes should also update the canonical architecture/ADR documents rather than duplicating target design in unrelated guides.
 
 ## Vulnerabilities
 

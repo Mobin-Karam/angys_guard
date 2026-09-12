@@ -17,6 +17,23 @@ These rules apply under `docs/` in addition to the root `AGENTS.md`.
 - Keep `ROADMAP.md` focused on planned work and `CHANGELOG.md` focused on shipped
   changes.
 
+## Canonical architecture documents
+
+- `ARCHITECTURE.md` owns the architecture contract, target dependency direction,
+  layer responsibilities, state/persistence/concurrency rules, and architecture
+  review checklist.
+- `SYSTEM_AUDIT.md` owns current source-level architecture evidence, current
+  behavior, active risks, and evidence limitations. It should not be used as the
+  future target design when it describes transitional coupling.
+- `architecture/BOUNDARIES.md` owns dependency/import boundary rules.
+- `architecture/FLOWS.md` owns canonical runtime/security/delivery flow diagrams.
+- `architecture/EVOLUTION_PLAN.md` owns staged behavior-preserving architecture
+  migration order.
+- `adr/` records accepted/proposed/deprecated/superseded architecture decisions.
+
+When architecture changes, update the smallest canonical set instead of copying
+new architecture prose into many files.
+
 ## Canonical maintenance documents
 
 - `FEATURE_LIFECYCLE.md` owns the process for adding, modifying, fixing, and
@@ -28,8 +45,6 @@ These rules apply under `docs/` in addition to the root `AGENTS.md`.
 - `TESTING.md` owns automated and target-device verification requirements.
 - `AI_AGENT_WORKFLOW.md` owns agent/skill selection and reusable AI task recipes.
 - `FILE_REFERENCE.md` owns file/module responsibility mapping.
-- `SYSTEM_AUDIT.md` owns current architecture/control-flow evidence and known
-  limitations.
 
-When adding a new maintenance guide, update `README.md` so a maintainer can reach
-it by task/goal rather than already knowing its filename.
+When adding a new maintenance or architecture guide, update `README.md` so a
+maintainer can reach it by task/goal rather than already knowing its filename.

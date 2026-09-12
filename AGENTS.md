@@ -14,7 +14,10 @@ Do not trade away security/privacy boundaries for convenience.
 
 ## Read only what the task needs
 
-- Architecture/current risks: `docs/SYSTEM_AUDIT.md`
+- Architecture contract/target boundaries: `docs/ARCHITECTURE.md`
+- Current architecture evidence/risks: `docs/SYSTEM_AUDIT.md`
+- Dependency rules and staged refactors: `docs/architecture/`
+- Architecture decisions: `docs/adr/`
 - Add/change/remove/fix a feature: `docs/FEATURE_LIFECYCLE.md`
 - Feature module contracts/templates: `docs/EXTENDING.md`
 - Find/triage/fix a bug or GitHub issue: `docs/BUG_TRIAGE_AND_FIXING.md`
@@ -40,6 +43,14 @@ explicit `FeatureManager`.
 
 Architecture rules:
 
+- Treat `docs/ARCHITECTURE.md` and Accepted ADRs as the target dependency contract.
+- For non-trivial cross-module refactors, read `docs/architecture/BOUNDARIES.md`
+  and `docs/architecture/EVOLUTION_PLAN.md` before proposing edits.
+- Evolve architecture by behavior-preserving slices; do not perform directory or
+  class reshuffles merely to make the tree look cleaner.
+- Dependencies should move inward: delivery/infrastructure may depend on
+  application-owned ports, while application/domain decisions should not depend
+  on concrete HTTP, database, hardware, or OS-command implementations.
 - New bot commands/callbacks belong in one focused module under
   `laptop_guard/features/`; do not grow legacy command/callback chains.
 - Code that talks to the owner depends on `RuntimeApi`, not directly on
@@ -49,6 +60,10 @@ Architecture rules:
 - Prefer narrow protocols/services over passing the full guard object around.
 - Keep imports side-effect-light and optional native dependencies lazy.
 - Keep feature registration explicit; do not add filesystem plugin auto-discovery.
+- Do not add new behavior to a compatibility facade when an active path exists;
+  use the active path and plan migration/removal instead.
+- Avoid service locators/global registries that let features reach arbitrary
+  infrastructure.
 
 ## Security and privacy hard gates
 
@@ -77,14 +92,16 @@ explain the conflict, and propose the safest compatible design.
 1. Run/inspect `git status --short` before editing. Preserve unrelated changes.
 2. Identify the issue/acceptance criteria when the task references GitHub work.
 3. Read the smallest relevant source/document set.
-4. For feature work, follow `docs/FEATURE_LIFECYCLE.md`; for defects, follow
+4. For architecture or cross-module work, map current ownership/dependencies with
+   `docs/ARCHITECTURE.md`, `docs/architecture/`, and relevant ADRs before editing.
+5. For feature work, follow `docs/FEATURE_LIFECYCLE.md`; for defects, follow
    `docs/BUG_TRIAGE_AND_FIXING.md` and reproduce before changing code when practical.
-5. For non-trivial changes, state the intended change boundary before editing.
-6. Implement the smallest coherent patch; avoid opportunistic rewrites.
-7. Add or update focused tests for behavior and failure modes.
-8. Run targeted checks first, then the broader verification required below.
-9. Review the diff for security/privacy regressions and accidental secrets.
-10. Report what changed, what was validated, and any target-device checks still
+6. For non-trivial changes, state the intended change boundary before editing.
+7. Implement the smallest coherent patch; avoid opportunistic rewrites.
+8. Add or update focused tests for behavior and failure modes.
+9. Run targeted checks first, then the broader verification required below.
+10. Review the diff for security/privacy regressions and accidental secrets.
+11. Report what changed, what was validated, and any target-device checks still
     required.
 
 Do not reset, clean, force checkout, overwrite unrelated work, or use destructive
