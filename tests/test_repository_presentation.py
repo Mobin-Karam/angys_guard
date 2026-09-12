@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tomllib
 
 
@@ -60,6 +62,29 @@ def test_repository_profile_is_complete_and_safe_for_github_about() -> None:
     assert profile["version_source"] == "pyproject.toml"
     assert profile["maintenance_guide"] == "docs/README_MAINTENANCE.md"
     assert (ROOT / profile["social_preview_source"]).is_file()
+
+
+def test_repository_profile_sync_helper_is_safe_read_only_preview() -> None:
+    profile = json.loads(PROFILE.read_text(encoding="utf-8"))
+    script = ROOT / "scripts" / "sync_repository_profile.py"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--repo",
+            "Mobin-Karam/laptop_guard_v3",
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        timeout=5,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Read-only preview" in result.stdout
+    assert profile["description"] in result.stdout
+    assert "Mobin-Karam/laptop_guard_v3" in result.stdout
 
 
 def test_presentation_maintenance_workflow_is_wired_for_agents() -> None:
