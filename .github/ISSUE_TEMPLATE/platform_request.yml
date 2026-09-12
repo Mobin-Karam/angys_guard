@@ -1,0 +1,97 @@
+name: Platform / OS request
+description: Request AngysGuard support for another operating system, distro, desktop environment, mobile platform, or device class.
+title: "[PLATFORM REQUEST] "
+labels:
+  - type:platform-request
+  - status:needs-design
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping shape AngysGuard platform support. A request is not an automatic support promise; platform targets are evaluated for demand, security feasibility, maintainability and test access.
+
+        **Do not include passwords, bot tokens, private keys, screenshots containing secrets, or captured evidence.**
+
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system / platform
+      description: Include the exact OS/distribution/platform name.
+      placeholder: "Example: Fedora Linux, Windows 11, macOS, ChromeOS, Android"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / release
+      placeholder: "Example: Fedora 43, Windows 11 25H2, Android 17"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device type / architecture
+      description: Laptop, desktop, phone, tablet, SBC; x86_64/ARM64 when known.
+      placeholder: "Example: laptop, x86_64"
+    validations:
+      required: true
+
+  - type: input
+    id: desktop
+    attributes:
+      label: Desktop/session (if applicable)
+      description: Desktop environment/session/window system when relevant.
+      placeholder: "Example: GNOME Wayland, KDE X11"
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Security/use case
+      description: What are you trying to protect or manage, and why does this platform matter?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: capabilities
+    attributes:
+      label: Capabilities you need
+      options:
+        - label: Setup / configuration app
+        - label: Arm / disarm / profiles
+        - label: Camera or motion monitoring
+        - label: Screen evidence
+        - label: Input-activity detection (not keylogging)
+        - label: Lock / safe system actions
+        - label: Bale bot control
+        - label: Telegram bot control
+        - label: Managed AngysGuard account / bot
+        - label: Mobile companion app
+        - label: Event/evidence viewer
+        - label: Other (describe below)
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Other requirements / known platform limits
+      description: Mention platform APIs, enterprise/device-owner requirements, store restrictions, or other useful context if known.
+
+  - type: dropdown
+    id: testing
+    attributes:
+      label: Can you test development builds on real hardware?
+      options:
+        - "Yes"
+        - "Maybe"
+        - "No"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety acknowledgement
+      options:
+        - label: I understand AngysGuard will not add stealth surveillance, keylogging, credential collection, or a generic remote shell just to support this platform.
+          required: true
