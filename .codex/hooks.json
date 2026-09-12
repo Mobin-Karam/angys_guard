@@ -8,8 +8,8 @@
             "type": "command",
             "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/session_start.py\"",
             "timeout": 5,
-            "additionalContextLimit": 800,
-            "statusMessage": "Loading Laptop Guard guardrails"
+            "additionalContextLimit": 1000,
+            "statusMessage": "Loading Laptop Guard rules and Graphify freshness"
           }
         ]
       }
@@ -37,7 +37,7 @@
             "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/post_edit_review.py\"",
             "timeout": 5,
             "additionalContextLimit": 500,
-            "statusMessage": "Checking verification scope"
+            "statusMessage": "Checking verification and graph refresh scope"
           }
         ]
       }

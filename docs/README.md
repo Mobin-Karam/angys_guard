@@ -1,22 +1,49 @@
 # Laptop Guard 11.1
 
 Laptop Guard is an owner-controlled Linux security agent. It watches camera and
-input activity, records local evidence, presents a five-second fullscreen
-warning, can lock the desktop, and exposes a constrained Bale control surface.
-It deliberately does not expose a remote shell, suppress capture indicators, or
-delete user data.
+input activity, records local evidence, presents a five-second fullscreen warning,
+can lock the desktop, and exposes a constrained Bale control surface. It deliberately
+does not expose a remote shell, suppress capture indicators, or delete user data.
+
+## Before reading the repository broadly: use Graphify
+
+For humans and AI agents, repository discovery is Graphify-first. Read
+[Graphify navigation](GRAPHIFY_NAVIGATION.md) before trying to understand where
+behavior lives or how files/symbols connect.
+
+```text
+question
+  -> check Graphify freshness
+  -> graphify query / explain / path
+  -> identify minimal relevant files/symbols/tests/docs
+  -> inspect those authoritative files
+```
+
+Useful examples:
+
+```bash
+graphify query "where is owner authorization enforced?"
+graphify explain "LaptopGuard"
+graphify path "InputMonitor" "EventStore"
+```
+
+Do not open the full `graphify-out/graph.json` manually for normal investigation;
+query it through Graphify. `graphify-out/graph.html` is available for human visual
+exploration, and `GRAPH_REPORT.md` gives a high-level overview/freshness record.
 
 ## Start here
 
-Choose the document by what you are trying to do:
+Choose the document by what you are trying to do **after Graphify narrows the
+scope**:
 
 | Goal | Read first |
 |---|---|
+| Navigate/find files, symbols, callers, tests, or connections | [Graphify navigation](GRAPHIFY_NAVIGATION.md) |
 | Understand the architecture contract/target design | [Architecture](ARCHITECTURE.md) |
 | See current architecture evidence, risks, and limitations | [System audit](SYSTEM_AUDIT.md) |
 | Review dependency rules / staged architecture evolution | [Architecture notes](architecture/) |
 | Understand architecture decisions | [ADRs](adr/) |
-| Find the file/module responsible for behavior | [File reference](FILE_REFERENCE.md) |
+| Use the curated file/module ownership map | [File reference](FILE_REFERENCE.md) |
 | Add, change, fix, or remove a feature | [Feature lifecycle](FEATURE_LIFECYCLE.md) |
 | Find the cause of a bug or fix a GitHub issue | [Bug triage and fixing](BUG_TRIAGE_AND_FIXING.md) |
 | Add a new command/feature module | [Extending](EXTENDING.md) |
@@ -36,8 +63,10 @@ microservice system. Existing seams such as `RuntimeApi`, `FeatureManager`,
 `FeatureHost`, `GuardRuntimeState`, and the event/outbox store should be strengthened
 incrementally instead of replaced by a flag-day rewrite.
 
-For new architecture work, start with `ARCHITECTURE.md`, then use:
+Use Graphify first to map the current runtime relationships, then reconcile them
+with the intended architecture:
 
+- `ARCHITECTURE.md` for the architecture contract;
 - `architecture/BOUNDARIES.md` for allowed dependency direction;
 - `architecture/FLOWS.md` for startup/security/delivery flows;
 - `architecture/EVOLUTION_PLAN.md` for staged refactor order;
@@ -61,13 +90,19 @@ For normal engineering work, use this sequence:
 GitHub issue / user report / feature request
                 |
                 v
+Graphify freshness + query/path/explain
+                |
+                v
+smallest owning files/symbols/tests/docs
+                |
+                v
 classify the task
   architecture  -> ARCHITECTURE.md + architecture/ + ADRs
   feature work  -> FEATURE_LIFECYCLE.md
   defect        -> BUG_TRIAGE_AND_FIXING.md
                 |
                 v
-find owner/path with FILE_REFERENCE.md + SYSTEM_AUDIT.md
+confirm current source behavior
                 |
                 v
 implement smallest safe change
@@ -79,11 +114,15 @@ focused regression tests
 TESTING.md + reviewer/security review when needed
                 |
                 v
+refresh Graphify after material relationship changes
+                |
+                v
 PR / release
 ```
 
-If using Codex in VS Code, `AGENTS.md` is the authoritative instruction file and
-`docs/AI_AGENT_WORKFLOW.md` explains the repo-local agents, skills, and hooks.
+If using Codex in VS Code, `AGENTS.md` is authoritative;
+`docs/AI_AGENT_WORKFLOW.md` explains repo-local agents, skills, hooks, and the
+Graphify-first handoff pattern.
 
 ## Install and run
 
@@ -109,13 +148,12 @@ capture backends. Laptop Guard cannot bypass compositor permission boundaries.
 - Only the configured owner chat ID may issue commands.
 - Configuration is stored under `~/.config/laptop-guard/`; a project `.env` is
   not required.
-- Unexpected input can trigger evidence collection, owner notification, a
-  bundled 1920×1080 MP4 warning, and a desktop lock.
-- Ctrl+C uses local PIN plus Bale owner confirmation. Other termination paths
-  fail closed through the exit-lock watchdog when enabled.
+- Unexpected input can trigger evidence collection, owner notification, a bundled
+  1920×1080 MP4 warning, and a desktop lock.
+- Ctrl+C uses local PIN plus Bale owner confirmation. Other termination paths fail
+  closed through the exit-lock watchdog when enabled.
 - Remote power and unlock controls are opt-in and confirmation-gated.
-- Autostart and automatic arming are separate settings: the service may start
-  after graphical login while remaining disarmed, or arm immediately.
+- Autostart and automatic arming are separate settings.
 - Readable Linux authentication failures generate sanitized owner alerts.
 - Persian speech and automatic RTL/LTR chat rendering are supported.
 
@@ -134,9 +172,9 @@ capture backends. Laptop Guard cannot bypass compositor permission boundaries.
 ./run.sh service status
 ```
 
-From Bale, `/menu`, `/status`, `/arm`, `/disarm`, `/photo`, `/screen`,
-`/listen`, `/chat`, `/say`, `/events`, `/lock`, `/unlock`, `/stoppin`, and the
-confirmed power actions are handled by the current runtime.
+From Bale, `/menu`, `/status`, `/arm`, `/disarm`, `/photo`, `/screen`, `/listen`,
+`/chat`, `/say`, `/events`, `/lock`, `/unlock`, `/stoppin`, and confirmed power
+actions are handled by the current runtime.
 
 The warning media is `laptop_guard/assets/warnings/countdown.mp4`: 1920×1080,
 30 fps, and five seconds.

@@ -3,6 +3,7 @@
 Use this as the short operational checklist for repository maintenance. Detailed
 procedures live in:
 
+- `GRAPHIFY_NAVIGATION.md` for graph-first repository navigation/freshness;
 - `FEATURE_LIFECYCLE.md` for add/change/fix/remove feature work;
 - `BUG_TRIAGE_AND_FIXING.md` for issue/bug investigation and repair;
 - `TESTING.md` for automated/manual validation;
@@ -11,9 +12,12 @@ procedures live in:
 ## Every pull request
 
 - [ ] Scope is clear and linked to an issue when appropriate.
+- [ ] Graphify was used first for repository discovery/impact mapping, or the
+      narrow fallback reason is recorded.
+- [ ] Important graph relationships were confirmed in current source/tests.
 - [ ] Task followed the feature-lifecycle or bug-triage workflow as applicable.
 - [ ] No secrets or private evidence are included.
-- [ ] CI passes, including documentation/AI workspace regression tests.
+- [ ] CI passes, including documentation/AI/Graphify-policy regression tests.
 - [ ] Repository Safety passes.
 - [ ] Security/privacy impact was considered.
 - [ ] Setup/config migration impact was considered.
@@ -23,6 +27,8 @@ procedures live in:
 - [ ] Tests/docs were updated where behavior changed.
 - [ ] Target-device validation is listed separately when CI cannot prove it.
 - [ ] `FILE_REFERENCE.md` was updated if file ownership/layout materially changed.
+- [ ] Graphify was refreshed after material file/symbol/dependency/doc relationship
+      changes when the tool was available; otherwise a follow-up is recorded.
 
 ## Weekly
 
@@ -33,13 +39,19 @@ procedures live in:
 - [ ] Confirm no credential/security issue is waiting without an owner.
 - [ ] Check newly reported bugs have reproduction/evidence or a clear next diagnostic.
 - [ ] Check recently added features have docs/tests and no duplicate legacy path was left behind.
+- [ ] Compare the Graphify `GRAPH_REPORT.md` build commit with current `main`; refresh
+      with `graphify update .` when material repository relationships changed.
+- [ ] Spot-check `graphify query`, `graphify explain`, and `graphify path` for a few
+      core nodes when a graph refresh landed.
 
 ## Before a release
 
 - [ ] Release milestone/checklist is complete.
 - [ ] `$release-readiness` / release-manager review has no unresolved blocker.
+- [ ] Graphify is fresh enough to represent the release's material source/docs
+      relationships, or a documented reason explicitly blocks/waives it.
 - [ ] Full tests pass on the supported Python range.
-- [ ] Documentation link/index checks pass.
+- [ ] Documentation link/index and Graphify-navigation policy checks pass.
 - [ ] Repository Safety passes on the release commit.
 - [ ] Clean-machine install succeeds.
 - [ ] Setup, doctor, provider pairing, camera, microphone, locking, service/autostart, and offline behavior are validated as applicable.
@@ -54,5 +66,8 @@ procedures live in:
 
 - [ ] Verify installation instructions against the published release.
 - [ ] Watch CI/issues for upgrade regressions.
-- [ ] Triage new defects with `BUG_TRIAGE_AND_FIXING.md` instead of applying speculative hotfixes.
+- [ ] Triage new defects with Graphify + `BUG_TRIAGE_AND_FIXING.md` instead of
+      applying speculative hotfixes.
+- [ ] Confirm the checked-in graph still represents the released baseline; if a
+      graph refresh intentionally follows the release commit, keep that provenance clear.
 - [ ] Open follow-up issues instead of silently carrying unfinished release work.

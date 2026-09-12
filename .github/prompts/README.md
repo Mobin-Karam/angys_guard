@@ -1,31 +1,46 @@
 # Reusable engineering prompt library
 
-These prompts are intentionally **evergreen and repository-aware**. They avoid pinned model names, versions, framework assumptions, and machine-specific commands. Each prompt tells the agent to discover and obey the current repository instructions first, so the library should need little maintenance as the project evolves.
+These prompts are intentionally **evergreen and repository-aware**. They avoid
+pinned model names, versions, framework assumptions, and machine-specific commands.
+Project-specific policy stays in `AGENTS.md` and canonical docs.
 
 ## How to use
 
-In GitHub Copilot-supported IDEs, invoke a prompt file from `.github/prompts/` by name. You can also open any file here and copy/paste its text into Codex, Copilot, Claude, Gemini, another coding agent, or a normal AI chat.
+In GitHub Copilot-supported IDEs, invoke a prompt file from `.github/prompts/` by
+name. You can also copy/paste a prompt into Codex, Copilot, Claude, Gemini, another
+coding agent, or a normal AI chat.
 
-When a prompt contains placeholders such as `<task>`, `<feature>`, `<bug>`, `<issue>`, `<file>`, or `<goal>`, replace them or add the missing context in the same chat message.
+When a prompt contains placeholders such as `<task>`, `<feature>`, `<bug>`,
+`<issue>`, `<file>`, or `<goal>`, replace them or add context in the same message.
 
 ## Stable baseline used by every prompt
 
 Unless a prompt says otherwise, the agent should:
 
-1. Read repository-wide and nearest scoped instructions (`AGENTS.md`, contributor/security guidance, and relevant docs) before acting.
-2. Inspect current source/tests/config rather than assuming architecture or APIs.
-3. Preserve unrelated working-tree changes and avoid destructive Git operations.
-4. Never expose secrets, credentials, private keys, personal data, or private captured evidence.
-5. Prefer the smallest coherent change that fixes the root cause or meets the acceptance criteria.
-6. Reuse existing abstractions before introducing new parallel mechanisms.
-7. Add/update focused tests for behavior changes and important failure/denial paths.
-8. Run targeted verification first, then the repository's broader required checks.
-9. Distinguish facts, assumptions, risks, and manual validation still required.
-10. Do not commit, push, merge, publish, deploy, or perform destructive actions unless explicitly requested.
+1. Read repository-wide/nearest scoped instructions and
+   `docs/GRAPHIFY_NAVIGATION.md` before repository discovery.
+2. Check Graphify freshness and use `graphify query`, `graphify explain`, or
+   `graphify path` before broad grep/search or large file reads.
+3. Use the graph to select the smallest relevant source/tests/docs, then verify
+   important conclusions against those current authoritative files.
+4. Never load the complete `graphify-out/graph.json` into conversation context.
+5. If Graphify is unavailable/stale-and-unrefreshable/insufficient, use a narrow
+   direct fallback and state why.
+6. Preserve unrelated working-tree changes and avoid destructive Git operations.
+7. Never expose secrets, credentials, private keys, personal data, or captured evidence.
+8. Prefer the smallest coherent change that fixes the root cause/acceptance criteria.
+9. Reuse existing abstractions before introducing parallel mechanisms.
+10. Add/update focused tests for behavior changes and meaningful failure/denial paths.
+11. Run targeted verification first, then broader required checks.
+12. Refresh Graphify after material code/docs relationship changes when available.
+13. Distinguish facts, inferred graph relationships, assumptions, risks, and manual
+    validation still required.
+14. Do not commit/push/merge/publish/deploy/destructively act unless explicitly requested.
 
 ## Prompt index
 
-### Understand and plan
+### Navigate, understand and plan
+- `graphify-navigation.prompt.md` — first choice for finding/understanding repository relationships
 - `understand-repository.prompt.md`
 - `architecture-map.prompt.md`
 - `plan-change.prompt.md`
@@ -78,8 +93,11 @@ Unless a prompt says otherwise, the agent should:
 - `release-notes.prompt.md`
 
 ### General-purpose router
-- `engineering-task.prompt.md` — use when you are not sure which specialized prompt fits.
+- `engineering-task.prompt.md` — use when no specialized prompt clearly fits.
 
 ## Maintenance rule
 
-Keep these prompts generic. Project-specific policy belongs in repository instructions/docs, not duplicated here. Only update a prompt when the **workflow itself** changes, not when implementation details, versions, filenames, or frameworks change.
+Keep prompt text generic. The Graphify-first rule and project-specific policy live
+in `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md`; prompts should reference those
+rather than copying changing implementation details. Update a prompt only when the
+workflow itself changes.

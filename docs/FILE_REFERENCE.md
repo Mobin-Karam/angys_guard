@@ -1,11 +1,13 @@
 # File reference
 
-This is the repository ownership map: use it to find the module, documentation,
-test area, or AI workflow that owns a behavior. Current source remains
-authoritative when an old note or generated graph disagrees.
+This is the curated repository ownership map. For live callers, dependencies,
+connections, tests, and change impact, use **Graphify first** as defined in
+`docs/GRAPHIFY_NAVIGATION.md`, then use this file for human-maintained ownership
+context. Current source remains authoritative when a note or generated graph
+disagrees.
 
 Generated caches, `.git`, `.venv`, local runtime data, and local
-`graphify-out/` artifacts are not product source.
+`graphify-out/` artifacts are not product runtime source.
 
 ## Root and operations
 
@@ -19,11 +21,11 @@ Generated caches, `.git`, `.venv`, local runtime data, and local
 | `run.sh` | Secure launcher; selects virtual-environment Python and delegates to the package CLI. |
 | `doctor.sh` | Convenience launcher for dependency/configuration readiness checks. |
 | `repair-opencv.sh` | Repairs conflicting OpenCV variants for person/HOG compatibility. |
-| `AGENTS.md` | Authoritative repository-wide AI/Codex instructions, architecture guardrails, task routing, and validation rules. |
+| `AGENTS.md` | Authoritative repository-wide AI/Codex instructions, Graphify-first navigation, architecture guardrails, task routing, and validation rules. |
 | `AGENT.md` | Compatibility pointer; `AGENTS.md` remains authoritative. |
-| `CLAUDE.md` | Claude-oriented compatibility entry that defers to `AGENTS.md`. |
-| `GEMINI.md` | Gemini-oriented compatibility entry that defers to `AGENTS.md`. |
-| `CONTRIBUTING.md` | Human contribution, architecture, branch, feature/bug, PR, testing, documentation, and vulnerability workflow. |
+| `CLAUDE.md` | Claude-oriented compatibility entry that defers to `AGENTS.md` and Graphify navigation policy. |
+| `GEMINI.md` | Gemini-oriented compatibility entry that defers to `AGENTS.md` and Graphify navigation policy. |
+| `CONTRIBUTING.md` | Human contribution workflow including Graphify-first discovery, architecture, branches, feature/bug, PR, testing, documentation, and vulnerability handling. |
 | `SECURITY.md` | Repository vulnerability-reporting policy. |
 | `CHANGELOG.md` | Shipped/released changes; do not use for planned roadmap work. |
 
@@ -37,43 +39,49 @@ Runtime secrets belong in protected user configuration storage described in
 |---|---|
 | `.github/workflows/ci.yml` | Python CI matrix, installation, compile checks, and pytest. |
 | `.github/workflows/repository-safety.yml` | Rejects tracked secret files/private-key material and protects repository hygiene. |
+| `.github/workflows/repository-management-bootstrap.yml` | Applies declarative labels, milestones, issue metadata, and release baseline configuration. |
+| `.github/repository-management/` | Declarative label/milestone/issue/release management configuration. |
 | `.github/dependabot.yml` | Dependency update configuration. |
 | `.github/CODEOWNERS` | Review ownership for repository/security-sensitive areas. |
 | `.github/pull_request_template.md` | PR testing/security/configuration/manual-validation checklist. |
 | `.github/ISSUE_TEMPLATE/` | Structured bug, feature, documentation, help, and security-report routing forms. |
-| `.github/copilot-instructions.md` | GitHub Copilot repository instructions; defers to `AGENTS.md`. |
-| `.github/instructions/` | Path-scoped Copilot rules for runtime/tests. |
-| `.github/prompts/` | Evergreen reusable engineering prompt library for architecture, planning, features, debugging, review, testing, refactoring, documentation, and releases. |
+| `.github/copilot-instructions.md` | GitHub Copilot repository instructions; enforces Graphify-first discovery and defers policy to `AGENTS.md`. |
+| `.github/instructions/` | Path-scoped Copilot rules for runtime/tests, including Graphify-first discovery. |
+| `.github/prompts/` | Evergreen reusable engineering prompt library. |
+| `.github/prompts/graphify-navigation.prompt.md` | Standalone Graphify-first repository-navigation/impact-mapping prompt. |
 | `.github/REPOSITORY_SETTINGS.md` | Settings/branch-protection/security features that must be configured in GitHub UI. |
 
 ## Codex / AI workspace
 
 | Path | Responsibility |
 |---|---|
-| `.codex/config.toml` | Project-local Codex configuration and custom subagent registry. |
-| `.codex/agents/architect.toml` | Read-only architecture/dependency/change planner. |
-| `.codex/agents/implementer.toml` | Focused implementation role. |
-| `.codex/agents/reviewer.toml` | Read-only correctness/regression reviewer. |
-| `.codex/agents/security_reviewer.toml` | Read-only trust-boundary/security/privacy reviewer. |
-| `.codex/agents/tester.toml` | Test selection, reproduction, CI failure triage, and verification role. |
-| `.codex/agents/release_manager.toml` | Release-readiness role. |
+| `.codex/config.toml` | Project-local Codex configuration and custom subagent registry, including `navigator`. |
+| `.codex/agents/navigator.toml` | Read-only Graphify-first repository navigator for owners, callers, dependencies, tests/docs, and impact mapping. |
+| `.codex/agents/architect.toml` | Read-only Graphify-backed architecture/dependency/change planner. |
+| `.codex/agents/implementer.toml` | Focused implementation role consuming a graph/source-confirmed scope. |
+| `.codex/agents/reviewer.toml` | Read-only correctness/regression reviewer using graph-backed blast-radius discovery. |
+| `.codex/agents/security_reviewer.toml` | Read-only trust-boundary/security/privacy reviewer using graph paths plus source confirmation. |
+| `.codex/agents/tester.toml` | Graphify-guided test selection, reproduction, CI-failure triage, and verification role. |
+| `.codex/agents/release_manager.toml` | Release-readiness role accounting for graph freshness/impact plus release checks. |
 | `.codex/hooks.json` | Session/pre-tool/post-tool Codex hook configuration. |
-| `.codex/hooks/session_start.py` | Injects short project/security context at session start. |
+| `.codex/hooks/session_start.py` | Injects project/security context plus Graphify freshness/build status at session start. |
 | `.codex/hooks/pre_tool_use_policy.py` | Blocks destructive Git/repository actions and protected-secret-file access. |
-| `.codex/hooks/post_edit_review.py` | Adds verification/security-review reminders after relevant edits. |
-| `.codex/README.md` | AI workspace layout, trust, roles, and hook explanation. |
-| `.agents/skills/issue-to-pr/SKILL.md` | GitHub issue to bounded branch/PR workflow. |
-| `.agents/skills/safe-implementation/SKILL.md` | Security-preserving product implementation workflow. |
-| `.agents/skills/security-review/SKILL.md` | Trust-boundary review workflow. |
-| `.agents/skills/test-and-verify/SKILL.md` | Progressive automated/manual verification workflow. |
-| `.agents/skills/release-readiness/SKILL.md` | Release readiness and blocker workflow. |
-| `.agents/README.md` | Project skill index and maintenance rules. |
+| `.codex/hooks/post_edit_review.py` | Adds verification/security-review and Graphify-refresh reminders after relevant runtime edits. |
+| `.codex/README.md` | AI workspace layout, trust, roles, Graphify navigation, and hook explanation. |
+| `.agents/skills/graphify-navigation/SKILL.md` | Reusable Graphify-first ownership/dependency/test/doc/change-impact workflow. |
+| `.agents/skills/issue-to-pr/SKILL.md` | GitHub issue to bounded Graphify-mapped branch/PR workflow. |
+| `.agents/skills/safe-implementation/SKILL.md` | Security-preserving product implementation workflow with graph-backed scope discovery. |
+| `.agents/skills/security-review/SKILL.md` | Trust-boundary review workflow using Graphify paths plus source verification. |
+| `.agents/skills/test-and-verify/SKILL.md` | Progressive Graphify-guided automated/manual verification workflow. |
+| `.agents/skills/release-readiness/SKILL.md` | Release readiness and blocker workflow including graph freshness. |
+| `.agents/README.md` | Project skill index and Graphify-first skill baseline. |
 
 ## Documentation
 
 | File | Responsibility |
 |---|---|
-| `docs/README.md` | Product entry point and task-oriented documentation index. |
+| `docs/README.md` | Product entry point and task-oriented documentation index; routes repository discovery through Graphify first. |
+| `docs/GRAPHIFY_NAVIGATION.md` | Canonical graph-first discovery, freshness, query/path/explain, source verification, token/context discipline, fallback, and refresh rules for humans and AI. |
 | `docs/ARCHITECTURE.md` | Canonical architecture contract: current seams, target modular-monolith/ports-adapters structure, layer responsibilities, state/persistence/concurrency/error/security rules, and architecture review checklist. |
 | `docs/architecture/BOUNDARIES.md` | Dependency/import direction and cross-layer boundary rules. |
 | `docs/architecture/FLOWS.md` | Startup, owner-command, intrusion, protected-stop, delivery, evidence, and configuration flow diagrams. |
@@ -85,19 +93,20 @@ Runtime secrets belong in protected user configuration storage described in
 | `docs/adr/0004-layered-modular-monolith.md` | Proposed decision: incremental modular-monolith architecture with inward dependencies. |
 | `docs/adr/0005-durable-owner-delivery.md` | Proposed decision: durable outbox-backed delivery for important owner notifications. |
 | `docs/adr/0006-compatibility-facade-consolidation.md` | Proposed decision: converge duplicate/compatibility facades rather than adding new paths. |
-| `docs/FEATURE_LIFECYCLE.md` | Canonical add/change/fix/remove-feature process, migration/removal checklist, and AI recipes. |
-| `docs/BUG_TRIAGE_AND_FIXING.md` | Canonical symptom-to-root-cause bug/issue investigation and repair playbook. |
-| `docs/AI_AGENT_WORKFLOW.md` | Codex agents/skills/hooks and task-specific AI handoff recipes. |
+| `docs/FEATURE_LIFECYCLE.md` | Canonical Graphify-first add/change/fix/remove-feature process, migration/removal checklist, and AI recipes. |
+| `docs/BUG_TRIAGE_AND_FIXING.md` | Canonical Graphify-first symptom-to-root-cause bug/issue investigation and repair playbook. |
+| `docs/AI_AGENT_WORKFLOW.md` | Graphify-first Codex agents/skills/hooks and task-specific handoff recipes. |
 | `docs/EXTENDING.md` | Focused feature-module template and extension contracts. |
 | `docs/SYSTEM_AUDIT.md` | Current architecture evidence, control/data flows, current behavior, risks/findings, and evidence boundary. It is evidence, not the target architecture contract. |
 | `docs/CONFIGURATION.md` | Setup, persisted paths, defaults, secret handling, migration, and service preparation. |
 | `docs/SECURITY.md` | Product trust model, authorization, protected exit, privacy, and residual risks. |
-| `docs/TESTING.md` | Automated checks and target-device/manual validation requirements. |
+| `docs/TESTING.md` | Graphify-guided test selection, automated checks, policy regressions, and target-device/manual validation requirements. |
 | `docs/ROADMAP.md` | Planned milestones/issues and execution order. |
-| `docs/MAINTAINER_CHECKLIST.md` | Repository/release maintenance checklist. |
+| `docs/PROJECT_MANAGEMENT.md` | GitHub Project v2 field/view/workflow specification and repository-management conventions. |
+| `docs/MAINTAINER_CHECKLIST.md` | Repository/release checklist including Graphify freshness/refresh maintenance. |
 | `docs/GITHUB_SETUP.md` | GitHub settings and repository setup guidance. |
 | `docs/HISTORY.md` | Consolidated release/migration history. |
-| `docs/FILE_REFERENCE.md` | This ownership/navigation map. |
+| `docs/FILE_REFERENCE.md` | This curated ownership/navigation map; live relationships should be discovered with Graphify first. |
 | `docs/AGENTS.md` | Documentation-specific AI instructions and canonical-doc ownership rules. |
 
 ## Runtime package
@@ -130,7 +139,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `laptop_guard/features/failed_login.py` | Journal auth-failure parsing, filtering, dedupe, event/owner alert behavior. |
 | `laptop_guard/features/sound_detection.py` | Sound-triggered detection/recording feature. |
 | `laptop_guard/features/__init__.py` | Public feature-system exports. |
-| `laptop_guard/AGENTS.md` | Runtime-specific AI/security/architecture instructions. |
+| `laptop_guard/AGENTS.md` | Runtime-specific Graphify-first AI/security/architecture instructions. |
 
 ### Provider and local control surfaces
 
@@ -184,18 +193,28 @@ Runtime secrets belong in protected user configuration storage described in
 Tests live under `tests/` and inherit `tests/AGENTS.md`.
 
 The suite includes coverage for configuration/defaults/migrations, setup
-checkpoints, providers and Bale serialization, feature registration/conflicts,
+checkpoints, providers/Bale serialization, feature registration/conflicts,
 runtime API/state, service/autostart, event/outbox persistence, failed-login
 monitoring, camera capability fallback, input privacy, screen parsing/capture,
 warning behavior/assets, Persian TTS, text direction, stop authorization, app
 allowlisting, local control API, chat persistence, AI workspace configuration,
-Codex hook policy, and documentation links/navigation.
+Codex hook policy, Graphify-navigation policy, and documentation link/navigation.
 
-Use test names and the owning runtime module together when triaging a failure;
-`docs/BUG_TRIAGE_AND_FIXING.md` explains the workflow.
+Use Graphify first to locate tests connected to the affected runtime symbol/behavior;
+`docs/BUG_TRIAGE_AND_FIXING.md` and `docs/TESTING.md` explain the workflow.
 
 ## Generated architecture/navigation data
 
-`graphify-out/graph.json`, when present and current, may be used by humans/agents
-to narrow cross-file navigation. It is not authoritative over current source and
-should not be treated as executable product code.
+Graphify outputs live under `graphify-out/` and are developer/agent navigation
+artifacts, not executable product code.
+
+- `graphify-out/GRAPH_REPORT.md` — high-level graph summary, hubs/communities, and
+  recorded build commit used for freshness checks.
+- `graphify-out/graph.html` — interactive human visualization.
+- `graphify-out/graph.json` — machine-readable graph queried through Graphify;
+  do not load it wholesale into AI/chat context for normal investigation.
+
+Use `graphify query`, `graphify explain`, and `graphify path` to discover live
+relationships, then confirm important conclusions in current source/tests. Refresh
+with `graphify update .` after material relationship changes when Graphify is
+available. Never manually edit generated graph data merely to make it appear fresh.

@@ -7,10 +7,15 @@ description: Implement or modify Laptop Guard runtime behavior while preserving 
 
 Before editing:
 
-1. Read root `AGENTS.md` and the closest nested `AGENTS.md`.
-2. Identify the existing abstraction that owns the behavior. Prefer extending it
-   instead of adding a parallel path.
-3. Identify whether the change touches authentication, remote control, secrets,
+1. Read root `AGENTS.md`, the closest nested `AGENTS.md`, and
+   `docs/GRAPHIFY_NAVIGATION.md`.
+2. Check Graphify freshness. Use `graphify query` / `explain` / `path` to identify
+   the existing owner, callers/dependencies, connected tests, config/state/storage,
+   and side-effect boundaries. Use a `navigator` handoff when useful.
+3. Confirm the graph-identified scope in current source; do not load raw
+   `graphify-out/graph.json` into context.
+4. Prefer the existing owning abstraction rather than adding a parallel path.
+5. Identify whether the change touches authentication, remote control, secrets,
    capture/input monitoring, subprocesses, network exposure, or OS lock/service
    behavior. If yes, include a security review.
 
@@ -27,8 +32,10 @@ Implementation rules:
 
 Verification:
 
+- Use Graphify to locate the closest relevant tests and impact surface.
 - Add success + relevant failure/denial tests.
 - Run targeted tests first.
 - Invoke/use `test-and-verify` before completion.
 - Use `security-review` for sensitive changes.
-- State any manual target-device checks still required.
+- Refresh Graphify after material relationship changes when available.
+- State graph freshness and any manual target-device checks still required.

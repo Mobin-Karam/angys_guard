@@ -1,16 +1,21 @@
 Understand this repository before proposing changes.
 
-Read the repository instructions and the smallest useful set of entry-point, architecture, configuration, testing, and security documentation. Inspect current source where docs are ambiguous.
+Follow repository instructions and `docs/GRAPHIFY_NAVIGATION.md`. Do not start by
+reading the repository broadly.
 
-Return a concise map of:
-- product/purpose and primary user flows;
-- runtime/build entry points;
-- major modules and ownership boundaries;
-- data/config/state flow;
-- external services/dependencies;
-- security/privacy/trust boundaries;
-- test strategy and CI/release flow;
-- current known risks/limitations visible from the repo;
-- where a new contributor should start.
+1. Check Graphify freshness.
+2. Use `graphify query`, `graphify explain`, and `graphify path` to map product
+   entry points, major communities, core abstractions, state/config/storage,
+   external boundaries, security boundaries, tests, docs, CI/release flow, and
+   current hotspots.
+3. Open only the minimal authoritative source/docs needed to verify the graph.
+4. Distinguish extracted graph relationships from inferred assumptions.
+5. If Graphify is unavailable/stale and cannot be refreshed, use narrow fallback
+   search and say why.
 
-Separate verified facts from inferred assumptions. Do not edit files.
+Return a concise map of product/purpose, primary flows, entry points, module
+ownership, data/config/state flow, external dependencies, trust boundaries, test
+strategy, known risks, and where a new contributor should start.
+
+Include Graphify freshness and the key queries/nodes/paths used. Do not edit files
+or load the complete `graphify-out/graph.json` into context.

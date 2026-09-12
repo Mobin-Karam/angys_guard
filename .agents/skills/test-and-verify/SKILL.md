@@ -5,17 +5,18 @@ description: Select and run Laptop Guard verification after code or configuratio
 
 # Test and verify
 
-Use progressive verification. Do not start with the noisiest/fullest command if a
-focused test can fail faster.
+Use progressive verification and `docs/GRAPHIFY_NAVIGATION.md`.
 
-1. Identify changed modules and the closest relevant tests.
-2. Run focused tests first, for example:
+1. Check Graphify freshness and use it to map changed/failing production symbols
+   to the closest tests, fixtures, config/state/storage, and failure boundaries.
+2. Confirm the selected tests in current source; do not load raw graph.json.
+3. Run focused graph-identified tests first, for example:
 
    ```bash
    .venv/bin/python -m pytest -q tests/test_config.py
    ```
 
-3. For a normal runtime/code change, finish with the applicable project checks:
+4. For a normal runtime/code change, finish with applicable project checks:
 
    ```bash
    .venv/bin/python -m pytest -q
@@ -25,11 +26,13 @@ focused test can fail faster.
    git diff --check
    ```
 
-4. Never use real tokens/passwords/private media in tests. Keep provider/hardware
-   tests mocked or fake unless the user explicitly performs target-device checks.
-5. If a command fails, report its exit status, failing tests/checks, relevant error
+5. Never use real tokens/passwords/private media in tests. Keep provider/hardware
+   tests mocked/fake unless explicitly performing target-device checks.
+6. If a command fails, report exit status, failing tests/checks, relevant error
    excerpt, likely cause, and the next smallest diagnostic.
-6. Consult `docs/TESTING.md` and list required manual validation for camera,
+7. Consult `docs/TESTING.md` and list manual validation for affected camera,
    microphone, screen/input, Wayland/X11, OS lock, systemd/autostart, and live
-   Telegram/Bale behavior affected by the change.
-7. Do not claim hardware/provider behavior passed when only unit tests ran.
+   Telegram/Bale behavior.
+8. Do not claim hardware/provider behavior passed when only unit tests ran.
+9. Report Graphify freshness and refresh the graph after material relationship
+   changes when available.

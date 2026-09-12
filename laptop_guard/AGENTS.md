@@ -3,6 +3,26 @@
 These rules apply under `laptop_guard/` in addition to the repository root
 `AGENTS.md`.
 
+## Navigate before reading broadly
+
+For runtime discovery, follow `docs/GRAPHIFY_NAVIGATION.md` first. Use Graphify to
+locate the owning class/function, callers, downstream dependencies, tests, config,
+state/storage links, and side-effect adapters before opening broad source ranges.
+
+Typical starting questions:
+
+```bash
+graphify query "where is <runtime behavior> implemented?"
+graphify query "what depends on <symbol>?"
+graphify path "<input/command source>" "<side effect/store>"
+graphify explain "<runtime symbol>"
+```
+
+Then inspect only the returned runtime paths/tests. For security-sensitive changes
+and deletions, confirm graph relationships against current source before editing.
+If Graphify is stale/unavailable and cannot be refreshed, use narrow direct search
+and state the fallback.
+
 ## Design rules
 
 - Keep `guard.LaptopGuard` orchestration-oriented; move new capabilities into
@@ -40,3 +60,6 @@ contents, or hidden capture through a feature or API.
 For changed behavior, cover the success path and at least the relevant failure,
 authorization, timeout, or unavailable-backend path. Hardware code needs a fake
 backend/unit path plus explicit manual target-device validation notes.
+
+After material runtime relationship changes, refresh Graphify when available so
+future navigation reflects the new call/dependency graph.

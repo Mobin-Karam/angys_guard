@@ -42,16 +42,22 @@ def main() -> int:
 
     lowered = "\n".join(runtime_paths).lower()
     sensitive = any(marker in lowered for marker in SECURITY_SENSITIVE)
+    graph_note = (
+        " If the edit materially changed calls/dependencies/ownership, refresh the "
+        "Graphify map with `graphify update .` when available and report graph freshness."
+    )
     if sensitive:
         context = (
             "Security-sensitive Laptop Guard runtime code was edited. Before completion, "
             "run focused regression tests, then use the security-review workflow/agent and "
             "the applicable full checks from docs/TESTING.md."
+            + graph_note
         )
     else:
         context = (
             "Laptop Guard runtime code was edited. Add/run focused regression tests and "
             "finish with the applicable verification from docs/TESTING.md before completion."
+            + graph_note
         )
 
     print(

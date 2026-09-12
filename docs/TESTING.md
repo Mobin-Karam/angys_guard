@@ -1,13 +1,33 @@
 # Testing and validation
 
 Use this document after feature work, bug fixes, configuration changes, AI-workspace
-changes, and release preparation.
+changes, Graphify/navigation changes, and release preparation.
 
 For the workflow before testing:
 
+- repository discovery: `docs/GRAPHIFY_NAVIGATION.md`;
 - feature add/change/remove/fix: `docs/FEATURE_LIFECYCLE.md`;
 - bug/issue investigation and repair: `docs/BUG_TRIAGE_AND_FIXING.md`;
 - AI-assisted verification: `$test-and-verify` in `docs/AI_AGENT_WORKFLOW.md`.
+
+## Graphify-guided test selection
+
+Before scanning the test suite broadly, check Graphify freshness and use the graph
+to find tests connected to the changed/failing symbol or behavior:
+
+```bash
+graphify query "what tests cover <symbol or behavior>?"
+graphify path "<production symbol>" "<test symbol>"
+graphify explain "<production or test symbol>"
+```
+
+Then inspect/run only the relevant current tests first. Graphify chooses the
+starting scope; the current test/source files remain authoritative. If Graphify is
+stale and available, refresh with `graphify update .`; if it cannot be used, use a
+narrow fallback search and record why.
+
+Never load the complete `graphify-out/graph.json` into AI/chat context just to
+select tests.
 
 ## Progressive verification
 
@@ -16,12 +36,14 @@ the problem faster.
 
 Recommended order:
 
-1. reproduce the reported behavior or run the closest focused test;
-2. run the changed module's test file(s);
-3. run the full automated suite;
-4. compile/check shell/package consistency;
-5. rerun the exact user reproduction;
-6. perform target-device checks for hardware/session/provider behavior.
+1. Graphify-map the changed/failing behavior to connected tests;
+2. reproduce the reported behavior or run the closest focused test;
+3. run the changed module's nearby test file(s);
+4. run the full automated suite;
+5. compile/check shell/package consistency;
+6. rerun the exact user reproduction;
+7. perform target-device checks for hardware/session/provider behavior;
+8. refresh Graphify after material source/docs relationship changes when available.
 
 ## Automated suite
 
@@ -38,20 +60,31 @@ conflicts/lifecycle, runtime transport/state, event/outbox persistence,
 service/autostart behavior, failed-login parsing/deduplication, camera capability
 fallbacks, input privacy, screen parsers, warning behavior/assets, Persian TTS,
 RTL/LTR direction, stop-PIN hashing, app allowlisting, chat persistence, local API
-construction, AI workspace configuration, Codex hook policy, and documentation
-link/index integrity.
+construction, AI workspace configuration, Codex hook policy, Graphify-first
+navigation policy, and documentation link/index integrity.
 
-### Documentation regression checks
+### Documentation and AI-navigation regression checks
 
-`tests/test_documentation_links.py` verifies that:
+`tests/test_documentation_links.py` verifies local Markdown links/index routing.
 
-- local Markdown links in repository/docs/AI instruction files resolve to real
-  files/directories;
-- `docs/README.md` links the canonical maintenance guides;
-- root `AGENTS.md` routes AI work to the canonical maintenance guides.
+`tests/test_graphify_navigation_policy.py` verifies that:
 
-When you add/rename/remove a documentation file, update links before merging.
-Do not bypass this check by converting useful local links into plain text.
+- `docs/GRAPHIFY_NAVIGATION.md` remains the canonical Graphify workflow;
+- root/scoped/cross-tool AI instruction files retain Graphify-first routing;
+- Codex keeps the `navigator` agent and Graphify-aware specialist roles;
+- SessionStart retains Graphify freshness context;
+- the Graphify skill/prompt stay registered;
+- core human maintenance guides retain the canonical navigation link;
+- generated `GRAPH_REPORT.md` continues to record the build commit required for
+  freshness checks.
+
+The policy test intentionally does not claim the checked-in graph is fresh. Graph
+freshness is an operational comparison between the report's build commit and the
+working repository.
+
+When adding/renaming/removing a documentation or AI-workspace file, update links
+and policy references before merging. Do not bypass these checks by replacing useful
+local links with plain text.
 
 ## Standard completion checks
 
@@ -65,8 +98,8 @@ bash -n install.sh run.sh doctor.sh repair-opencv.sh
 git diff --check
 ```
 
-Use focused subsets first when debugging. A failure in one of these commands
-should be investigated rather than hidden or skipped.
+Use focused Graphify-selected subsets first when debugging. A failure in one of
+these commands should be investigated rather than hidden or skipped.
 
 ## Regression-test rule for bug fixes
 
@@ -138,19 +171,21 @@ behavior.
 When GitHub Actions fails:
 
 1. identify the exact job, step, and first meaningful failing test/error;
-2. determine whether the failure is product code, test/fixture, dependency,
+2. use Graphify to connect that test/module to likely production ownership and
+   dependencies before broad repository searching;
+3. determine whether the failure is product code, test/fixture, dependency,
    Python-version compatibility, packaging, or environment/flakiness;
-3. reproduce locally or with the smallest equivalent test when possible;
-4. fix the cause rather than weakening/skipping the check;
-5. rerun the failed focused test before the full suite.
+4. reproduce locally or with the smallest equivalent test when possible;
+5. fix the cause rather than weakening/skipping the check;
+6. rerun the failed focused test before the full suite.
 
 For Codex:
 
 ```text
-Have tester triage the failing CI job using docs/TESTING.md and
-BUG_TRIAGE_AND_FIXING.md. Return the exact failing step/test, classification,
-root-cause evidence, and smallest next fix/diagnostic. Do not change unrelated
-code.
+Have tester triage the failing CI job using Graphify first, docs/TESTING.md, and
+BUG_TRIAGE_AND_FIXING.md. Return graph freshness, connected production/test paths,
+the exact failing step/test, classification, root-cause evidence, and smallest next
+fix/diagnostic. Do not change unrelated code.
 ```
 
 ## Verification report format
@@ -158,12 +193,14 @@ code.
 Record what was actually proven:
 
 ```text
+Graphify freshness / queries used:
 Focused tests:
 Full pytest:
 Compile/shell/pip/diff checks:
 Original reproduction:
 GitHub CI:
 Repository Safety:
+Graph refreshed after relationship changes:
 Manual target-device checks:
 Not tested / still required:
 ```
