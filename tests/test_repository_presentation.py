@@ -75,6 +75,22 @@ def test_presentation_maintenance_workflow_is_wired_for_agents() -> None:
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     assert "README_MAINTENANCE.md" in agents
     assert "repository-presentation" in agents
+    assert "repository_curator" in agents
+
+
+def test_release_pr_and_runtime_workflows_keep_presentation_trigger() -> None:
+    surfaces = {
+        ROOT / ".codex" / "agents" / "release_manager.toml": "repository-presentation",
+        ROOT / ".agents" / "skills" / "release-readiness" / "SKILL.md": "repository-presentation",
+        ROOT / ".agents" / "skills" / "safe-implementation" / "SKILL.md": "README_MAINTENANCE.md",
+        ROOT / ".agents" / "skills" / "issue-to-pr" / "SKILL.md": "repository-presentation",
+        ROOT / ".github" / "pull_request_template.md": "test_repository_presentation.py",
+        ROOT / "docs" / "MAINTAINER_CHECKLIST.md": "repository-presentation",
+        ROOT / ".codex" / "hooks" / "post_edit_review.py": "README_MAINTENANCE.md",
+    }
+    for path, marker in surfaces.items():
+        text = path.read_text(encoding="utf-8")
+        assert marker in text, f"presentation trigger missing from {path}: {marker}"
 
 
 def test_graphify_generated_assets_do_not_dominate_language_stats() -> None:
