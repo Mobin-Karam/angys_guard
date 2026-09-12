@@ -1,58 +1,77 @@
 # GitHub Project management
 
-This document defines the canonical GitHub Project v2 structure for Laptop Guard.
+This document defines the canonical GitHub Project v2 structure for AngysGuard / Laptop Guard.
 
-The repository already tracks execution through issues, milestones, labels, roadmap docs, and issue #9. A GitHub Project board should visualize that same data rather than invent a second planning system.
+The repository tracks execution through issues, milestones, labels, roadmap docs, and project issue #9. A native GitHub Project board should visualize that same data rather than create a second planning system.
 
 ## Project
 
-**Name:** `Laptop Guard — Product & Architecture Delivery`
+**Name:** `AngysGuard — Product, Platform & Architecture Delivery`
 
-**Purpose:** one board for product-readiness work, architecture evolution, security/hardening, and release preparation.
+**Purpose:** one board for current product-readiness work, architecture evolution, AngysGuard self-hosted UX, optional managed-service work, platform expansion, security and release preparation.
 
-Repository issues remain the source of truth for requirements and acceptance criteria. Milestones remain the source of truth for release grouping.
+Repository issues remain the source of truth for requirements/acceptance criteria. Milestones group delivery targets. `docs/ROADMAP.md` explains sequencing.
 
 ## Fields
-
-Use these Project fields:
 
 | Field | Type | Values / purpose |
 |---|---|---|
 | Status | Single select | Backlog, Ready, In progress, Review, Validation, Done |
 | Priority | Single select | P0, P1, P2, P3 |
-| Track | Single select | Product, Architecture, Security, Release, Repository |
-| Area | Single select | Setup, Runtime, Provider, Storage, UX, CI, Release, Docs |
+| Track | Single select | Product, Architecture, Security, Release, Repository, Platform, Desktop App, Mobile, Managed Service |
+| Area | Single select | Setup, Runtime, Provider, Storage, UX, CI, Release, Docs, Platform, Desktop App, Mobile, Managed Service |
 | Effort | Single select | XS, S, M, L, XL |
-| Target | Text or milestone-derived | v11.2, v11.3, v12.0, Architecture Evolution |
+| Target | Text or milestone-derived | v11.2, v11.3, v12.0, v13.0, v14.0, Future Platform Expansion, Architecture Evolution |
 | Blocked | Boolean | Whether execution is currently blocked |
 
-Do not duplicate issue labels into every custom field unless the Project view benefits from filtering/grouping by that field. Labels remain useful outside Projects and should stay canonical for issue taxonomy.
+Labels remain canonical outside the Project. Avoid duplicating metadata unless a Project field materially improves filtering/grouping.
 
-## Initial item mapping
+## Initial/current item mapping
 
-### Product readiness
+### Current product readiness
 
-- #1, #2, #3 -> Track: Product/Security, Target: v11.2
-- #4, #5, #6 -> Track: Product, Target: v11.3
-- #7, #8 -> Track: Release/Product, Target: v12.0
-- #9 -> Track: Repository, project-level tracker
+- #1, #2, #3 -> v11.2
+- #4, #5, #6 -> v11.3
+- #7, #8 -> v12.0
+- #9 -> project-level tracker
 
 ### Architecture evolution
 
-- #19 -> Track: Architecture, Priority P1, Runtime
-- #20 -> Track: Architecture, Priority P1, Provider
-- #21 -> Track: Architecture, Priority P1, Storage/Provider
-- #22 -> Track: Architecture, Priority P2, Runtime
-- #23 -> Track: Architecture, Priority P2, Storage
-- #24 -> Track: Architecture, Priority P2, CI
+- #19 -> Architecture / Runtime / P1
+- #20 -> Architecture / Provider / P1
+- #21 -> Architecture / Storage+Provider / P1
+- #22 -> Architecture / Runtime / P2
+- #23 -> Architecture / Storage / P2
+- #24 -> Architecture / CI / P2
+- #27 -> Repository/Architecture maintenance / Graphify freshness
+
+### v13.0 — AngysGuard Self-Hosted UX & Linux App
+
+- #30 -> Product/Repository, AngysGuard naming migration
+- #31 -> Platform/Product, support matrix + platform-request intake
+- #32 -> Desktop App/Product, Linux management UI
+- #37 -> Product/Security/Provider, self-hosted bot pairing
+- #41 -> Product/Provider/Testing, Bale/Telegram capability parity
+
+### v14.0 — AngysGuard Managed Control
+
+- #38 -> Managed Service/Security/Architecture, onboarding/trust model
+- #39 -> Security/Architecture/Platform, passwordless device authorization/local privilege
+- #40 -> Managed Service/Product, multi-device account/dashboard
+- #42 -> Managed Service/Product/Security, backend + official Bale/Telegram bots
+
+### Future Platform Expansion — Windows & Android
+
+- #33 -> Platform/Architecture, capability adapters
+- #34 -> Platform/Desktop App, Windows agent/app
+- #35 -> Platform/Mobile, Android companion app
+- #36 -> Platform/Mobile/Architecture, Android protected-device research
 
 ## Views
 
-Create these views.
-
 ### 1. Now
 
-Purpose: daily execution.
+Daily execution.
 
 Filter:
 
@@ -60,71 +79,127 @@ Filter:
 status:Ready,In progress,Review,Validation
 ```
 
-Group by `Status`, sort by `Priority`.
+Group by Status and sort by Priority.
 
-### 2. Product roadmap
+### 2. Current product roadmap
 
-Show product issues only. Group by milestone/Target, then sort by Priority.
-
-Expected sequence:
+Targets:
 
 ```text
 v11.2 -> v11.3 -> v12.0
 ```
 
-### 3. Architecture evolution
+This is the release-hardening path and remains higher priority than speculative platform expansion.
+
+### 3. AngysGuard product future
+
+Targets:
+
+```text
+v13.0 -> v14.0
+```
+
+Show branding, Linux desktop app, self-hosted bot UX, managed-service design, multi-device and official bot work.
+
+### 4. Platform expansion
+
+Filter `Track = Platform`, `Desktop App`, or `Mobile`.
+
+Recommended dependency shape:
+
+```text
+#33 platform adapters
+  -> #34 Windows
+  -> #35 Android companion
+       -> #36 Android protected-device research decision
+```
+
+Also include platform-request issues (`type:platform-request`) as demand signals, but do not automatically treat them as committed targets.
+
+### 5. Managed service
+
+Filter `Track = Managed Service` or `area:managed-service`.
+
+Recommended order:
+
+```text
+#39 + #38 -> #40 -> #42
+```
+
+Security/privacy blockers must be visible before implementation or launch.
+
+### 6. Self-hosted bot & providers
+
+Include #37 and #41 plus provider bugs/requests. This view protects self-hosted mode from being neglected after managed mode exists.
+
+### 7. Architecture evolution
 
 Filter `Track = Architecture`.
 
-Recommended sequence:
+Current sequence:
 
 ```text
 #19 -> #20 -> (#21 and #22) -> #23 -> #24
 ```
 
-Use the dependency notes in the issues and `docs/architecture/EVOLUTION_PLAN.md`; the board order is visual guidance, not a replacement for those constraints.
+Cross-platform #33 should align with the architecture contract rather than introduce a parallel framework.
 
-### 4. Security & hardening
+### 8. Security & hardening
 
-Filter issues carrying `type:security` or Track `Security`.
+Include `type:security` or Track `Security`. Managed-service credentials/pairing and platform privileged actions belong here too.
 
-Use this view for credential cleanup, authorization/privacy changes, provider security, and release-blocking security work.
+### 9. Release readiness
 
-### 5. Release readiness
+Group by milestone/Target. Include `type:release`, `status:needs-validation`, release milestones, support-matrix work and README/product-presentation drift.
 
-Group by Target/milestone. Include issues with `type:release`, `status:needs-validation`, or release milestones.
+### 10. Platform requests
 
-This view should make unresolved blockers visible before tagging a new release.
+Filter `type:platform-request`.
 
-### 6. Backlog
+Group/sort by requested platform and community demand when useful. A request remains a request until feasibility/security/testing capacity justify promotion into a roadmap issue/milestone.
 
-Filter `Status = Backlog`. Group by Track, sort by Priority.
+### 11. Backlog
+
+Filter `Status = Backlog`, group by Track, sort by Priority.
 
 ## Workflow rules
 
 Recommended automation:
 
-- new repository issue -> add to Project with Status `Backlog`;
-- issue assigned / explicitly selected for work -> `Ready`;
-- linked PR opened -> `In progress` or `Review` depending on team preference;
-- PR merged but manual target-device checks remain -> `Validation`;
-- issue closed -> `Done`;
-- `status:blocked` label -> set Blocked true;
-- `status:needs-validation` -> Status `Validation`.
+- new repository issue -> Project / Backlog;
+- new `type:platform-request` -> Platform Requests view / Backlog;
+- assigned/selected work -> Ready;
+- linked PR -> In progress or Review;
+- merged PR with required manual checks -> Validation;
+- issue closed after acceptance criteria -> Done;
+- `status:blocked` -> Blocked true;
+- `status:needs-validation` -> Validation.
 
-Do not auto-close issues merely because a PR merged unless the issue's acceptance criteria are actually complete.
+Do not auto-close an issue merely because a PR merged.
 
 ## Planning rules
 
-1. **Product/security blockers outrank architecture cleanup.** Architecture work may proceed in parallel only when it does not destabilize the active release milestone.
-2. **One issue = one measurable outcome.** Split work when independent acceptance criteria or rollback boundaries emerge.
-3. **Milestones are release commitments, not general categories.** The architecture milestone is intentionally separate because it spans releases.
-4. **Labels classify; Project fields organize execution; milestones group release targets.** Avoid using all three for the same purpose unless it materially improves visibility.
-5. **No hidden work.** Non-trivial work should have an issue before implementation unless it is an immediate small fix discovered inside an existing issue/PR.
-6. **Validation is a real state.** Hardware/session/provider checks that cannot run in CI should prevent premature completion when they are part of acceptance criteria.
+1. **Security/current product blockers outrank future platform work.** v11.2-v12.0 remains the near-term path.
+2. **Future milestones are explicit but not current support claims.** v13/v14 are product targets; Future Platform Expansion is a planning milestone until release-grade support is scheduled.
+3. **One issue = one measurable outcome.** Split work when independent acceptance/security/rollback boundaries emerge.
+4. **Self-hosted remains first-class.** Managed-service convenience must not make the core agent dependent on startup infrastructure.
+5. **No OS passwords through remote services.** #39/ADR 0007 is a hard design constraint.
+6. **Platform requests are demand input, not promises.** Promote only after feasibility/security/test capacity review.
+7. **Capability differences are honest.** Do not mark Windows/Android/other OS as supported before target-device validation.
+8. **Labels classify; Project fields organize; milestones group targets.** Avoid needless duplication.
+9. **No hidden work.** Non-trivial work should have an issue.
+10. **Validation is a real state.** Hardware/provider/platform checks that CI cannot prove remain visible.
 
-## Creating the native Project
+## Native GitHub Project creation/update
 
-GitHub Project v2 creation requires user/organization-level Projects write permission. The normal repository-scoped `GITHUB_TOKEN` cannot create/manage the Project.
+GitHub Project v2 write access is user/organization scoped and is not provided by the normal repository-scoped `GITHUB_TOKEN` used by this repository's bootstrap workflow.
 
-When an appropriately scoped token or GitHub App is available, create the project using this document exactly as the board specification and add issues #1-#9 and #19-#24 as the initial items.
+When an appropriately scoped token/App is available, use this document as the canonical board specification and add:
+
+- #1-#9;
+- #19-#24;
+- #27;
+- #30-#42;
+- future `type:platform-request` issues.
+
+Until then, issues + milestones + labels + project issue #9 + this specification remain the planning source of truth.
