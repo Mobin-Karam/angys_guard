@@ -9,26 +9,30 @@ enabled = true
 max_concurrent_threads_per_session = 4
 interrupt_message = true
 
+[agents.navigator]
+description = "Read-only Graphify-first repository navigator for ownership, callers, dependencies, tests, docs, and impact mapping."
+config_file = "agents/navigator.toml"
+
 [agents.architect]
-description = "Read-only architecture planner for cross-module or security-sensitive changes."
+description = "Read-only architecture planner for cross-module or security-sensitive changes; consumes Graphify navigation first."
 config_file = "agents/architect.toml"
 
 [agents.implementer]
-description = "Focused implementation agent that follows the agreed change boundary and adds tests."
+description = "Focused implementation agent that follows the agreed graph-backed change boundary and adds tests."
 config_file = "agents/implementer.toml"
 
 [agents.reviewer]
-description = "Read-only correctness and regression reviewer for proposed changes."
+description = "Read-only correctness and regression reviewer; uses Graphify for impact/caller/test discovery before broad reads."
 config_file = "agents/reviewer.toml"
 
 [agents.security_reviewer]
-description = "Read-only reviewer for authorization, privacy, secrets, remote control, and capture boundaries."
+description = "Read-only reviewer for authorization, privacy, secrets, remote control, capture boundaries, and graph-backed impact tracing."
 config_file = "agents/security_reviewer.toml"
 
 [agents.tester]
-description = "Verification specialist for targeted tests, full suite checks, and failure triage."
+description = "Verification specialist for Graphify-guided test discovery, targeted tests, full checks, and failure triage."
 config_file = "agents/tester.toml"
 
 [agents.release_manager]
-description = "Release-readiness specialist for changelog, support matrix, CI, and release checklists."
+description = "Release-readiness specialist for changelog, support matrix, CI, release checklists, and graph freshness accounting."
 config_file = "agents/release_manager.toml"
