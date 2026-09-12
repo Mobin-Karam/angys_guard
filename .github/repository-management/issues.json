@@ -17,5 +17,21 @@
   "22": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P2","area:runtime"]},
   "23": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P2","area:storage"]},
   "24": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","type:testing","priority:P2","area:ci"]},
-  "27": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:maintenance","type:docs","priority:P1","area:ci","status:needs-validation"]}
+  "27": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:maintenance","type:docs","priority:P1","area:ci","status:needs-validation"]},
+
+  "30": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:maintenance","type:docs","priority:P2","area:release","area:platform","status:needs-design"]},
+  "31": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:feature","type:docs","priority:P2","area:release","area:platform","area:ux"]},
+  "32": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:feature","priority:P1","area:desktop-app","area:platform","area:runtime","area:ux","status:needs-design"]},
+  "37": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:feature","type:security","priority:P1","area:provider","area:setup","area:platform","status:needs-design"]},
+  "41": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:feature","type:testing","priority:P2","area:provider","area:setup"]},
+
+  "38": {"milestone":"v14.0 — AngysGuard Managed Control","labels":["type:feature","type:security","type:architecture","priority:P1","area:provider","area:managed-service","status:needs-design"]},
+  "39": {"milestone":"v14.0 — AngysGuard Managed Control","labels":["type:security","type:architecture","priority:P1","area:runtime","area:provider","area:managed-service","area:platform","status:needs-design"]},
+  "40": {"milestone":"v14.0 — AngysGuard Managed Control","labels":["type:feature","type:architecture","priority:P2","area:provider","area:storage","area:ux","area:managed-service","status:needs-design"]},
+  "42": {"milestone":"v14.0 — AngysGuard Managed Control","labels":["type:feature","type:security","priority:P2","area:provider","area:storage","area:managed-service","status:needs-design"]},
+
+  "33": {"milestone":"Future Platform Expansion — Windows & Android","labels":["type:architecture","priority:P1","area:runtime","area:platform","status:needs-design"]},
+  "34": {"milestone":"Future Platform Expansion — Windows & Android","labels":["type:feature","priority:P1","area:runtime","area:ux","area:platform","area:desktop-app","status:needs-design"]},
+  "35": {"milestone":"Future Platform Expansion — Windows & Android","labels":["type:feature","type:security","priority:P2","area:ux","area:provider","area:platform","area:mobile","status:needs-design"]},
+  "36": {"milestone":"Future Platform Expansion — Windows & Android","labels":["type:architecture","type:feature","priority:P3","area:runtime","area:platform","area:mobile","status:needs-design"]}
 }
