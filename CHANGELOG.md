@@ -10,6 +10,15 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Developer and AI navigation
+
+- Made Graphify the default repository-discovery/navigation layer for humans and AI agents before broad source reads/searches.
+- Added canonical Graphify freshness, query/path/explain, source-verification, token/context, and fallback guidance.
+- Added a read-only Codex `navigator` role and reusable `graphify-navigation` skill/prompt.
+- Updated Codex, Copilot, Claude, Gemini, scoped AGENTS, feature/bug workflows, tests, review/security/release roles, and contribution docs to use Graphify-first discovery.
+- Codex SessionStart now reports Graphify freshness and post-edit guidance reminds maintainers to refresh the graph after material relationship changes.
+- Added regression tests that protect the cross-tool Graphify navigation policy.
+
 ### Planned
 
 See `docs/ROADMAP.md`, `docs/PROJECT_MANAGEMENT.md`, the GitHub project-tracking issue, and `docs/architecture/EVOLUTION_PLAN.md` for the v11.2, v11.3, v12.0, and architecture-evolution work.
