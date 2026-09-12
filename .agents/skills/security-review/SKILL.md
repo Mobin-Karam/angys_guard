@@ -5,8 +5,14 @@ description: Review Laptop Guard changes for authorization bypasses, secret leak
 
 # Security review
 
-Review the actual diff and affected call paths. Do not read real secret files or
-captured media.
+Follow `AGENTS.md`, `docs/SECURITY.md`, and `docs/GRAPHIFY_NAVIGATION.md`.
+Do not read real secret files or captured media.
+
+Before broad source review, check Graphify freshness and trace the changed symbol
+or entry point to relevant trust boundaries with `graphify query`, `explain`, and
+`path`. Map authorization, provider/network, secret/config, state/storage,
+capture/evidence, subprocess/OS, local API, and stop/unlock relationships. Confirm
+important/inferred graph edges in current source/tests before declaring a finding.
 
 Check these trust boundaries:
 
@@ -26,6 +32,6 @@ Check these trust boundaries:
    and concurrency.
 
 Return findings sorted by severity. For each finding give a concrete path/symbol,
-impact, realistic trigger, and smallest remediation/test. Separate vulnerabilities
-from optional hardening. Explicitly list the boundaries checked when no blocking
-finding exists.
+the relevant graph/trust-boundary path, impact, realistic trigger, and smallest
+remediation/test. Separate confirmed vulnerabilities from inferred relationships
+or optional hardening. Report Graphify freshness/fallback status.
