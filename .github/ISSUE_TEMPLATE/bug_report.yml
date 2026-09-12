@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a reproducible Laptop Guard problem
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. **Do not include bot tokens, API tokens, private chat IDs, screenshots, recordings, or other sensitive evidence.**
+  - type: input
+    id: version
+    attributes:
+      label: Laptop Guard version
+      placeholder: e.g. 11.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Ubuntu / X11
+        - Ubuntu / Wayland
+        - Other Linux
+        - Other / unknown
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run ...
+        2. Choose ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized diagnostics
+      description: Paste relevant `./run.sh doctor` or error output after removing secrets and private evidence.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety checks
+      options:
+        - label: I removed tokens, chat IDs, private media, and other sensitive data.
+          required: true
+        - label: I searched existing issues for the same problem.
+          required: true
