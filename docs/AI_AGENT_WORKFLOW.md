@@ -39,7 +39,9 @@ For the engineering procedure itself, use:
 - `docs/GRAPHIFY_NAVIGATION.md` for discovery/freshness/fallback/token discipline;
 - `docs/FEATURE_LIFECYCLE.md` for adding/changing/fixing/removing features;
 - `docs/BUG_TRIAGE_AND_FIXING.md` for defect investigation and repair;
-- `docs/TESTING.md` for verification and target-device checks.
+- `docs/TESTING.md` for verification and target-device checks;
+- `docs/README_MAINTENANCE.md` for root README, GitHub About/profile, version,
+  docs-navigation, and repository-visual synchronization.
 
 ## OpenAI Codex / VS Code
 
@@ -70,13 +72,27 @@ Codex instruction scope is hierarchical:
 | `reviewer` | correctness/regression/blast-radius review | read-only |
 | `security_reviewer` | Graphify-backed trust-boundary/security/privacy review | read-only |
 | `tester` | graph-guided test discovery, reproduction, CI/failure triage | as permitted by parent task |
-| `release_manager` | release impact/freshness/version/CI/security/readiness | focused release work |
+| `release_manager` | release impact/freshness/version/CI/security/presentation readiness | focused release work |
+| `repository_curator` | root README, GitHub About/profile, package/version references, docs navigation, overview visual | focused presentation/docs work |
 
-For non-trivial work, separate discovery, implementation, and verification:
+For non-trivial product work, separate discovery, implementation, and verification:
 
 ```text
 navigator -> architect (when design needed) -> implementer -> tester -> reviewer
                                                     \-> security_reviewer
+```
+
+When the change affects a release/version or materially changes the user-visible
+product story, add repository presentation before completion:
+
+```text
+product change / release
+        |
+        v
+repository_curator / $repository-presentation
+        |
+        v
+README + About/profile + version/docs consistency tests
 ```
 
 Skip `navigator` only when the exact owner/files/tests are already known and no
@@ -92,6 +108,7 @@ repository discovery is required.
 | `$security-review` | reviewing trust boundaries or a sensitive final diff |
 | `$test-and-verify` | selecting/validating tests and accounting for manual checks |
 | `$release-readiness` | deciding whether a version is ready for release |
+| `$repository-presentation` | synchronizing README, GitHub About/profile, package/version references, docs navigation, and repository visual with shipped behavior |
 
 Every workflow skill inherits the Graphify-first discovery policy.
 
@@ -102,15 +119,17 @@ Every workflow skill inherits the Graphify-first discovery policy.
 | Understand repository/component | `navigator` / `$graphify-navigation` | open only returned authoritative paths |
 | Find owner/file/symbol | `query` / `explain` | confirm in source |
 | Trace A to B | `path` | inspect returned call/dependency chain |
-| Add feature | map extension point/callers/config/tests | architect when non-trivial -> implementer -> tester -> reviewer |
-| Modify feature | map current owner/dependents/tests | architect for cross-module -> implementer -> tester -> reviewer |
-| Remove feature | map every caller/config/state/test/doc edge | architect removal map -> implementer -> tester -> security review if sensitive |
+| Add feature | map extension point/callers/config/tests | architect when non-trivial -> implementer -> tester -> reviewer -> presentation if user-visible |
+| Modify feature | map current owner/dependents/tests | architect for cross-module -> implementer -> tester -> reviewer -> presentation if affected |
+| Remove feature | map every caller/config/state/test/doc edge | architect removal map -> implementer -> tester -> security review if sensitive -> presentation cleanup |
 | Unknown bug | connect symptom/entry point to owner/tests | navigator + tester/architect -> implement after root cause |
 | Reproducible bug | map owner + regression coverage | implementer -> tester -> reviewer |
-| Security bug | trace entry to trust boundaries | architect -> implementer -> tester -> security_reviewer |
+| Security bug | trace entry to trust boundaries | architect -> implementer -> tester -> security_reviewer; presentation if public security model changed |
 | CI failure | map failing test/module/dependency | tester -> implementation only if repo fix needed |
 | GitHub issue | map issue concepts to code/test/docs | `$issue-to-pr` |
-| Release | map changed communities/surfaces/tests/docs | `$release-readiness` / release_manager |
+| README/About refresh | map current shipped features/commands/security/docs | `repository_curator` / `$repository-presentation` |
+| Version bump | map shipped release surfaces | repository_curator -> release_manager |
+| Release | map changed communities/surfaces/tests/docs | `$release-readiness` / release_manager -> repository_curator check |
 
 ## Feature workflow
 
@@ -134,9 +153,18 @@ failure, and denial tests. Then have tester verify and reviewer inspect the fina
 diff. Use security_reviewer for sensitive boundaries.
 ```
 
+If the feature materially changes the README product story, command list, setup,
+platform requirements, or security model:
+
+```text
+$repository-presentation refresh the landing page/profile for this shipped change.
+Verify facts from current source/tests/docs; do not copy roadmap claims.
+```
+
 For feature removal, require Graphify impact mapping plus source confirmation for
 registration, imports/callers, commands/callbacks, config/migrations, state/events,
-setup/doctor/help/menu, tests, docs, and shared security guards before deletion.
+setup/doctor/help/menu, tests, docs, shared security guards, README claims, and
+About topics/description before deletion is considered complete.
 
 ## Bug workflow
 
@@ -151,6 +179,47 @@ sufficiently narrowed.
 
 For a known reproducible bug, use Graphify to confirm the owning abstraction and
 connected regression test surface, then make the smallest root-cause fix.
+
+Bug fixes normally do not need README changes unless they correct a documented
+behavior/support/security claim. If they do, use `$repository-presentation`.
+
+## Repository presentation workflow
+
+Use `repository_curator` or `$repository-presentation` when:
+
+- preparing a release or version bump;
+- adding/removing/changing a major user-facing capability;
+- changing CLI/owner commands, setup, doctor, service/autostart, supported
+  platforms/backends, provider behavior, or security boundaries;
+- reorganizing repository paths described by the landing page;
+- changing repository identity/description/topics/license/visual.
+
+Canonical sources/surfaces:
+
+```text
+README.md
+.github/repository-profile.json
+pyproject.toml
+docs/README.md
+docs/README_MAINTENANCE.md
+docs/assets/laptop-guard-overview.svg
+CHANGELOG.md
+docs/ROADMAP.md
+```
+
+The curator must use Graphify to narrow fact verification, then confirm current
+source/tests/docs. Roadmap/proposed ADR content is not proof of shipped behavior.
+
+Minimum checks:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_repository_presentation.py
+.venv/bin/python -m pytest -q tests/test_documentation_links.py tests/test_graphify_navigation_policy.py
+```
+
+If GitHub About/social-preview cannot be changed because repository-admin API/UI
+access is unavailable, the curator must keep `.github/repository-profile.json`
+current and report the remaining setting explicitly.
 
 ## Review workflow
 
@@ -171,11 +240,33 @@ Security review should use graph paths to connect the changed surface to:
 All important/inferred relationships must be confirmed in current source before a
 security finding is treated as fact.
 
+Reviewers should flag stale README/About claims when a diff changes a behavior that
+the landing page currently describes.
+
 ## Test workflow
 
 Tester should ask Graphify what tests cover the changed/failing symbols before
 searching the entire suite. Run the smallest connected tests first, then broader
 applicable/full checks from `docs/TESTING.md`.
+
+For release/version/repository-presentation changes, include
+`tests/test_repository_presentation.py` in targeted verification.
+
+## Release workflow
+
+Before a release is considered ready:
+
+```text
+release_manager
+  -> Graphify changed-surface map
+  -> version/changelog/CI/security/target-device checks
+  -> repository_curator / $repository-presentation
+  -> README/About/package/docs consistency checks
+  -> Graphify refresh when material relationships changed
+  -> tag/release only when explicitly requested
+```
+
+A version bump with a stale README is a release blocker.
 
 ## Agent handoff format
 
@@ -210,8 +301,22 @@ Changed files:
 Behavior changed:
 Tests added/updated:
 Checks run:
+Repository-presentation impact:
 Graph refresh/freshness:
 Manual validation remaining:
+```
+
+Repository curator:
+
+```text
+Presentation surfaces changed:
+Shipped facts verified from:
+Version consistency:
+GitHub About/profile changes:
+Security wording reviewed:
+Checks run:
+Graphify refresh status:
+Manual GitHub settings remaining:
 ```
 
 Reviewer/security reviewer returns findings by severity with concrete paths/symbols
@@ -224,6 +329,7 @@ Graph-to-test mapping:
 Reproduction result:
 Targeted tests:
 Full checks:
+Presentation-policy checks when applicable:
 Failures:
 Manual target-device checks:
 ```
@@ -235,7 +341,8 @@ Manual target-device checks:
 - `SessionStart`: project/security reminder plus Graphify freshness status;
 - `PreToolUse`: blocks destructive Git/repository deletion and protected secret
   reads/edits;
-- `PostToolUse`: reminds agents about regression/security verification after edits.
+- `PostToolUse`: reminds agents about regression/security verification and, after
+  runtime edits, repository-presentation impact where applicable.
 
 Hooks do not call Graphify automatically or modify generated graph files. They
 report navigation state; the agent/human decides when to refresh Graphify.
@@ -245,10 +352,11 @@ report navigation state; the agent/human decides when to refresh Graphify.
 - GitHub Copilot: `.github/copilot-instructions.md` plus path-scoped instructions.
 - Claude compatibility: `CLAUDE.md`.
 - Gemini compatibility: `GEMINI.md`.
-- Reusable prompt: `.github/prompts/graphify-navigation.prompt.md`.
+- Navigation prompt: `.github/prompts/graphify-navigation.prompt.md`.
+- Presentation prompt: `.github/prompts/refresh-repository-presentation.prompt.md`.
 
-All defer to `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md`, so switching tools does
-not change repository navigation policy.
+All defer to `AGENTS.md` and canonical docs, so switching tools does not change
+repository navigation/security/presentation policy.
 
 ## Recommended issue-to-PR workflow
 
@@ -261,8 +369,11 @@ not change repository navigation policy.
 7. Implement bounded patch.
 8. Use tester / `$test-and-verify`.
 9. Use reviewer/security_reviewer on non-trivial/sensitive diffs.
-10. Refresh Graphify after material relationship changes when available.
-11. Open/merge only after required checks/docs/manual validation are accounted for.
+10. If release/version/user-visible/setup/platform/security/repository story changed,
+    use `$repository-presentation` and run its policy tests.
+11. Refresh Graphify after material relationship changes when available.
+12. Open/merge only after required checks/docs/presentation/manual validation are
+    accounted for.
 
 The AI layer and Graphify are navigation/workflow aids, not substitutes for
 required target-device validation or direct source verification.
