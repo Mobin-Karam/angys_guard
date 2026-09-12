@@ -6,7 +6,13 @@ from datetime import datetime
 from pathlib import Path
 
 from .chat_surface import INBOX, OUTBOX
-from .text_direction import directional_text, resolve_direction, visual_text
+from .text_direction import (
+    directional_text,
+    paragraph_directions,
+    resolve_direction,
+    text_direction,
+    visual_text,
+)
 
 try:
     import tkinter as tk
@@ -46,6 +52,8 @@ class ChatWindow:
         self.seen: set[str] = set()
         self.history: list[tuple[str, str, str]] = []
         self.font_size = 16
+        self.composer_direction = "rtl"
+        self._direction_update_pending = False
 
         self.root = tk.Tk()
         self.root.title("Laptop Guard — Security Conversation")
@@ -205,8 +213,13 @@ class ChatWindow:
         )
         self.composer.pack(side="right", expand=True, fill="x", padx=(10, 0))
         self.composer.bind("<KeyRelease>", self._composer_direction_event)
+        self.composer.bind("<<Modified>>", self._composer_modified)
+        self.composer.bind("<<Paste>>", self._schedule_composer_direction, add="+")
+        self.composer.bind("<<Cut>>", self._schedule_composer_direction, add="+")
         self.composer.bind("<Return>", self._return_pressed)
-        self.composer.tag_configure("dir", justify="right")
+        self.composer.tag_configure("dir_rtl", justify="right", lmargin1=8, rmargin=8)
+        self.composer.tag_configure("dir_ltr", justify="left", lmargin1=8, rmargin=8)
+        self.composer.edit_modified(False)
 
         self.send_button = tk.Button(
             compose_row,
@@ -249,8 +262,11 @@ class ChatWindow:
         self.font_size = max(11, min(24, self.font_size + delta))
 
     def _update_direction_badge(self) -> None:
-        labels = {"auto": "AUTO ↔", "rtl": "RTL ←", "ltr": "LTR →"}
-        self.direction_badge.configure(text=labels[self.direction_mode])
+        if self.direction_mode == "auto":
+            label = "AUTO • RTL ←" if self.composer_direction == "rtl" else "AUTO • LTR →"
+        else:
+            label = "RTL ←" if self.direction_mode == "rtl" else "LTR →"
+        self.direction_badge.configure(text=label)
 
     def set_direction_mode(self, mode: str) -> None:
         if mode not in {"auto", "rtl", "ltr"}:
@@ -260,13 +276,38 @@ class ChatWindow:
         self._apply_composer_direction()
 
     def _composer_direction_event(self, _event=None) -> None:
-        self._apply_composer_direction()
+        self._schedule_composer_direction()
+
+    def _composer_modified(self, _event=None) -> None:
+        if self.composer.edit_modified():
+            self.composer.edit_modified(False)
+            self._schedule_composer_direction()
+
+    def _schedule_composer_direction(self, _event=None) -> None:
+        if self._direction_update_pending:
+            return
+        self._direction_update_pending = True
+        self.root.after_idle(self._apply_composer_direction)
 
     def _apply_composer_direction(self) -> None:
         text = self.composer.get("1.0", "end-1c")
-        resolved = text_direction(text, "rtl") if self.direction_mode == "auto" else self.direction_mode
-        self.composer.tag_configure("dir", justify="right" if resolved == "rtl" else "left")
-        self.composer.tag_add("dir", "1.0", "end")
+        directions = paragraph_directions(text, self.direction_mode, "rtl")
+        self.composer.tag_remove("dir_rtl", "1.0", "end")
+        self.composer.tag_remove("dir_ltr", "1.0", "end")
+        for line_number, resolved in enumerate(directions, start=1):
+            self.composer.tag_add(
+                f"dir_{resolved}",
+                f"{line_number}.0",
+                f"{line_number}.end+1c",
+            )
+
+        try:
+            current_line = max(1, int(self.composer.index("insert").split(".", 1)[0]))
+        except (ValueError, tk.TclError):
+            current_line = 1
+        self.composer_direction = directions[min(current_line - 1, len(directions) - 1)]
+        self._direction_update_pending = False
+        self._update_direction_badge()
 
     def _return_pressed(self, event):
         # Shift+Enter inserts a newline; Enter sends.

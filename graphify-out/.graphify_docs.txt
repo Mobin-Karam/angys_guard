@@ -1,0 +1,10 @@
+/home/anonymous/Downloads/laptop_guard_v3/AGENTS.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/CONFIGURATION.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/EXTENDING.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/FILE_REFERENCE.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/HISTORY.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/README.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/SECURITY.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/SYSTEM_AUDIT.md
+/home/anonymous/Downloads/laptop_guard_v3/docs/TESTING.md
+/home/anonymous/Downloads/laptop_guard_v3/requirements.txt

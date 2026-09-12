@@ -21,14 +21,15 @@ def cmd_setup(_):
 
 
 def cmd_run(_):
-    from .setup_wizard import run_setup
-    if not setup_is_complete():
-        console.print("[yellow]Setup is incomplete. Resuming setup first.[/yellow]" if CONFIG_PATH.exists() else "[yellow]No configuration found. Starting setup first.[/yellow]")
-        cfg = run_setup()
-        if not cfg.setup_complete:
-            console.print("[yellow]Guard was not started because setup is incomplete.[/yellow]"); return 2
-    from .guard import GuardApp
-    GuardApp().run(); return 0
+    from .runtime_config import RuntimeConfigurationError, ensure_runtime_configuration
+    try:
+        cfg = ensure_runtime_configuration(console)
+    except RuntimeConfigurationError as exc:
+        console.print(f"[red]{exc}[/red]")
+        return 2
+    from .guard import LaptopGuard
+    LaptopGuard(cfg).run()
+    return 0
 
 
 def cmd_doctor(_):
@@ -64,7 +65,9 @@ def cmd_config(_):
 
 
 def cmd_lock(_):
-    console.print("Lock requested." if lock_screen() else "Could not lock screen."); return 0
+    locked = lock_screen()
+    console.print("Lock requested." if locked else "Could not lock screen.")
+    return 0 if locked else 2
 
 
 def cmd_profile(args):
@@ -94,11 +97,23 @@ def cmd_test(args):
 
 def cmd_service(args):
     from .service import install_service, logs_service, status_service, uninstall_service
-    {"install": install_service, "uninstall": uninstall_service, "status": status_service, "logs": logs_service}[args.action](); return 0
+    ok = {"install": install_service, "uninstall": uninstall_service, "status": status_service, "logs": logs_service}[args.action]()
+    return 0 if ok else 2
+
+
+def cmd_autostart(args):
+    from .service import autostart_enabled, set_autostart
+    if args.action == "status":
+        enabled = autostart_enabled()
+        console.print(f"Autostart: {'enabled' if enabled else 'disabled'}")
+        return 0
+    ok = set_autostart(args.action == "on")
+    console.print(f"Autostart {'enabled' if args.action == 'on' else 'disabled'}." if ok else "Could not update autostart.")
+    return 0 if ok else 2
 
 
 def build_parser():
-    p = argparse.ArgumentParser(prog="laptop-guard", description="Laptop Guard v6")
+    p = argparse.ArgumentParser(prog="laptop-guard", description="Laptop Guard v11.1")
     sub = p.add_subparsers(dest="command")
     sub.add_parser("setup", help="guided/resumable setup").set_defaults(func=cmd_setup)
     sub.add_parser("run", help="run the guard").set_defaults(func=cmd_run)
@@ -113,6 +128,7 @@ def build_parser():
     sub.add_parser("health", help="show local health snapshot").set_defaults(func=cmd_health)
     test = sub.add_parser("test", help="test hardware/integration"); test.add_argument("target", choices=["camera", "microphone", "bot", "lock", "screen", "input"]); test.set_defaults(func=cmd_test)
     svc = sub.add_parser("service", help="manage systemd user service"); svc.add_argument("action", choices=["install", "uninstall", "status", "logs"]); svc.set_defaults(func=cmd_service)
+    auto = sub.add_parser("autostart", help="run automatically after graphical login"); auto.add_argument("action", choices=["on", "off", "status"]); auto.set_defaults(func=cmd_autostart)
     return p
 
 

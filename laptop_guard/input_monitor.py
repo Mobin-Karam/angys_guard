@@ -46,7 +46,6 @@ class InputMonitor:
         self._stop = threading.Event()
         self._ev_thread: threading.Thread | None = None
         self._ev_devices = []
-        self._rel_accum = 0.0
         self._last_move_emit = 0.0
 
     def _readable_evdev_devices(self):
@@ -118,7 +117,7 @@ class InputMonitor:
         fds = {d.fd: d for d in self._ev_devices}
         while not self._stop.is_set() and fds:
             try:
-                readable, _, _ = select.select(list(fds), [], [], 0.5)
+                readable, _, _ = select.select(list(fds), [], [], 0.1)
             except Exception:
                 break
             for fd in readable:
@@ -143,10 +142,12 @@ class InputMonitor:
             if event.code in {ecodes.REL_WHEEL, getattr(ecodes, "REL_HWHEEL", -1)} and event.value:
                 self.callback("mouse scroll"); return
             if event.code in {ecodes.REL_X, ecodes.REL_Y}:
-                self._rel_accum += abs(float(event.value))
+                if not event.value:
+                    return
                 now = time.monotonic()
-                if self._rel_accum >= self.threshold and now - self._last_move_emit >= 0.25:
-                    self._rel_accum = 0.0; self._last_move_emit = now; self.callback("mouse movement")
+                if now - self._last_move_emit >= 0.05:
+                    self._last_move_emit = now
+                    self.callback("mouse movement")
                 return
         if event.type == ecodes.EV_KEY and event.value == 1:
             # BTN_* values are pointer/touchpad buttons. We inspect the symbolic
@@ -175,11 +176,17 @@ class InputMonitor:
             self.anchor = None
 
     def _move(self, x, y) -> None:
+        detected = False
         with self._lock:
             if self.anchor is None:
-                self.anchor = (x, y); return
-            ax, ay = self.anchor
-            if math.hypot(x - ax, y - ay) < self.threshold:
-                return
-            self.anchor = (x, y)
-        self.callback("mouse movement")
+                # The first movement is activity too. Do not make an intruder
+                # move the pointer twice before the guard reacts.
+                self.anchor = (x, y)
+                detected = True
+            else:
+                ax, ay = self.anchor
+                if math.hypot(x - ax, y - ay) >= self.threshold:
+                    self.anchor = (x, y)
+                    detected = True
+        if detected:
+            self.callback("mouse movement")

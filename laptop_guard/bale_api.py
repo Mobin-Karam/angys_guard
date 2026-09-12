@@ -16,13 +16,24 @@ class BaleApiError(RuntimeError):
 class BaleApi:
     """Small dependency-light client for Bale's Telegram-style Bot API."""
 
-    def __init__(self, token: str, base_url: str = "https://tapi.bale.ai") -> None:
+    def __init__(
+        self,
+        token: str,
+        base_url: str = "https://tapi.bale.ai",
+        proxy: str = "",
+    ) -> None:
         if not token:
-            raise ValueError("BALE_BOT_TOKEN is required")
+            raise ValueError("Bot token is required. Run ./run.sh setup to configure it.")
         self.token = token
         self.base_url = base_url.rstrip("/")
         self.session = requests.Session()
-        self.session.headers.update({"User-Agent": "LaptopGuard/8.0"})
+        # Only the proxy explicitly configured by the owner may affect this
+        # security-sensitive client.
+        self.session.trust_env = False
+        configured_proxy = str(proxy or "").strip()
+        if configured_proxy:
+            self.session.proxies.update({"http": configured_proxy, "https": configured_proxy})
+        self.session.headers.update({"User-Agent": "LaptopGuard/11.0"})
 
     def _url(self, method: str) -> str:
         return f"{self.base_url}/bot{self.token}/{method}"

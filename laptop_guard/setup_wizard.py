@@ -83,7 +83,7 @@ def _choose_camera(cfg: AppConfig, console: Console) -> None:
 
 def run_setup() -> AppConfig:
     console = Console()
-    console.print(Panel.fit("[bold]Laptop Guard v6 Setup[/bold]\nGuided + resumable configuration", border_style="cyan"))
+    console.print(Panel.fit("[bold]Laptop Guard v11 Setup[/bold]\nGuided + resumable configuration", border_style="cyan"))
     cfg = load_config() if CONFIG_PATH.exists() else AppConfig()
     cfg.setup_complete = False
     save_config(cfg)
@@ -105,23 +105,38 @@ def run_setup() -> AppConfig:
         if provider == "local":
             cfg.bot.api_base = ""; cfg.bot.chat_id = None; cfg.bot.proxy = ""; save_config(cfg)
         else:
-            stored_token = get_bot_token()
-            token = stored_token if stored_token and Confirm.ask("A stored bot token exists. Reuse it?", default=True) else ""
-            if not token:
-                token = getpass.getpass(f"{provider.title()} bot token: ").strip()
-            if not token:
-                raise RuntimeError("A bot token is required.")
             cfg.bot.proxy = Prompt.ask("Proxy URL (blank = direct)", default=cfg.bot.proxy).strip()
             cfg.bot.api_base = Prompt.ask("API base URL", default=cfg.bot.api_base or default_api_base(provider)).strip()
             save_config(cfg)
-            bot = build_provider(provider, token, cfg.bot.api_base, cfg.bot.proxy)
-            console.print("Testing bot connection...")
-            me = bot.get_me()
-            console.print(f"[green]Connected[/green] to {me.get('username') or me.get('first_name') or 'bot'}")
-            set_bot_token(token)
+
+            stored_token = get_bot_token()
+            use_stored = bool(stored_token) and Confirm.ask("A stored bot token exists. Reuse and validate it?", default=True)
+            token = stored_token if use_stored else ""
+            while True:
+                if not token:
+                    token = getpass.getpass(f"{provider.title()} bot token: ").strip()
+                if not token:
+                    console.print("[red]A bot token is required.[/red]")
+                    continue
+                bot = build_provider(provider, token, cfg.bot.api_base, cfg.bot.proxy)
+                console.print("Testing bot connection...")
+                try:
+                    me = bot.get_me()
+                except Exception as exc:
+                    console.print(f"[red]Bot authentication failed:[/red] {exc}")
+                    console.print("Enter a new token. The rejected token will not be saved.")
+                    token = ""
+                    continue
+                console.print(f"[green]Connected[/green] to {me.get('username') or me.get('first_name') or 'bot'}")
+                set_bot_token(token)
+                break
+
             reuse = cfg.bot.chat_id is not None and Confirm.ask(f"Reuse paired owner chat {cfg.bot.chat_id}?", default=True)
             if not reuse:
-                cfg.bot.chat_id = pair_chat(bot, console)
+                if Confirm.ask("Pair automatically by waiting for a new /start message?", default=True):
+                    cfg.bot.chat_id = pair_chat(bot, console)
+                else:
+                    cfg.bot.chat_id = IntPrompt.ask("Owner chat ID")
             save_config(cfg)
             console.print(f"[green]Owner paired and saved.[/green] Chat ID: {cfg.bot.chat_id}")
 
@@ -152,6 +167,19 @@ def run_setup() -> AppConfig:
         cfg.audio.input = sources[choice - 1]
         cfg.audio.backend = "pulse" if shutil.which("pactl") else "alsa"
         cfg.audio.play_remote_voice = Confirm.ask("Auto-play owner Voice messages on laptop speakers?", default=cfg.audio.play_remote_voice)
+        cfg.audio.sound_detection_enabled = Confirm.ask(
+            "When armed, record and send a clip after loud environmental sound?",
+            default=cfg.audio.sound_detection_enabled,
+        )
+        if cfg.audio.sound_detection_enabled:
+            cfg.audio.sound_record_seconds = max(
+                2,
+                min(IntPrompt.ask("Sound-triggered recording seconds", default=cfg.audio.sound_record_seconds), 30),
+            )
+            cfg.audio.sound_cooldown = max(
+                5,
+                min(IntPrompt.ask("Seconds between sound alerts", default=cfg.audio.sound_cooldown), 3600),
+            )
         cfg.audio.tts_enabled = Confirm.ask("Enable local /say text-to-speech?", default=cfg.audio.tts_enabled)
         save_config(cfg)
 
@@ -210,10 +238,25 @@ def run_setup() -> AppConfig:
         cfg.monitors.offline_queue = Confirm.ask("Queue security alerts while bot/network is offline?", default=cfg.monitors.offline_queue)
         cfg.monitors.usb_events = Confirm.ask("Alert about USB add/remove while armed?", default=cfg.monitors.usb_events)
         cfg.monitors.health_events = Confirm.ask("Monitor battery/disk/temperature health?", default=cfg.monitors.health_events)
+        cfg.monitors.failed_login_events = Confirm.ask(
+            "Notify the owner about failed Linux login attempts?",
+            default=cfg.monitors.failed_login_events,
+        )
+        cfg.startup.enabled = Confirm.ask(
+            "Start Laptop Guard automatically after graphical login?",
+            default=cfg.startup.enabled,
+        )
         save_config(cfg)
 
         cfg.setup_complete = True
         save_config(cfg)
+        try:
+            from .service import set_autostart
+
+            if not set_autostart(cfg.startup.enabled, start_now=False):
+                console.print("[yellow]Autostart could not be updated; use ./run.sh autostart on|off later.[/yellow]")
+        except OSError as exc:
+            console.print(f"[yellow]Autostart is unavailable: {exc}[/yellow]")
         console.print("\n[green]Configuration saved and setup completed.[/green]")
         console.print("Run: [bold]./run.sh doctor[/bold]\nThen: [bold]./run.sh[/bold]")
         return cfg

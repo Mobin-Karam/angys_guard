@@ -71,3 +71,37 @@ class ScreenCapture:
             except Exception:
                 pass
         return None, "unavailable"
+
+
+class ScreenCaptureManager(ScreenCapture):
+    """Backward-compatible facade for older diagnostics/tests."""
+
+    def __init__(self, notify_local: bool = True) -> None:
+        super().__init__()
+        self.notify_local = notify_local
+
+    @property
+    def screenshot_backend(self) -> str:
+        if shutil.which("gnome-screenshot"):
+            return "gnome-screenshot"
+        if shutil.which("grim"):
+            return "grim"
+        if shutil.which("spectacle"):
+            return "spectacle"
+        if os.environ.get("DISPLAY") and shutil.which("import"):
+            return "imagemagick"
+        return "unavailable"
+
+    @property
+    def video_backend(self) -> str:
+        if os.environ.get("WAYLAND_DISPLAY") and shutil.which("wf-recorder"):
+            return "wf-recorder"
+        if os.environ.get("DISPLAY") and shutil.which("ffmpeg"):
+            return "ffmpeg-x11grab"
+        return "unavailable"
+
+    @staticmethod
+    def _parse_gdbus_path(output: str) -> str:
+        import re
+        match = re.search(r"\(\s*true\s*,\s*['\"]([^'\"]+)['\"]", str(output), re.I)
+        return match.group(1) if match else ""

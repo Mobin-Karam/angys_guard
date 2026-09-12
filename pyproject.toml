@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "laptop-guard"
-version = "6.0.0"
+version = "11.1.0"
 description = "Owner-controlled laptop security guard with Telegram/Bale dashboard, live security chat/notepad, native Linux screen evidence, intrusion countdown lockdown, offline history, voice intercom and safe desktop controls"
-readme = "README.md"
+readme = "docs/README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "requests>=2.32,<3",
   "httpx[socks]>=0.28,<1",
   "opencv-python>=4.13,<5",
   "pynput>=1.7",
@@ -17,6 +18,12 @@ dependencies = [
   "pyudev>=0.24,<1",
   "evdev>=1.7,<2",
   "Pillow>=10,<12",
+  "py-persian-tts==3.0.2",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8,<10",
 ]
 
 [project.scripts]
@@ -24,3 +31,10 @@ laptop-guard = "laptop_guard.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["laptop_guard*"]
+
+[tool.setuptools.package-data]
+laptop_guard = [
+  "assets/*.mp4",
+  "assets/warnings/*.mp4",
+  "assets/warnings/*.png",
+]

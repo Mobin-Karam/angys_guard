@@ -1,0 +1,522 @@
+{
+  "doctor.sh": {
+    "mtime": 1789204680.0,
+    "ast_hash": "1e2e53811eabda3c2eb38f2f3294060c",
+    "semantic_hash": ""
+  },
+  "install.sh": {
+    "mtime": 1789204680.0,
+    "ast_hash": "1baaf7c4bef31c107ee4575829a10ddb",
+    "semantic_hash": ""
+  },
+  "laptop_guard/__init__.py": {
+    "mtime": 1789204722.0,
+    "ast_hash": "79f10b1d16cddd0a125ceb8200146746",
+    "semantic_hash": ""
+  },
+  "laptop_guard/__main__.py": {
+    "mtime": 1789204601.0,
+    "ast_hash": "5109ab95441454c3d40c9321c4c146b7",
+    "semantic_hash": ""
+  },
+  "laptop_guard/app_manager.py": {
+    "mtime": 1789153840.0,
+    "ast_hash": "e79b76664cdf64b5fecd50e04048baf4",
+    "semantic_hash": ""
+  },
+  "laptop_guard/audio.py": {
+    "mtime": 1789153916.0,
+    "ast_hash": "4d7ca5dd6406177e53b80248d2777ad2",
+    "semantic_hash": ""
+  },
+  "laptop_guard/audio_indicator.py": {
+    "mtime": 1789197789.0,
+    "ast_hash": "0c43c3133e8a8f69de644916b104a0ac",
+    "semantic_hash": ""
+  },
+  "laptop_guard/audio_intercom.py": {
+    "mtime": 1789197926.0,
+    "ast_hash": "e73e4f43e4d130437f5be3a9ae572425",
+    "semantic_hash": ""
+  },
+  "laptop_guard/bale_api.py": {
+    "mtime": 1789233115.7015667,
+    "ast_hash": "20b7e3ebaf1ee59a35136f11db21c648",
+    "semantic_hash": ""
+  },
+  "laptop_guard/camera.py": {
+    "mtime": 1789151862.0,
+    "ast_hash": "cae89f2046e0a9d5de33e364072211cd",
+    "semantic_hash": ""
+  },
+  "laptop_guard/camera_devices.py": {
+    "mtime": 1789151962.0,
+    "ast_hash": "d28e34553a35c2c199893d322f7e2388",
+    "semantic_hash": ""
+  },
+  "laptop_guard/chat_surface.py": {
+    "mtime": 1789204626.0,
+    "ast_hash": "a44ae494ffc410eae85b274f7c3cc1d1",
+    "semantic_hash": ""
+  },
+  "laptop_guard/chat_window.py": {
+    "mtime": 1789235227.5691416,
+    "ast_hash": "a1a2b509e614174e896ddbacdd814728",
+    "semantic_hash": ""
+  },
+  "laptop_guard/cli.py": {
+    "mtime": 1789234169.088834,
+    "ast_hash": "4dafa6a29352b75e5c0268e134118def",
+    "semantic_hash": ""
+  },
+  "laptop_guard/config.py": {
+    "mtime": 1789234178.0759046,
+    "ast_hash": "821bd7d5c9b527e63ba5ccc79a1462cb",
+    "semantic_hash": ""
+  },
+  "laptop_guard/control_api.py": {
+    "mtime": 1789153924.0,
+    "ast_hash": "377a829c476dc859ee8c9cb28fad24a2",
+    "semantic_hash": ""
+  },
+  "laptop_guard/doctor.py": {
+    "mtime": 1789234288.8047736,
+    "ast_hash": "316ea81fedd6f008b0f2985e3de8e6eb",
+    "semantic_hash": ""
+  },
+  "laptop_guard/events.py": {
+    "mtime": 1789233451.2482002,
+    "ast_hash": "a23900e9d8ffcd43afb8202519c84c9f",
+    "semantic_hash": ""
+  },
+  "laptop_guard/exit_watchdog.py": {
+    "mtime": 1789203104.0,
+    "ast_hash": "c23f8d08bb091b9130306b1da5947281",
+    "semantic_hash": ""
+  },
+  "laptop_guard/features/__init__.py": {
+    "mtime": 1789234256.6865215,
+    "ast_hash": "ceef7fe4af6fe8692fbd1110dc76a897",
+    "semantic_hash": ""
+  },
+  "laptop_guard/features/base.py": {
+    "mtime": 1789234256.6855216,
+    "ast_hash": "a7990752dedd26cadb55e373e36e9ee9",
+    "semantic_hash": ""
+  },
+  "laptop_guard/features/failed_login.py": {
+    "mtime": 1789234256.6855216,
+    "ast_hash": "506ddb5bd51ba890a527a98e9536a5ab",
+    "semantic_hash": ""
+  },
+  "laptop_guard/features/manager.py": {
+    "mtime": 1789233702.0171683,
+    "ast_hash": "16da75eade86486bbcf026fe897ef2da",
+    "semantic_hash": ""
+  },
+  "laptop_guard/features/system_info.py": {
+    "mtime": 1789233540.1998982,
+    "ast_hash": "e34a65bfc7cbc549492899bc2d972ce6",
+    "semantic_hash": ""
+  },
+  "laptop_guard/guard.py": {
+    "mtime": 1789235227.5701416,
+    "ast_hash": "44e9d7bf023b3171b6b1904f789b7a56",
+    "semantic_hash": ""
+  },
+  "laptop_guard/health.py": {
+    "mtime": 1789151510.0,
+    "ast_hash": "9a2f09ab0e2ce49e5afb7d6c82d1f9d6",
+    "semantic_hash": ""
+  },
+  "laptop_guard/input_monitor.py": {
+    "mtime": 1789234874.3363693,
+    "ast_hash": "9e47d7a1072eaa6120dcfa73fabc6b85",
+    "semantic_hash": ""
+  },
+  "laptop_guard/models.py": {
+    "mtime": 1789235227.5681417,
+    "ast_hash": "31d65712e49bdaf469138cb8bc156e30",
+    "semantic_hash": ""
+  },
+  "laptop_guard/persian_speech.py": {
+    "mtime": 1789199604.0,
+    "ast_hash": "104d4ed9f30f5859a4514597ffcd893a",
+    "semantic_hash": ""
+  },
+  "laptop_guard/privacy_light.py": {
+    "mtime": 1789149884.0,
+    "ast_hash": "b7f4c650b6f572a80380c13a65b4218a",
+    "semantic_hash": ""
+  },
+  "laptop_guard/profiles.py": {
+    "mtime": 1789187835.0,
+    "ast_hash": "39f606f1a133cbf74df3121997077f3e",
+    "semantic_hash": ""
+  },
+  "laptop_guard/providers/__init__.py": {
+    "mtime": 1789147590.0,
+    "ast_hash": "40024b699217fcde968d431b74c89dff",
+    "semantic_hash": ""
+  },
+  "laptop_guard/providers/base.py": {
+    "mtime": 1789151848.0,
+    "ast_hash": "c99e154fe8fa3d1db71ec69987bf8e50",
+    "semantic_hash": ""
+  },
+  "laptop_guard/providers/http_bot.py": {
+    "mtime": 1789151848.0,
+    "ast_hash": "ba45b9aba374227c70ec9666f67af2d5",
+    "semantic_hash": ""
+  },
+  "laptop_guard/runtime_api.py": {
+    "mtime": 1789233062.0231454,
+    "ast_hash": "555b0074734351fe521657396ea1ceb8",
+    "semantic_hash": ""
+  },
+  "laptop_guard/runtime_config.py": {
+    "mtime": 1789204599.0,
+    "ast_hash": "ca84966950adf676b4ea9417539db959",
+    "semantic_hash": ""
+  },
+  "laptop_guard/runtime_state.py": {
+    "mtime": 1789233420.1779563,
+    "ast_hash": "636798c33b7bdfa6082dfe777e5a33fe",
+    "semantic_hash": ""
+  },
+  "laptop_guard/screen_capture.py": {
+    "mtime": 1789203375.0,
+    "ast_hash": "896c304777afd6bb6d85775da46b1b8e",
+    "semantic_hash": ""
+  },
+  "laptop_guard/service.py": {
+    "mtime": 1789234169.088834,
+    "ast_hash": "598e655095c707b63b8329074cea8f14",
+    "semantic_hash": ""
+  },
+  "laptop_guard/setup_wizard.py": {
+    "mtime": 1789234187.2419765,
+    "ast_hash": "64ba9787afbd8e37ca04856d0b6f267d",
+    "semantic_hash": ""
+  },
+  "laptop_guard/state.py": {
+    "mtime": 1789151584.0,
+    "ast_hash": "6481509e0ac0b194896be87e3f068072",
+    "semantic_hash": ""
+  },
+  "laptop_guard/stop_auth.py": {
+    "mtime": 1789203092.0,
+    "ast_hash": "2efd5264f4b2fb23a2bda8fe23286b65",
+    "semantic_hash": ""
+  },
+  "laptop_guard/storage.py": {
+    "mtime": 1789151510.0,
+    "ast_hash": "9fc39e67d550b2e92bffa703c20bc33e",
+    "semantic_hash": ""
+  },
+  "laptop_guard/system.py": {
+    "mtime": 1789147590.0,
+    "ast_hash": "c9787804e51bf113280e50a2c683daee",
+    "semantic_hash": ""
+  },
+  "laptop_guard/system_actions.py": {
+    "mtime": 1789198948.0,
+    "ast_hash": "4999b9b324c8de8138dc6e88616d311e",
+    "semantic_hash": ""
+  },
+  "laptop_guard/tests_manual.py": {
+    "mtime": 1789153784.0,
+    "ast_hash": "38dcaa415c1c6e9c6061a1b33dcc7115",
+    "semantic_hash": ""
+  },
+  "laptop_guard/text_direction.py": {
+    "mtime": 1789200881.0,
+    "ast_hash": "7eb24f572217d2321a96004d6c141923",
+    "semantic_hash": ""
+  },
+  "laptop_guard/usb_monitor.py": {
+    "mtime": 1789151510.0,
+    "ast_hash": "4aa42c3ffa84a6b3d293e3433bb81066",
+    "semantic_hash": ""
+  },
+  "laptop_guard/warning.py": {
+    "mtime": 1789187758.0,
+    "ast_hash": "1df819b81910532b9e650c4ac3fd04eb",
+    "semantic_hash": ""
+  },
+  "laptop_guard/warning_screen.py": {
+    "mtime": 1789187909.0,
+    "ast_hash": "08cbae9d7cb5629d7aba9afa132ea3fe",
+    "semantic_hash": ""
+  },
+  "laptop_guard/warning_sequence.py": {
+    "mtime": 1789204807.0,
+    "ast_hash": "c4d605ec6f48e4ebf7f90e94d52871da",
+    "semantic_hash": ""
+  },
+  "pyproject.toml": {
+    "mtime": 1789232771.5688658,
+    "ast_hash": "b843ecc7313142c6440beb0f1b1aa332",
+    "semantic_hash": ""
+  },
+  "repair-opencv.sh": {
+    "mtime": 1789148942.0,
+    "ast_hash": "359a5311609d67c34f6bdcc6adcba0fc",
+    "semantic_hash": ""
+  },
+  "run.sh": {
+    "mtime": 1789204601.0,
+    "ast_hash": "4fe7b18b307610a287c7d96c62c6c5b0",
+    "semantic_hash": ""
+  },
+  "tests/test_autostart.py": {
+    "mtime": 1789234372.2514286,
+    "ast_hash": "070008ce7fa178c8f771e5669f59e877",
+    "semantic_hash": ""
+  },
+  "tests/test_bale_api.py": {
+    "mtime": 1789233115.7025666,
+    "ast_hash": "d2cbf8b925b60c0f229082e09e368c5b",
+    "semantic_hash": ""
+  },
+  "tests/test_camera_capability.py": {
+    "mtime": 1789148894.0,
+    "ast_hash": "6223f1beebf878a728c494d23acb795d",
+    "semantic_hash": ""
+  },
+  "tests/test_cli.py": {
+    "mtime": 1789233343.4493542,
+    "ast_hash": "552500b936d1ce04f681ed303874d244",
+    "semantic_hash": ""
+  },
+  "tests/test_config.py": {
+    "mtime": 1789203302.0,
+    "ast_hash": "1426489df19886ceefac0f877cae3071",
+    "semantic_hash": ""
+  },
+  "tests/test_config_checkpoint.py": {
+    "mtime": 1789148344.0,
+    "ast_hash": "8c6866b9c2178f57acdcd16ffae60fa4",
+    "semantic_hash": ""
+  },
+  "tests/test_config_robustness.py": {
+    "mtime": 1789233343.4493542,
+    "ast_hash": "aed49448fe11e17a42ef578bdc7c54f0",
+    "semantic_hash": ""
+  },
+  "tests/test_config_v33_migration.py": {
+    "mtime": 1789187887.0,
+    "ast_hash": "ac21ef65e7cce2f430645f2740ffc9dd",
+    "semantic_hash": ""
+  },
+  "tests/test_events.py": {
+    "mtime": 1789233451.2492,
+    "ast_hash": "8b1f4205bd81a862f19d4f8ca11a13fe",
+    "semantic_hash": ""
+  },
+  "tests/test_exit_watchdog.py": {
+    "mtime": 1789199236.0,
+    "ast_hash": "a95071a6a41368daffbefe62bd8c6dc8",
+    "semantic_hash": ""
+  },
+  "tests/test_failed_login.py": {
+    "mtime": 1789234256.6875217,
+    "ast_hash": "efff2c2502ee55ffe2727397f122704d",
+    "semantic_hash": ""
+  },
+  "tests/test_feature_manager.py": {
+    "mtime": 1789233702.0181682,
+    "ast_hash": "f01a3ae0eabe05ce4fe10e60e8ca1ca6",
+    "semantic_hash": ""
+  },
+  "tests/test_guard_helpers.py": {
+    "mtime": 1789233574.8561702,
+    "ast_hash": "b14e3885901ac2f3d9f6b972c0c7b8a0",
+    "semantic_hash": ""
+  },
+  "tests/test_persian_tts.py": {
+    "mtime": 1789199646.0,
+    "ast_hash": "5e278f874b428ad0737835bf71809f02",
+    "semantic_hash": ""
+  },
+  "tests/test_provider_keyboard.py": {
+    "mtime": 1789147692.0,
+    "ast_hash": "8428de8a1e18bd7b03402f09072fa036",
+    "semantic_hash": ""
+  },
+  "tests/test_runtime_api.py": {
+    "mtime": 1789233115.7015667,
+    "ast_hash": "7bfb5d3b754609fe3b4077dd1c072e79",
+    "semantic_hash": ""
+  },
+  "tests/test_runtime_state.py": {
+    "mtime": 1789233326.0882177,
+    "ast_hash": "10624d3460089760fb8eb18c11825e41",
+    "semantic_hash": ""
+  },
+  "tests/test_service.py": {
+    "mtime": 1789233854.7603672,
+    "ast_hash": "e8fdbbc480d603bfdf42f5d19c0fe526",
+    "semantic_hash": ""
+  },
+  "tests/test_state.py": {
+    "mtime": 1789147692.0,
+    "ast_hash": "cea72afd20c2e806b9388d9e4830c1cc",
+    "semantic_hash": ""
+  },
+  "tests/test_stop_auth.py": {
+    "mtime": 1789203302.0,
+    "ast_hash": "9adcaa769875b99aab1f7e69065429cd",
+    "semantic_hash": ""
+  },
+  "tests/test_text_direction.py": {
+    "mtime": 1789235227.5721416,
+    "ast_hash": "7a5d63431e56908941df9f93342308ef",
+    "semantic_hash": ""
+  },
+  "tests/test_v33_features.py": {
+    "mtime": 1789187887.0,
+    "ast_hash": "deca5d16503a54e87e3cbfc3c3b17aca",
+    "semantic_hash": ""
+  },
+  "tests/test_v4_config_roundtrip.py": {
+    "mtime": 1789151746.0,
+    "ast_hash": "7417a2af9a344321c27929ae067dfa30",
+    "semantic_hash": ""
+  },
+  "tests/test_v4_health.py": {
+    "mtime": 1789151746.0,
+    "ast_hash": "5c5ecdf72e358fcca1a6b083fdfabfc0",
+    "semantic_hash": ""
+  },
+  "tests/test_v4_outbox.py": {
+    "mtime": 1789151746.0,
+    "ast_hash": "c2ade41083597a471fddcd7d15b34390",
+    "semantic_hash": ""
+  },
+  "tests/test_v4_profiles.py": {
+    "mtime": 1789187887.0,
+    "ast_hash": "d9b60c3c1c18a0b888d116d7c9a8b00c",
+    "semantic_hash": ""
+  },
+  "tests/test_v5_api.py": {
+    "mtime": 1789153796.0,
+    "ast_hash": "9699ab58ca2a622606907cd309363e1b",
+    "semantic_hash": ""
+  },
+  "tests/test_v5_apps.py": {
+    "mtime": 1789153796.0,
+    "ast_hash": "ddff25a6cbc9e13ab7dd82d433054b4a",
+    "semantic_hash": ""
+  },
+  "tests/test_v5_chat.py": {
+    "mtime": 1789187900.0,
+    "ast_hash": "88c8c2c3ca2529b4741f91c36fe2ec58",
+    "semantic_hash": ""
+  },
+  "tests/test_v5_config.py": {
+    "mtime": 1789153796.0,
+    "ast_hash": "a76e2ab6fe9b8451736b946c5370346b",
+    "semantic_hash": ""
+  },
+  "tests/test_v5_input_privacy.py": {
+    "mtime": 1789153796.0,
+    "ast_hash": "5b41c815d38cd9f1600f8992c01797b5",
+    "semantic_hash": ""
+  },
+  "tests/test_v5_screen.py": {
+    "mtime": 1789153796.0,
+    "ast_hash": "04339a92b86fe7938b6be282f3829f25",
+    "semantic_hash": ""
+  },
+  "tests/test_v6_config_migration.py": {
+    "mtime": 1789187900.0,
+    "ast_hash": "4b7024bbb830cd478cf60eaa67f1c072",
+    "semantic_hash": ""
+  },
+  "tests/test_v6_screen_native.py": {
+    "mtime": 1789187900.0,
+    "ast_hash": "629326594b48050adb0c1d7473515985",
+    "semantic_hash": ""
+  },
+  "tests/test_v6_warning.py": {
+    "mtime": 1789187900.0,
+    "ast_hash": "966d54da84fccd0dddf9d18fb3ae5470",
+    "semantic_hash": ""
+  },
+  "tests/test_v8_security_config.py": {
+    "mtime": 1789203302.0,
+    "ast_hash": "081e391c646856fcdbefbe7104550f7d",
+    "semantic_hash": ""
+  },
+  "tests/test_warning_assets.py": {
+    "mtime": 1789203302.0,
+    "ast_hash": "f121c9ae12b805813fe84e8ebc020512",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1789233925.4239216,
+    "ast_hash": "5ba943b41ad8b19f8972440b37124f7e",
+    "semantic_hash": ""
+  },
+  "docs/CONFIGURATION.md": {
+    "mtime": 1789235227.5711417,
+    "ast_hash": "39bcd38831283ab7d29c89d46c3a0fb5",
+    "semantic_hash": ""
+  },
+  "docs/EXTENDING.md": {
+    "mtime": 1789233379.8166394,
+    "ast_hash": "4348a41954983e9d00c495e3046d701d",
+    "semantic_hash": ""
+  },
+  "docs/FILE_REFERENCE.md": {
+    "mtime": 1789234362.22135,
+    "ast_hash": "02726b4f1104a6c9d463e9602919d70d",
+    "semantic_hash": ""
+  },
+  "docs/HISTORY.md": {
+    "mtime": 1789232771.5708656,
+    "ast_hash": "5b25da292e53a371b335bdcf37b0a5a5",
+    "semantic_hash": ""
+  },
+  "docs/README.md": {
+    "mtime": 1789234362.2203498,
+    "ast_hash": "ddda6f1b0421d713a7b202e09a266c86",
+    "semantic_hash": ""
+  },
+  "docs/SECURITY.md": {
+    "mtime": 1789234883.2914395,
+    "ast_hash": "d9c8c2627780a7d8393cdcd4d073f2f4",
+    "semantic_hash": ""
+  },
+  "docs/SYSTEM_AUDIT.md": {
+    "mtime": 1789234362.22135,
+    "ast_hash": "a650c0745411f7e0b2f59c9524147390",
+    "semantic_hash": ""
+  },
+  "docs/TESTING.md": {
+    "mtime": 1789234429.2958763,
+    "ast_hash": "0122169aaec72c86d75695499e1d42c5",
+    "semantic_hash": ""
+  },
+  "requirements.txt": {
+    "mtime": 1789204721.0,
+    "ast_hash": "1cd7828ed1e9f55c472c85c2ab9f497f",
+    "semantic_hash": ""
+  },
+  "laptop_guard/assets/warnings/countdown.mp4": {
+    "mtime": 1789201613.0,
+    "ast_hash": "89fc7a9a356ffbb967f20a53f2ab286a",
+    "semantic_hash": ""
+  },
+  "tests/test_input_immediate.py": {
+    "mtime": 1789234945.925931,
+    "ast_hash": "f60aa8a785871c728b48cbb677fd5e3e",
+    "semantic_hash": ""
+  },
+  "tests/test_chat_defaults.py": {
+    "mtime": 1789235227.5721416,
+    "ast_hash": "10bf5a56447ad5926c5cc207f05e8bac",
+    "semantic_hash": ""
+  }
+}

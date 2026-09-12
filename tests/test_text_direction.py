@@ -1,4 +1,5 @@
-from laptop_guard.text_direction import directional_text, text_direction
+from laptop_guard.text_direction import directional_text, paragraph_directions, text_direction
+import laptop_guard.chat_window as chat_window
 
 
 def test_persian_is_rtl():
@@ -23,3 +24,13 @@ def test_directional_text_preserves_content():
     value, direction = directional_text("Hello", "auto")
     assert direction == "ltr"
     assert value.endswith("Hello")
+
+
+def test_chat_composer_has_direction_detector_available():
+    assert chat_window.text_direction("سلام") == "rtl"
+    assert chat_window.text_direction("Hello") == "ltr"
+
+
+def test_chat_paragraphs_resolve_rtl_and_ltr_independently():
+    assert paragraph_directions("سلام دنیا\nHello world", "auto") == ["rtl", "ltr"]
+    assert paragraph_directions("Hello\nسلام", "rtl") == ["rtl", "rtl"]

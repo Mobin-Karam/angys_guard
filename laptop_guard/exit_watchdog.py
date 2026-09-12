@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 import time
+from pathlib import Path
 
 from .system_actions import lock_screen
 
@@ -21,21 +22,44 @@ def _pid_alive(pid: int) -> bool:
     return True
 
 
-def watch(parent_pid: int, interval: float = 0.25) -> int:
-    """Lock the normal desktop session when the guard process disappears.
+def _authorized_safe_exit(path: str, token: str) -> bool:
+    if not path or not token:
+        return False
+    p = Path(path)
+    try:
+        value = p.read_text(encoding="utf-8").strip()
+    except OSError:
+        return False
+    ok = value == token
+    try:
+        p.unlink()
+    except OSError:
+        pass
+    return ok
 
-    This is intentionally a separate process so SIGKILL, terminal closure or a
-    crash of the main guard still leaves a chance to issue the OS lock request.
+
+def watch(
+    parent_pid: int,
+    interval: float = 0.25,
+    safe_exit_file: str = "",
+    safe_exit_token: str = "",
+) -> int:
+    """Lock when the guard disappears unless it completed owner-authorized exit.
+
+    The separate watchdog covers abrupt exits such as terminal loss or SIGKILL.
+    A normal, two-factor approved stop writes a one-time safe-exit token before
+    the guard process ends; only then does the watchdog leave without locking.
     """
     interval = max(0.1, min(float(interval), 2.0))
     while _pid_alive(parent_pid):
-        # On POSIX the child's PPID changes as soon as its parent disappears;
-        # checking both PID liveness and parentage also avoids a rare PID-reuse race.
         if os.name != "nt" and os.getppid() != parent_pid:
             break
         time.sleep(interval)
-    # Small delay lets a terminating process complete its own direct lock first.
+
     time.sleep(0.05)
+    if _authorized_safe_exit(safe_exit_file, safe_exit_token):
+        return 0
+
     lock_screen()
     return 0
 
@@ -44,8 +68,15 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--parent-pid", type=int, required=True)
     parser.add_argument("--interval", type=float, default=0.25)
+    parser.add_argument("--safe-exit-file", default="")
+    parser.add_argument("--safe-exit-token", default="")
     args = parser.parse_args()
-    return watch(args.parent_pid, args.interval)
+    return watch(
+        args.parent_pid,
+        args.interval,
+        args.safe_exit_file,
+        args.safe_exit_token,
+    )
 
 
 if __name__ == "__main__":

@@ -23,3 +23,11 @@ def test_remote_power_is_opt_in(monkeypatch):
     monkeypatch.delenv("ALLOW_REMOTE_POWER", raising=False)
     cfg = AppConfig()
     assert cfg.security.allow_remote_power is False
+
+
+def test_protected_stop_is_enabled_by_default(monkeypatch):
+    monkeypatch.delenv("STOP_AUTH_ENABLED", raising=False)
+    cfg = AppConfig()
+    assert cfg.security.stop_auth_enabled is True
+    assert cfg.security.stop_pin_timeout == 15
+    assert cfg.security.stop_owner_confirm_timeout == 10

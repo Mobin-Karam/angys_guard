@@ -230,7 +230,10 @@ class SecurityChatManager:
                     except json.JSONDecodeError:
                         continue
 
-                    if item.get("session_id") != self.session_id:
+                    item_session = item.get("session_id")
+                    # Backward compatibility: older local writers did not add a
+                    # session_id. If one is present it must match this session.
+                    if item_session not in (None, "") and item_session != self.session_id:
                         continue
 
                     text = str(item.get("text") or "").strip()

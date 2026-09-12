@@ -54,6 +54,17 @@ def resolve_direction(text: object, mode: DirectionMode = "auto", default: Direc
     return text_direction(text, default)
 
 
+def paragraph_directions(
+    text: object,
+    mode: DirectionMode = "auto",
+    default: Direction = "rtl",
+) -> list[Direction]:
+    """Resolve every input paragraph independently for editable text widgets."""
+    value = str(text or "")
+    lines = value.split("\n")
+    return [resolve_direction(line, mode, default) for line in lines]
+
+
 def _reshape_arabic(text: str) -> str:
     if not text or not contains_rtl(text) or arabic_reshaper is None:
         return text

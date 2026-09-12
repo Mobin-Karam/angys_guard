@@ -36,3 +36,9 @@ def test_file_download_url():
     api.token = '123:secret'
     api.base_url = 'https://tapi.bale.ai'
     assert api._file_url('voice/file.ogg') == 'https://tapi.bale.ai/file/bot123:secret/voice/file.ogg'
+
+
+def test_client_ignores_ambient_proxy_and_uses_explicit_proxy():
+    api = mod.BaleApi('123:secret', proxy='http://127.0.0.1:8080')
+    assert api.session.trust_env is False
+    assert api.session.proxies['https'] == 'http://127.0.0.1:8080'
