@@ -1,0 +1,93 @@
+name: Architecture proposal
+description: Propose a cross-module boundary, dependency, storage, platform, or system-design change
+title: "[ARCH] "
+labels:
+  - type:architecture
+  - status:needs-design
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for changes that affect module boundaries, ports/adapters, shared state, storage, provider abstractions, platform capabilities, lifecycle, or other cross-cutting design.
+
+        Start from the documented architecture and Graphify relationships. Prefer an incremental migration over a rewrite.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Architectural problem
+      description: What coupling, boundary, scalability, maintainability, security, or platform problem needs a design decision?
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Current evidence / relationships
+      description: Relevant Graphify nodes/paths, modules, issues, tests, or documented constraints. Do not paste the whole graph.
+      placeholder: "Example: LaptopGuard -> RuntimeApi -> provider path; issues #19/#20"
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed architecture
+      description: Describe responsibilities, boundaries, dependency direction, ports/adapters, and ownership.
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Expected impact / blast radius
+      description: Modules, config/state/storage, providers, platforms, tests, docs, migrations, or compatibility surfaces affected.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: security
+    attributes:
+      label: Security / privacy sensitivity
+      options:
+        - Low / no security-boundary change
+        - Authorization / pairing / privileged actions
+        - Capture / evidence / privacy
+        - Secrets / credentials / storage
+        - Network / provider / remote control
+        - Process / service / OS control
+        - Multiple / unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: migration
+    attributes:
+      label: Migration / compatibility strategy
+      description: How can this be introduced incrementally without a flag-day rewrite or breaking existing installs/config/state?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What simpler or competing designs were considered and why are they insufficient?
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation plan
+      description: Tests, architecture checks, target-device validation, rollback criteria, or ADR needed before implementation.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Proposal checklist
+      options:
+        - label: I checked the current architecture docs, ADRs, Graphify relationships, and related issues first.
+          required: true
+        - label: This proposal preserves owner authorization and does not introduce a generic remote shell, arbitrary command runner, keylogging, or remote OS-password collection.
+          required: true

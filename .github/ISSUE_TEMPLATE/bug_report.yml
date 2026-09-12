@@ -1,59 +1,147 @@
-name: Bug report
-description: Report a reproducible Laptop Guard problem
+name: Bug / regression
+description: Report a reproducible AngysGuard defect or regression
 title: "[BUG] "
-labels: ["bug"]
+labels:
+  - type:bug
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting a problem. **Do not include bot tokens, API tokens, private chat IDs, screenshots, recordings, or other sensitive evidence.**
+        Thanks for reporting an AngysGuard problem.
+
+        **Do not post credentials, bot tokens, chat IDs, OS passwords, private keys, captured evidence, private screenshots/recordings, or other sensitive data.** If this is a security vulnerability, use the private security-reporting path from the issue chooser instead of this form.
+
   - type: input
     id: version
     attributes:
-      label: Laptop Guard version
-      placeholder: e.g. 11.1.0
+      label: AngysGuard / Laptop Guard version
+      description: Use the installed/released version or commit SHA when running from source.
+      placeholder: "Example: 11.1.0 or commit abc1234"
     validations:
       required: true
-  - type: dropdown
-    id: environment
+
+  - type: input
+    id: os
     attributes:
-      label: Environment
-      options:
-        - Ubuntu / X11
-        - Ubuntu / Wayland
-        - Other Linux
-        - Other / unknown
+      label: Operating system
+      placeholder: "Example: Ubuntu 26.04, Fedora 43"
     validations:
       required: true
+
+  - type: dropdown
+    id: session
+    attributes:
+      label: Desktop / session
+      options:
+        - GNOME / Wayland
+        - GNOME / X11
+        - KDE / Wayland
+        - KDE / X11
+        - Other Linux desktop/session
+        - Headless / service-only
+        - Unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected area
+      options:
+        - Startup / runtime
+        - Installation / setup / doctor
+        - Monitoring / intrusion response
+        - Camera
+        - Screen capture
+        - Input activity
+        - Audio / microphone / TTS
+        - Bale / Telegram / provider
+        - Local API / owner controls
+        - Warning / lock / system action
+        - Service / autostart
+        - Events / storage / outbox
+        - Local UI / chat surface
+        - Other / unsure
+    validations:
+      required: true
+
   - type: textarea
-    id: problem
+    id: actual
     attributes:
       label: What happened?
-      description: Describe the problem and what you expected instead.
+      description: Describe the observed behavior and the smallest useful context.
     validations:
       required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
   - type: textarea
     id: reproduce
     attributes:
-      label: Steps to reproduce
+      label: Minimal steps to reproduce
       placeholder: |
         1. Run ...
         2. Choose ...
-        3. See ...
+        3. Observe ...
     validations:
       required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: Reproduction frequency
+      options:
+        - Every time
+        - Often
+        - Sometimes
+        - Happened once
+        - Unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Is this a regression?
+      options:
+        - "Yes"
+        - "No"
+        - Unknown
+    validations:
+      required: true
+
+  - type: input
+    id: last_working
+    attributes:
+      label: Last known working version / commit
+      placeholder: "Leave blank if unknown"
+
   - type: textarea
     id: diagnostics
     attributes:
       label: Sanitized diagnostics
-      description: Paste relevant `./run.sh doctor` or error output after removing secrets and private evidence.
+      description: Include only relevant `./run.sh doctor`, status, event, or traceback output after removing secrets and private data.
       render: shell
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Hardware/backend details, workaround, or other non-sensitive information that may help reproduce the problem.
+
   - type: checkboxes
     id: checks
     attributes:
-      label: Safety checks
+      label: Reporter checklist
       options:
-        - label: I removed tokens, chat IDs, private media, and other sensitive data.
-          required: true
         - label: I searched existing issues for the same problem.
+          required: true
+        - label: I removed credentials, tokens, chat IDs, OS passwords, private media/evidence, and other sensitive data.
+          required: true
+        - label: This is a normal bug report, not a vulnerability requiring private disclosure.
           required: true

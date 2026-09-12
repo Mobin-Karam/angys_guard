@@ -1,37 +1,76 @@
 name: Question / help
-description: Ask for help using or configuring Laptop Guard
+description: Ask for help using, installing, or configuring AngysGuard
 title: "[HELP] "
-labels: ["question"]
+labels: []
 body:
   - type: markdown
     attributes:
       value: |
-        Use this for normal usage/setup questions. For vulnerabilities, follow `SECURITY.md` instead. Never paste real tokens or private evidence.
+        Use this for normal usage/setup questions that are not clearly a bug or feature request. For vulnerabilities, use the private security-reporting path from the issue chooser.
+
+        **Never paste real bot tokens, chat IDs, OS passwords, private keys, private media/evidence, or other sensitive data.**
+
   - type: input
     id: version
     attributes:
-      label: Laptop Guard version
-      placeholder: e.g. 11.1.0
+      label: AngysGuard / Laptop Guard version
+      placeholder: "Example: 11.1.0 or commit abc1234"
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system / environment
+      placeholder: "Example: Ubuntu 26.04 / GNOME Wayland"
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - Installation / first run
+        - Setup / configuration
+        - Doctor / diagnostics
+        - Arm / disarm / profiles
+        - Bale bot
+        - Telegram bot
+        - Camera / screen / input / audio
+        - Warning / lock / system action
+        - Service / autostart
+        - Events / evidence / history
+        - Local API / integration
+        - Development / contribution
+        - Roadmap / platform support
+        - Other
+    validations:
+      required: true
+
   - type: textarea
     id: goal
     attributes:
       label: What are you trying to do?
+      description: Describe the desired outcome.
     validations:
       required: true
+
   - type: textarea
     id: tried
     attributes:
       label: What have you tried?
+      description: List the relevant steps or documentation you already tried.
+
   - type: textarea
     id: diagnostics
     attributes:
-      label: Sanitized doctor/output
-      description: Remove tokens, chat IDs, personal paths/media, and private data before pasting.
+      label: Sanitized diagnostics
+      description: Optional. Include only relevant output after removing credentials, chat IDs, personal paths, private evidence, and other sensitive data.
       render: shell
+
   - type: checkboxes
     id: checks
     attributes:
-      label: Safety check
+      label: Reporter checklist
       options:
+        - label: I searched the README/docs and existing issues first.
+          required: true
         - label: I removed credentials and private data from anything I included.
           required: true

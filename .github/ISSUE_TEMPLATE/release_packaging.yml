@@ -1,0 +1,80 @@
+name: Release / packaging / upgrade problem
+description: Report release artifacts, upgrade, versioning, installer, tag, or packaging problems
+title: "[RELEASE] "
+labels:
+  - type:release
+  - area:release
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version / release / tag
+      placeholder: "Example: v11.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Release area
+      options:
+        - GitHub release / tag
+        - Python package metadata / installation
+        - Installer / setup scripts
+        - Upgrade / migration
+        - Changelog / release notes
+        - Supported-platform claim
+        - CI / release validation
+        - Repository metadata / links
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Example: Ubuntu 26.04, Python 3.13"
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+      description: Describe the release/packaging behavior and why it blocks or confuses installation, upgrade, validation, or maintenance.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / verify
+      placeholder: |
+        1. Install/download ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected release behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized output
+      description: Optional package/install/CI output with credentials, private paths, tokens, and other sensitive information removed.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Reporter checklist
+      options:
+        - label: I checked the changelog, release notes, support matrix, and existing release issues first.
+          required: true
+        - label: I did not include credentials, private keys, secret-file contents, OS passwords, or private evidence.
+          required: true
