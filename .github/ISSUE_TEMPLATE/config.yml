@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Security vulnerability
-    url: https://github.com/Mobin-Karam/laptop_guard_v3/security/policy
-    about: Do not report vulnerabilities, credentials, or private evidence in a normal issue. Follow the security policy instead.
+  - name: Security vulnerability — private reporting
+    url: https://github.com/Mobin-Karam/angys_guard/security/policy
+    about: Do not post vulnerabilities, credentials, exploit details, private evidence, or sensitive device/user data in a public issue.
+  - name: AngysGuard documentation
+    url: https://github.com/Mobin-Karam/angys_guard/tree/main/docs
+    about: Check installation, platform support, control modes, security, architecture, troubleshooting, and roadmap documentation before opening an issue.
+  - name: Product roadmap and planned platforms
+    url: https://github.com/Mobin-Karam/angys_guard/blob/main/docs/ROADMAP.md
+    about: Check whether your requested feature, Windows/Android work, managed service, or other platform target is already planned.
