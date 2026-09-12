@@ -1,5 +1,12 @@
 # Extending Laptop Guard
 
+This document is the **implementation template** for adding a feature module. For
+the full lifecycle—including deciding where a feature belongs, modifying existing
+behavior, fixing defects, safe removal, configuration/migration, and AI-agent
+workflows—read `docs/FEATURE_LIFECYCLE.md` first.
+
+For a reported defect, use `docs/BUG_TRIAGE_AND_FIXING.md` before changing code.
+
 The feature system is intentionally explicit: adding a feature should require
 one small module, one registration line, and focused tests. No filesystem plugin
 auto-discovery is used because silently importing arbitrary local files would
@@ -36,9 +43,14 @@ class ExampleFeature:
         return None
 ```
 
-Then explicitly install it beside `SystemInfoFeature` in `LaptopGuard.__init__`.
-Feature names, commands, and callback prefixes must be unique. The manager fails
-fast on conflicts and starts/stops features in deterministic order.
+Then explicitly install it beside the existing runtime features in the current
+`LaptopGuard` initialization path. Feature names, commands, and callback prefixes
+must be unique. The manager fails fast on conflicts and starts/stops features in
+deterministic order.
+
+Before registration, inspect `laptop_guard/features/manager.py` and an existing
+feature with similar lifecycle/side effects. Do not invent a second dispatcher or
+auto-loader.
 
 ## Host capabilities
 
@@ -57,6 +69,16 @@ needed service (camera, events, speech, state, or OS action).
 - Timestamps persisted across processes use Unix time (`time.time()`), not
   monotonic process-local clocks.
 
+## Configuration and diagnostics
+
+When a feature needs configuration, keep the model/default/migration/setup paths
+consistent. Use `docs/CONFIGURATION.md` and the checklist in
+`docs/FEATURE_LIFECYCLE.md`.
+
+If the feature depends on a package, binary, device, permission, compositor, or
+system service, add an actionable readiness check to `doctor.py` rather than
+letting normal startup fail with an unexplained traceback.
+
 ## Test checklist
 
 Add tests for registration, aliases, authorization boundary, valid input,
@@ -70,3 +92,14 @@ bash -n install.sh run.sh doctor.sh repair-opencv.sh
 .venv/bin/python -m pip check
 git diff --check
 ```
+
+Use `docs/TESTING.md` for manual device/session checks and `$test-and-verify` when
+working through Codex.
+
+## Changing or removing a feature
+
+Do not use this file as a deletion checklist. Feature removal can affect config
+migration, commands/callbacks, setup/doctor/help/menu surfaces, persisted state,
+events, tests, and shared security guards. Follow the removal sequence in
+`docs/FEATURE_LIFECYCLE.md` and have `architect` map dependencies before a
+non-trivial removal.
