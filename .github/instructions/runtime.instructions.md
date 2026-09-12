@@ -2,11 +2,13 @@
 applyTo: "laptop_guard/**/*.py"
 ---
 
-Follow root `AGENTS.md` and `laptop_guard/AGENTS.md`.
+Follow `AGENTS.md`, `laptop_guard/AGENTS.md`, and `docs/GRAPHIFY_NAVIGATION.md`.
+Before broad runtime discovery, use Graphify query/explain/path to locate the
+owning symbol, callers, dependencies, tests, config/state/storage, and side-effect
+boundaries. Open only the minimal current source returned by that navigation.
 
-Preserve owner authorization/privacy boundaries and existing `RuntimeApi`,
-`FeatureManager`, and `GuardRuntimeState` abstractions. New bot behavior should be
-a focused explicitly registered feature. Never add arbitrary remote shell/exec,
-hidden capture, credential logging, or permissive secret handling. Add focused
-success/failure/authorization tests for changed behavior and keep optional native
-hardware dependencies lazy/degradable.
+Preserve owner authorization/privacy boundaries, explicit feature registration,
+`RuntimeApi`, shared runtime state, bounded capture/process/network behavior, and
+secret handling. Prefer focused services/ports over making `LaptopGuard` larger.
+Add focused success/failure/denial tests and refresh Graphify after material
+relationship changes when available.
