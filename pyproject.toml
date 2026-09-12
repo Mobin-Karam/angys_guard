@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "laptop-guard"
 version = "11.1.0"
-description = "AngysGuard / Laptop Guard: owner-controlled Linux device security with bounded evidence, Bale/Telegram owner controls, guided setup, and a cross-platform roadmap"
+description = "AngysGuard / Laptop Guard: owner-controlled endpoint security and device protection platform, Linux-first with Bale/Telegram controls, bounded evidence, guided setup, and a cross-platform roadmap"
 readme = "README.md"
 requires-python = ">=3.11"
 keywords = [
@@ -13,8 +13,9 @@ keywords = [
   "linux",
   "security",
   "laptop-security",
-  "intrusion-detection",
   "endpoint-security",
+  "device-protection",
+  "intrusion-detection",
   "monitoring",
   "telegram-bot",
   "bale",
@@ -42,10 +43,10 @@ test = [
 laptop-guard = "laptop_guard.cli:main"
 
 [project.urls]
-Repository = "https://github.com/Mobin-Karam/laptop_guard_v3"
-Documentation = "https://github.com/Mobin-Karam/laptop_guard_v3/tree/main/docs"
-Issues = "https://github.com/Mobin-Karam/laptop_guard_v3/issues"
-Changelog = "https://github.com/Mobin-Karam/laptop_guard_v3/blob/main/CHANGELOG.md"
+Repository = "https://github.com/Mobin-Karam/angys_guard"
+Documentation = "https://github.com/Mobin-Karam/angys_guard/tree/main/docs"
+Issues = "https://github.com/Mobin-Karam/angys_guard/issues"
+Changelog = "https://github.com/Mobin-Karam/angys_guard/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["laptop_guard*"]
