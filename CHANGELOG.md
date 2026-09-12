@@ -10,6 +10,15 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Repository presentation
+
+- Added a full root `README.md` landing page with product overview, capabilities, security boundaries, architecture/flow diagrams, quick start, commands, repository map, testing, docs, roadmap, contributing, and license guidance.
+- Added `docs/assets/laptop-guard-overview.svg` as the repository overview visual used by the landing page.
+- Added canonical `.github/repository-profile.json` metadata for GitHub About description/topics/social-preview source.
+- Updated package metadata so the root README is the package landing document and package description/URLs align with the repository presentation.
+- Added `.gitattributes` Linguist rules so generated Graphify HTML/JSON do not dominate GitHub language statistics.
+- Added `docs/README_MAINTENANCE.md`, the `repository_curator` Codex role, `$repository-presentation` skill, reusable presentation prompt, PR/maintainer/release workflow integration, and regression tests to keep README/About/version/docs/visuals synchronized with future shipped changes.
+
 ### Developer and AI navigation
 
 - Made Graphify the default repository-discovery/navigation layer for humans and AI agents before broad source reads/searches.
