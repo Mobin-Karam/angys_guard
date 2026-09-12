@@ -1,0 +1,37 @@
+name: Question / help
+description: Ask for help using or configuring Laptop Guard
+title: "[HELP] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for normal usage/setup questions. For vulnerabilities, follow `SECURITY.md` instead. Never paste real tokens or private evidence.
+  - type: input
+    id: version
+    attributes:
+      label: Laptop Guard version
+      placeholder: e.g. 11.1.0
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized doctor/output
+      description: Remove tokens, chat IDs, personal paths/media, and private data before pasting.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials and private data from anything I included.
+          required: true
