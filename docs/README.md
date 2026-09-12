@@ -6,15 +6,55 @@ warning, can lock the desktop, and exposes a constrained Bale control surface.
 It deliberately does not expose a remote shell, suppress capture indicators, or
 delete user data.
 
-## Documentation
+## Start here
 
-- [System audit](SYSTEM_AUDIT.md) — architecture, flows, controls, findings, and limitations.
-- [File reference](FILE_REFERENCE.md) — responsibility and status of every tracked project file.
-- [Extending](EXTENDING.md) — low-context feature template and module contracts.
-- [Configuration](CONFIGURATION.md) — setup, persistent files, defaults, and service preparation.
-- [Security](SECURITY.md) — trust boundaries, authorization, protected stop, and privacy.
-- [Testing](TESTING.md) — automated and target-device validation.
-- [History](HISTORY.md) — consolidated release and migration history.
+Choose the document by what you are trying to do:
+
+| Goal | Read first |
+|---|---|
+| Understand the system/architecture | [System audit](SYSTEM_AUDIT.md) |
+| Find the file/module responsible for behavior | [File reference](FILE_REFERENCE.md) |
+| Add, change, fix, or remove a feature | [Feature lifecycle](FEATURE_LIFECYCLE.md) |
+| Find the cause of a bug or fix a GitHub issue | [Bug triage and fixing](BUG_TRIAGE_AND_FIXING.md) |
+| Add a new command/feature module | [Extending](EXTENDING.md) |
+| Work with Codex/AI agents | [AI agent workflow](AI_AGENT_WORKFLOW.md) |
+| Change setup/config/secrets | [Configuration](CONFIGURATION.md) |
+| Review trust/privacy/security rules | [Security](SECURITY.md) |
+| Run tests or validate hardware/session behavior | [Testing](TESTING.md) |
+| See planned work | [Roadmap](ROADMAP.md) |
+| Prepare/maintain the repository | [Maintainer checklist](MAINTAINER_CHECKLIST.md) |
+| Understand previous migrations/releases | [History](HISTORY.md) |
+
+## Maintenance workflow
+
+For normal engineering work, use this sequence:
+
+```text
+GitHub issue / user report / feature request
+                |
+                v
+classify the task
+  feature work -> FEATURE_LIFECYCLE.md
+  defect       -> BUG_TRIAGE_AND_FIXING.md
+                |
+                v
+find owner/path with FILE_REFERENCE.md + SYSTEM_AUDIT.md
+                |
+                v
+implement smallest safe change
+                |
+                v
+focused regression tests
+                |
+                v
+TESTING.md + reviewer/security review when needed
+                |
+                v
+PR / release
+```
+
+If using Codex in VS Code, `AGENTS.md` is the authoritative instruction file and
+`docs/AI_AGENT_WORKFLOW.md` explains the repo-local agents, skills, and hooks.
 
 ## Install and run
 
