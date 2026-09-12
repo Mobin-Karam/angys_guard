@@ -17,9 +17,12 @@ Current skills:
 | `test-and-verify` | Focused/full verification and manual-check accounting |
 | `release-readiness` | Version/changelog/CI/security/platform/release readiness |
 | `repository-presentation` | README, About/profile, package/version references, docs navigation, visuals |
+| `brand-assets` | AngysGuard logo, app icons, wordmarks, colors, README hero, social-preview sources, platform icon exports |
 | `product-roadmap-maintenance` | AngysGuard product vision, OS/app support, Bale/Telegram/self-hosted/managed modes, roadmap issues/milestones, current-vs-future claims |
 
 Prefer `$graphify-navigation` first when ownership/scope is unclear.
+
+Use `$brand-assets` for logo/icon/wordmark/color/social-preview work, together with `$repository-presentation` when the public README/About/profile is affected.
 
 Use `$product-roadmap-maintenance` when a release/product decision adds or changes an OS target, app target, bot/control mode, managed-service plan, platform request, milestone, or support state. Use `$repository-presentation` when that change affects public README/About/support copy.
 
@@ -29,6 +32,7 @@ Current product-platform sources of truth:
 - `docs/PLATFORM_SUPPORT.md`;
 - `docs/CONTROL_MODES.md`;
 - `docs/ROADMAP.md`;
-- `docs/PROJECT_MANAGEMENT.md`.
+- `docs/PROJECT_MANAGEMENT.md`;
+- `docs/BRAND_GUIDE.md`.
 
 Keep skill descriptions narrow enough that automatic selection is predictable. Do not put secrets, credentials, OS passwords, machine-specific paths, or private evidence in skills.

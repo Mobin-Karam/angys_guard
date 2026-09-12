@@ -1,6 +1,6 @@
 # Repository presentation and README maintenance
 
-This document defines how AngysGuard / Laptop Guard keeps its **root README, GitHub About metadata, package metadata, documentation index, platform/control-mode claims, release/version references, roadmap state, and repository visuals** synchronized with the actual product.
+This document defines how AngysGuard keeps its **root README, GitHub About metadata, package metadata, brand assets, documentation index, platform/control-mode claims, release/version references, roadmap state, and repository visuals** synchronized with the actual product.
 
 Repository presentation is a maintained product surface, not a one-time marketing file.
 
@@ -9,6 +9,7 @@ Repository presentation is a maintained product surface, not a one-time marketin
 The repository landing page should let a new user, maintainer or reviewer understand quickly:
 
 - what AngysGuard is and is not;
+- that the preferred category is **owner-controlled endpoint security and device protection platform**;
 - what the current shipped Linux release can do;
 - which OSes/apps/control modes are current, planned, research, or merely requested;
 - how to install and run the current supported platform;
@@ -22,13 +23,16 @@ The repository landing page should let a new user, maintainer or reviewer unders
 | Surface | Purpose |
 | --- | --- |
 | `README.md` | GitHub/project/package landing page |
+| `docs/BRAND_GUIDE.md` | Product category, logo concept, palette, asset rules, platform design references |
+| `docs/assets/brand/` | Canonical mark, app icon, wordmarks, hero and size exports |
 | `docs/ANGYSGUARD_PRODUCT_VISION.md` | Long-term product identity/principles/current-vs-future experience |
-| `docs/PLATFORM_SUPPORT.md` | Canonical current/best-effort/planned/research/not-targeted OS matrix and request policy |
+| `docs/PLATFORM_SUPPORT.md` | Canonical OS support/request policy |
 | `docs/CONTROL_MODES.md` | Local/Bale/Telegram/self-hosted/managed control model and credential rules |
 | `docs/ROADMAP.md` | Sequenced milestones/issues/future work |
 | `docs/PROJECT_MANAGEMENT.md` | Project fields/views/mapping/workflow |
-| `docs/assets/laptop-guard-overview.svg` | High-level AngysGuard product/flow visual |
+| `docs/assets/laptop-guard-overview.svg` | Legacy README image path; now carries the AngysGuard hero identity |
 | `.github/repository-profile.json` | Canonical GitHub About description/topics/social-preview source |
+| `scripts/generate_brand_assets.py` | PNG/favicon/social-preview brand renderer |
 | `scripts/sync_repository_profile.py` | Read-only preview / optional admin-token About sync helper |
 | `pyproject.toml` | Package version/description/README/keywords/URLs |
 | `docs/README.md` | Task-oriented documentation index |
@@ -39,7 +43,7 @@ Do not duplicate long canonical content. README should summarize and link.
 
 ## Graphify first
 
-Before changing presentation because of a feature, release, platform, provider, control mode, refactor or repository reorganization, use the Graphify-first workflow.
+Before changing presentation because of a feature, release, platform, provider, control mode, refactor, brand update or repository reorganization, use the Graphify-first workflow.
 
 Useful queries:
 
@@ -67,7 +71,7 @@ Windows, Android, managed AngysGuard service and future requested platforms must
 
 ## When a presentation/product refresh is required
 
-Review README/profile/platform/control/roadmap docs when any of these changes materially:
+Review README/profile/brand/platform/control/roadmap docs when any of these changes materially:
 
 1. package version/release status;
 2. user-visible feature added/changed/deprecated/removed;
@@ -80,7 +84,7 @@ Review README/profile/platform/control/roadmap docs when any of these changes ma
 9. configuration/secret handling/migration/security defaults;
 10. authorization/capture/privacy/lock/stop/unlock/network/process trust boundary;
 11. major architecture ownership or repository structure;
-12. product/repository naming or branding;
+12. product/repository naming, logo, color system or branding;
 13. documentation/AI/Graphify workflow;
 14. a release is being prepared.
 
@@ -98,39 +102,33 @@ Never write docs/README copy implying AngysGuard supports:
 - bypassing OS/compositor privacy boundaries;
 - sending the protected device's OS password through Bale, Telegram, Android/mobile UI or managed backend;
 - storing OS passwords as ordinary environment variables for remote operation;
-- Windows/Android/other-platform support that has not been implemented and target-device validated.
+- Windows/Android/other-platform support that has not been implemented and target-device validated;
+- antivirus/malware-engine capabilities that do not actually ship.
 
 Managed service remains optional; self-hosted/local operation stays first-class.
 
+## Brand workflow
+
+Use `$brand-assets` for logo/icon/wordmark/color/social-preview work.
+
+Canonical brand rules:
+
+- primary category: **owner-controlled endpoint security and device protection platform**;
+- mark concept: **halo + wings + A + shield/lock**;
+- preserve small-size silhouette first;
+- use the palette in `docs/BRAND_GUIDE.md`;
+- keep full-color, monochrome, dark/light wordmark and launcher-icon variants;
+- keep size exports under `docs/assets/brand/icons/svg/`;
+- use `scripts/generate_brand_assets.py` for PNG/favicon/social-preview rendering;
+- follow official platform icon guidance linked from `docs/BRAND_GUIDE.md` rather than copying other security brands.
+
 ## Product roadmap workflow
 
-For platform/app/control-mode/managed-service changes, use:
-
-```text
-product_planner
-```
-
-or:
-
-```text
-$product-roadmap-maintenance
-```
-
-The workflow should reconcile:
-
-- `ANGYSGUARD_PRODUCT_VISION.md`;
-- `PLATFORM_SUPPORT.md`;
-- `CONTROL_MODES.md`;
-- `ROADMAP.md`;
-- `PROJECT_MANAGEMENT.md`;
-- issues/milestones/labels;
-- root README and repository profile where public claims changed.
-
-Substantial roadmap work belongs in focused GitHub issues rather than prose only.
+For platform/app/control-mode/managed-service changes, use `product_planner` or `$product-roadmap-maintenance` and reconcile product vision, platform support, control modes, roadmap, Project mapping, issues/milestones and public presentation.
 
 ## Repository presentation workflow
 
-Use `repository_curator` / `$repository-presentation` after a release/version change or material public/support change.
+Use `repository_curator` / `$repository-presentation` after a release/version change or material public/support/brand change.
 
 ### 1. Establish the current shipped baseline
 
@@ -141,6 +139,7 @@ pyproject.toml
 CHANGELOG.md
 docs/PLATFORM_SUPPORT.md
 docs/CONTROL_MODES.md
+docs/BRAND_GUIDE.md
 docs/ROADMAP.md
 docs/SECURITY.md
 docs/TESTING.md
@@ -152,11 +151,12 @@ laptop_guard/features/
 ### 2. Update the smallest affected set
 
 - `README.md` for public/current/future summary;
+- `BRAND_GUIDE.md` / `docs/assets/brand/` for visual identity changes;
 - `PLATFORM_SUPPORT.md` for OS support-state changes;
 - `CONTROL_MODES.md` for Bale/Telegram/self-hosted/managed changes;
 - `ANGYSGUARD_PRODUCT_VISION.md` for long-term direction/principles;
 - `ROADMAP.md` / `PROJECT_MANAGEMENT.md` for targets/issues/milestones;
-- overview SVG when high-level product direction changes;
+- overview/hero SVG when high-level product direction or identity changes;
 - repository profile when About/topics should change;
 - `pyproject.toml` when package description/version/keywords change;
 - `CHANGELOG.md` for shipped repository/presentation changes.
@@ -176,14 +176,14 @@ export GH_TOKEN='<admin-capable token>'
 python scripts/sync_repository_profile.py --apply
 ```
 
-Never commit/log/share that token. Social preview still requires GitHub repository settings upload.
+Never commit/log/share that token. Social preview still requires GitHub repository settings upload; render its PNG source with `scripts/generate_brand_assets.py` when needed.
 
 ### 4. Verify consistency
 
 At minimum:
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_repository_presentation.py
+.venv/bin/python -m pytest -q tests/test_repository_presentation.py tests/test_brand_assets.py
 .venv/bin/python -m pytest -q tests/test_documentation_links.py tests/test_graphify_navigation_policy.py
 python scripts/sync_repository_profile.py
 ```
@@ -204,7 +204,7 @@ The root README should retain equivalent coverage for:
 
 ```text
 hero / AngysGuard identity + compatibility note
-what the product is
+what the product is and what category to use
 project status
 OS/platform support today
 Bale / Telegram / local control surfaces
@@ -223,33 +223,24 @@ security/privacy
 validation/testing
 documentation index
 roadmap
-AI/contributing/presentation maintenance
+AI/contributing/presentation/brand maintenance
 license
 ```
 
-## Version rule
+## Version and support rules
 
-`pyproject.toml` is authoritative for the current package version. README current-version status must match. Releases should not silently move planned platform/control capabilities into shipped copy.
-
-## Platform support promotion rule
-
-A platform moves from Planned/Best effort to Supported only after:
-
-- implementation exists;
-- installation/update steps are documented;
-- required capability limitations are explicit;
-- target-device testing exists;
-- provider/security behavior is validated where relevant;
-- release manager/product planner/repository curator agree that the support claim is accurate.
+`pyproject.toml` is authoritative for the current package version. README current-version status must match. A platform moves to Supported only after implementation, documentation, explicit limitations, target-device validation and release review.
 
 ## Pull-request checklist
 
-For product/presentation-affecting work:
+For product/presentation/brand-affecting work:
 
 - [ ] Graphify used first or fallback documented;
 - [ ] current source/tests confirm shipped claims;
 - [ ] current/planned/research/requested states are distinct;
 - [ ] root README version matches `pyproject.toml`;
+- [ ] brand category/logo/palette assets updated together when affected;
+- [ ] no unsupported antivirus claim introduced;
 - [ ] platform/control-mode docs updated when affected;
 - [ ] no OS-password-through-bot/backend design is documented as acceptable;
 - [ ] self-hosted/local remains a supported design path;
@@ -257,6 +248,5 @@ For product/presentation-affecting work:
 - [ ] commands/install examples are current;
 - [ ] documentation links resolve;
 - [ ] `.github/repository-profile.json` is current;
-- [ ] overview graphic updated only if product direction changed;
-- [ ] presentation/policy tests pass;
+- [ ] brand/presentation/policy tests pass;
 - [ ] Graphify refresh/follow-up accounted for.

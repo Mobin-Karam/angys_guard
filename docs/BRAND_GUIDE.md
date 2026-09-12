@@ -8,9 +8,9 @@ Shorter alternatives:
 
 - **endpoint security platform**;
 - **device protection platform**;
-- **Linux-first endpoint security agent** when describing the current installed runtime specifically.
+- **Linux-first endpoint security agent** when describing the installed runtime specifically.
 
-Avoid calling AngysGuard an **antivirus** unless the product later ships a real malware-detection engine with malware scanning/detection claims that are validated and maintained. The current product is broader in owner-control, intrusion response, evidence, alerts and device protection, but it is not positioned as a conventional antivirus engine.
+Do **not** call AngysGuard an **antivirus** unless the project later ships and maintains a real malware-detection engine with validated malware-scanning/detection claims. AngysGuard currently focuses on owner-controlled monitoring, intrusion response, bounded evidence, alerting, safe device actions, and constrained remote control.
 
 Avoid positioning it as spyware, a generic remote-administration tool, or a remote shell. Those descriptions conflict with the project's explicit security boundaries.
 
@@ -20,20 +20,20 @@ Avoid positioning it as spyware, a generic remote-administration tool, or a remo
 
 The mark combines four ideas:
 
-1. **Halo** — guardian/angel identity, ethical intent and visible protection.
+1. **Halo** — guardian/angel identity, ethical intent, visible protection.
 2. **Wings** — guardian presence and fast response.
 3. **Letter A** — distinctive AngysGuard identity.
-4. **Shield + lock** — security, owner authorization and protected actions.
+4. **Shield + lock** — security, owner authorization, and protected actions.
 
-The logo should feel **protective, technical, calm and trustworthy**, not aggressive, militarized or covert.
+The identity should feel **protective, technical, calm, and trustworthy**, not aggressive, militarized, or covert.
 
-## Primary logo direction
+## Logo direction
 
-Use the winged-A mark as the product icon. The horizontal wordmark pairs the mark with `AngysGuard` and the descriptor `Angel of System Guard`.
+Use the **winged A** as the primary product mark. The horizontal wordmark pairs the mark with `AngysGuard` and `Angel of System Guard`.
 
-At small sizes, prioritize the silhouette. Fine details may disappear, so the halo + A + wing silhouette must remain recognizable without relying on text.
+At small sizes, prioritize the silhouette. Fine details disappear quickly, so the halo + A + wing shape must remain recognizable without relying on text.
 
-Do not add additional metaphors to the icon. The shield/lock already supplies the security cue; adding eyes, cameras, weapons, masks or code symbols would make the mark too busy and can imply surveillance or offensive tooling.
+Do not add more metaphors to the launcher icon. The shield/lock already supplies the security cue; eyes, cameras, weapons, masks, terminals, or code symbols would make the mark too busy and can imply surveillance/offensive tooling.
 
 ## Color system
 
@@ -42,21 +42,21 @@ Do not add additional metaphors to the icon. The shield/lock already supplies th
 | Deep Night | `#0B1220` | Primary dark background, app icon base |
 | Deep Navy | `#0F172A` | Dark surfaces and high-contrast structure |
 | Primary Blue | `#2563EB` | Trust, security, technology |
-| Guardian Teal | `#0F766E` | Primary brand/guardian color |
+| Guardian Teal | `#0F766E` | Primary guardian/security brand color |
 | Accent Cyan | `#22D3EE` | Highlights, halo, active states |
 | Success Green | `#22C55E` | Protected/safe/healthy states |
 | Light | `#E2E8F0` | Text/shape contrast on dark surfaces |
 | Muted | `#94A3B8` | Secondary text |
 | Warning Amber | `#F59E0B` | Warnings only, not core branding |
-| Danger Red | `#EF4444` | Critical/security danger only |
+| Danger Red | `#EF4444` | Critical/security-danger states only |
 
 ### Color rules
 
-- The core brand should be **Deep Night + Blue/Teal/Cyan + white/light**.
+- Core identity: **Deep Night + Blue/Teal/Cyan + white/light**.
 - Green is a supporting state color, not the main identity color.
-- Amber and red are reserved for warning/danger UI; they should not dominate the logo.
-- Provide monochrome black and white variants for high-contrast contexts.
-- Never rely on color alone to communicate security state.
+- Amber and red are reserved for warning/danger UI and should not dominate the logo.
+- Keep a monochrome/symbolic variant for high-contrast and platform-theming contexts.
+- Never rely on color alone to communicate a security state.
 
 ## Logo usage
 
@@ -64,61 +64,66 @@ Do not add additional metaphors to the icon. The shield/lock already supplies th
 
 - dark app icon for launchers/docks/taskbars;
 - transparent vector mark for documents and UI;
-- horizontal wordmark on README/site headers;
+- horizontal wordmark for README/site/product headers;
 - monochrome mark where color is unavailable;
-- sufficient clear space around the mark.
+- generous clear space around the mark.
 
 ### Avoid
 
-- stretching or rotating the mark;
-- recoloring each element independently without a brand need;
-- placing detailed text inside launcher icons;
-- adding glow/shadow so strong that the silhouette disappears;
-- using the logo to imply official affiliation with Linux, Telegram, Bale, Microsoft, Google or another platform.
+- stretching, skewing, or rotating the mark;
+- arbitrary per-element recoloring;
+- detailed text inside launcher icons;
+- excessive glow/shadow that damages the silhouette;
+- implying official affiliation with Linux, Telegram, Bale, Microsoft, Google, GNOME, or another platform/provider.
 
 ## Asset folder
 
 Canonical brand assets live in `docs/assets/brand/`.
 
 - `angysguard-mark.svg` — scalable primary mark;
-- `angysguard-app-icon.svg` — dark app icon source;
+- `angysguard-app-icon.svg` — square app icon source;
 - `angysguard-mark-monochrome.svg` — symbolic/monochrome mark;
 - `angysguard-wordmark-dark.svg` / `angysguard-wordmark-light.svg` — horizontal wordmarks;
 - `angysguard-readme-hero.svg` — repository README hero;
-- `angysguard-social-preview.png` — GitHub/social preview;
-- `icons/angysguard-*.png` — raster icon sizes;
-- `icons/favicon.ico` — multi-size favicon;
-- `reference/angysguard-brand-board.png` — generated visual concept/reference board.
+- `icons/svg/angysguard-*.svg` — explicit size exports;
+- `README.md` — asset inventory and generation instructions.
 
-## Raster sizes
+## Sizes
 
-The repository exports PNG icons at:
+Committed SVG size exports cover:
 
 `16, 20, 24, 32, 48, 64, 96, 128, 180, 192, 256, 512, 1024` pixels.
 
-These cover common favicon, Linux desktop, Windows shell, web/PWA, Apple-touch-style, Android/web preview and high-resolution source use. Platform packaging should still follow that platform's exact current requirements.
+Generate matching PNG exports, a multi-size favicon, and a GitHub social-preview PNG with:
+
+```bash
+python -m pip install cairosvg pillow
+python scripts/generate_brand_assets.py
+```
+
+These sizes cover common favicon, Linux desktop, Windows shell, web/PWA, touch-icon, Android/web preview, and high-resolution source use. Platform packaging must still follow each platform's current requirements.
 
 ## Platform reference guidance
 
 Use official platform design documentation as implementation references rather than copying another security company's logo.
 
 - GNOME app icons: https://developer.gnome.org/hig/guidelines/app-icons
-- freedesktop icon-theme specification: https://specifications.freedesktop.org/icon-theme/latest/
+- freedesktop icon-theme specification: https://specifications.freedesktop.org/icon-theme-spec/latest/
 - Windows app icons: https://learn.microsoft.com/windows/apps/design/iconography/app-icons
 - Windows icon design: https://learn.microsoft.com/windows/apps/design/iconography/app-icon-design
 - Android adaptive icons: https://developer.android.com/develop/ui/compose/system/icon_design_adaptive
 - Google Play icon specifications: https://developer.android.com/distribute/google-play/resources/icon-design-specifications
 - GitHub social preview: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview
 
-Key shared lessons from these references: keep the metaphor simple, preserve a distinctive silhouette, test small sizes, provide monochrome/symbolic variants, respect platform safe areas/masks, and test the mark on both light and dark backgrounds.
+Shared lessons: keep the metaphor simple, preserve a distinctive silhouette, test small sizes, provide monochrome/symbolic variants, respect platform safe areas and masks, and test the mark on light and dark backgrounds.
 
 ## Brand maintenance
 
-For a product rename, major app launch, new platform family, or major visual identity change:
+For a product rename, major app launch, new platform family, or major visual-identity change:
 
 1. use the repository-presentation workflow;
 2. update this guide and `docs/assets/brand/` together;
-3. keep README/About/social preview synchronized;
-4. verify small-size icons and light/dark variants;
-5. do not change current/future platform claims just for marketing presentation;
-6. keep security wording aligned with `SECURITY.md` and the project architecture.
+3. keep README/About/social-preview sources synchronized;
+4. verify small-size and light/dark variants;
+5. keep current-vs-future platform claims truthful;
+6. keep security wording aligned with `SECURITY.md`, `AGENTS.md`, and architecture decisions.

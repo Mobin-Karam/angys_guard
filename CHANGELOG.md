@@ -10,6 +10,15 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### AngysGuard brand system
+
+- Established **owner-controlled endpoint security and device protection platform** as the preferred AngysGuard product category; explicitly avoid an antivirus claim until a real maintained malware-detection engine exists.
+- Added the canonical winged-A / halo / shield-lock identity, dark/light wordmarks, monochrome mark, app-icon source and README hero under `docs/assets/brand/`.
+- Added explicit SVG icon exports for 16, 20, 24, 32, 48, 64, 96, 128, 180, 192, 256, 512 and 1024 pixel targets plus `scripts/generate_brand_assets.py` for PNG/favicon/social-preview rendering.
+- Added `docs/BRAND_GUIDE.md` with palette, usage rules and official GNOME/freedesktop/Windows/Android/GitHub design references.
+- Updated the repository overview image to include the AngysGuard logo and product category.
+- Added `$brand-assets`, `design-or-refresh-brand.prompt.md`, repository-presentation integration and `tests/test_brand_assets.py` so future brand/release changes remain synchronized.
+
 ### AngysGuard product/platform planning
 
 - Introduced **AngysGuard — Angel of System Guard** as the planned public product identity while retaining current `laptop-guard` / `laptop_guard_v3` compatibility identifiers until a safe migration is implemented.
