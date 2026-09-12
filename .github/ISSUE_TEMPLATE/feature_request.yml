@@ -1,0 +1,54 @@
+name: Feature request
+description: Suggest an improvement to Laptop Guard
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Prefer changes that make Laptop Guard safer, easier to install, or easier for non-technical users to operate.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What user problem or limitation does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the user experience and expected behavior, not only implementation details.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Installation / setup
+        - Security / privacy
+        - Guided UX / CLI
+        - Telegram / Bale integration
+        - Camera / audio / screen
+        - Monitoring / alerts
+        - Service / autostart
+        - Testing / CI
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Suggested acceptance criteria
+      description: What must be true for this request to be considered complete?
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This request does not require exposing tokens, private media, or sensitive user data.
+          required: true
+        - label: I searched existing issues for a similar request.
+          required: true
