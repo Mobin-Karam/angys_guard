@@ -10,18 +10,37 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Planned
+
+See `docs/ROADMAP.md`, `docs/PROJECT_MANAGEMENT.md`, the GitHub project-tracking issue, and `docs/architecture/EVOLUTION_PLAN.md` for the v11.2, v11.3, v12.0, and architecture-evolution work.
+
+## 11.1.0 — 2026-09-12
+
+First formal GitHub release checkpoint for the existing 11.1.0 product baseline.
+
 ### Repository and project management
 
 - Added GitHub Actions CI for supported Python versions.
 - Added repository safety checks to prevent common local secret files and private keys from being committed.
 - Added Dependabot configuration for Python and GitHub Actions dependencies.
-- Added issue forms, pull request checklist, CODEOWNERS, security policy, and contributing guide.
+- Added issue forms, pull request checklist, CODEOWNERS, security policy, and contribution workflow.
 - Removed the tracked `.env` file from the current branch and added ignore rules for local secrets/runtime artifacts.
+- Added declarative repository-management configuration for labels, milestones, issue metadata, release notes, and the `v11.1.0` GitHub release/tag bootstrap.
+- Defined the GitHub Project v2 fields, views, workflow states, and initial issue mapping.
 
-### Planned
+### AI-assisted engineering
 
-See `docs/ROADMAP.md` and the GitHub project-tracking issue for the v11.2, v11.3, and v12.0 work.
+- Added authoritative `AGENTS.md` instructions with scoped runtime/test/docs guidance.
+- Added project-local Codex roles, reusable skills, safety hooks, and cross-tool AI compatibility instructions.
+- Added an evergreen `.github/prompts/` engineering prompt library.
+- Added feature-lifecycle, bug-triage, testing, and AI-agent maintenance playbooks.
 
-## 11.1.0
+### Architecture baseline
 
-This is the current version declared by `pyproject.toml` when this changelog was introduced. Historical release details have not been reconstructed here; add older entries only from verified tags, releases, or commit history.
+- Added the canonical modular-monolith / ports-and-adapters architecture guide.
+- Added dependency-boundary rules, security/runtime flow diagrams, staged architecture evolution plan, and ADR framework.
+- Added architecture backlog issues for intrusion orchestration, provider consolidation, durable delivery, compatibility-facade convergence, retention policy, and dependency-boundary enforcement.
+
+### Security note
+
+The repository no longer expects a tracked project `.env`, but any real credential that may have existed in historical commits must still be rotated before credential-cleanup work is considered complete.

@@ -25,6 +25,7 @@ Choose the document by what you are trying to do:
 | Review trust/privacy/security rules | [Security](SECURITY.md) |
 | Run tests or validate hardware/session behavior | [Testing](TESTING.md) |
 | See planned work | [Roadmap](ROADMAP.md) |
+| Understand labels, milestones, releases, and Project views | [Project management](PROJECT_MANAGEMENT.md) |
 | Prepare/maintain the repository | [Maintainer checklist](MAINTAINER_CHECKLIST.md) |
 | Understand previous migrations/releases | [History](HISTORY.md) |
 
@@ -41,6 +42,16 @@ For new architecture work, start with `ARCHITECTURE.md`, then use:
 - `architecture/FLOWS.md` for startup/security/delivery flows;
 - `architecture/EVOLUTION_PLAN.md` for staged refactor order;
 - `adr/` for accepted/proposed architecture decisions.
+
+## Project and release management
+
+Repository labels, milestones, issue mappings, and release notes are declared under
+`.github/repository-management/` and applied by the repository-management bootstrap
+workflow. `PROJECT_MANAGEMENT.md` defines the canonical GitHub Project v2 fields,
+views, workflow rules, and initial issue mapping.
+
+The first formal GitHub release checkpoint is `v11.1.0`. Future releases should
+create a new semantic-version tag rather than moving an already-published tag.
 
 ## Maintenance workflow
 

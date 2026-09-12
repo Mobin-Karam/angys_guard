@@ -1,0 +1,18 @@
+[
+  {
+    "title": "v11.2 — Setup & Security Hardening",
+    "description": "Harden secrets, installation, setup readiness, and guided recovery so a clean supported machine can reach a secure usable state without editing source/config files manually."
+  },
+  {
+    "title": "v11.3 — Non-Technical UX",
+    "description": "Make setup and daily operation understandable to non-technical users through resumable setup, guided recovery, and a simple main menu while preserving advanced CLI compatibility."
+  },
+  {
+    "title": "v12.0 — Production-Ready Release",
+    "description": "Complete regression coverage, platform/support policy, clean-machine validation, packaging/release checks, and measurable release readiness."
+  },
+  {
+    "title": "Architecture Evolution — Modular Monolith",
+    "description": "Incrementally move Laptop Guard toward the documented modular-monolith/ports-and-adapters architecture without a flag-day rewrite or security behavior regressions."
+  }
+]

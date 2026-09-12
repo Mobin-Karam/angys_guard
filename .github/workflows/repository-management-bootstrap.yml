@@ -1,0 +1,32 @@
+name: Repository Management Bootstrap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/repository-management-bootstrap.yml"
+      - ".github/repository-management/**"
+      - ".github/scripts/bootstrap_repository_management.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: repository-management-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Apply labels, milestones, issue metadata, tag and release
+        run: python .github/scripts/bootstrap_repository_management.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}

@@ -1,0 +1,20 @@
+{
+  "1":  {"milestone":"v11.2 — Setup & Security Hardening","labels":["type:security","type:maintenance","priority:P0","area:setup"]},
+  "2":  {"milestone":"v11.2 — Setup & Security Hardening","labels":["type:maintenance","priority:P0","area:setup"]},
+  "3":  {"milestone":"v11.2 — Setup & Security Hardening","labels":["type:testing","type:maintenance","priority:P0","area:setup"]},
+
+  "4":  {"milestone":"v11.3 — Non-Technical UX","labels":["type:feature","priority:P1","area:ux"]},
+  "5":  {"milestone":"v11.3 — Non-Technical UX","labels":["type:feature","priority:P1","area:setup","area:ux"]},
+  "6":  {"milestone":"v11.3 — Non-Technical UX","labels":["type:feature","priority:P1","area:runtime","area:ux"]},
+
+  "7":  {"milestone":"v12.0 — Production-Ready Release","labels":["type:testing","priority:P1","area:ci","area:release"]},
+  "8":  {"milestone":"v12.0 — Production-Ready Release","labels":["type:release","type:docs","priority:P2","area:release"]},
+  "9":  {"milestone":null,"labels":["project","type:maintenance","priority:P1"]},
+
+  "19": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P1","area:runtime"]},
+  "20": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P1","area:provider"]},
+  "21": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P1","area:storage","area:provider"]},
+  "22": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P2","area:runtime"]},
+  "23": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P2","area:storage"]},
+  "24": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","type:testing","priority:P2","area:ci"]}
+}
