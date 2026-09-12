@@ -1,13 +1,15 @@
 # Testing and validation
 
 Use this document after feature work, bug fixes, configuration changes, AI-workspace
-changes, Graphify/navigation changes, and release preparation.
+changes, Graphify/navigation changes, repository-presentation changes, and release
+preparation.
 
 For the workflow before testing:
 
 - repository discovery: `docs/GRAPHIFY_NAVIGATION.md`;
 - feature add/change/remove/fix: `docs/FEATURE_LIFECYCLE.md`;
 - bug/issue investigation and repair: `docs/BUG_TRIAGE_AND_FIXING.md`;
+- README/About/version/repository presentation: `docs/README_MAINTENANCE.md`;
 - AI-assisted verification: `$test-and-verify` in `docs/AI_AGENT_WORKFLOW.md`.
 
 ## Graphify-guided test selection
@@ -39,11 +41,12 @@ Recommended order:
 1. Graphify-map the changed/failing behavior to connected tests;
 2. reproduce the reported behavior or run the closest focused test;
 3. run the changed module's nearby test file(s);
-4. run the full automated suite;
-5. compile/check shell/package consistency;
-6. rerun the exact user reproduction;
-7. perform target-device checks for hardware/session/provider behavior;
-8. refresh Graphify after material source/docs relationship changes when available.
+4. run repository presentation/policy tests when the changed surface affects them;
+5. run the full automated suite;
+6. compile/check shell/package consistency;
+7. rerun the exact user reproduction;
+8. perform target-device checks for hardware/session/provider behavior;
+9. refresh Graphify after material source/docs relationship changes when available.
 
 ## Automated suite
 
@@ -61,7 +64,8 @@ service/autostart behavior, failed-login parsing/deduplication, camera capabilit
 fallbacks, input privacy, screen parsers, warning behavior/assets, Persian TTS,
 RTL/LTR direction, stop-PIN hashing, app allowlisting, chat persistence, local API
 construction, AI workspace configuration, Codex hook policy, Graphify-first
-navigation policy, and documentation link/index integrity.
+navigation policy, repository-presentation consistency, and documentation
+link/index integrity.
 
 ### Documentation and AI-navigation regression checks
 
@@ -82,6 +86,30 @@ The policy test intentionally does not claim the checked-in graph is fresh. Grap
 freshness is an operational comparison between the report's build commit and the
 working repository.
 
+### Repository-presentation regression checks
+
+`tests/test_repository_presentation.py` protects the repository landing surface.
+It verifies that:
+
+- root `README.md` is the package README referenced by `pyproject.toml`;
+- the current package version appears in the root README;
+- the repository overview SVG is referenced and present;
+- important landing-page sections remain available;
+- `.github/repository-profile.json` has a valid GitHub About description/topics
+  and references real canonical files;
+- `repository_curator`, `$repository-presentation`, and the reusable presentation
+  prompt/maintenance guide remain wired;
+- generated Graphify HTML/JSON are marked as generated for GitHub Linguist so they
+  do not dominate repository language statistics.
+
+Run this test whenever a version, release, root README, package metadata, GitHub
+About/profile, major product capability, or repository-presentation workflow
+changes:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_repository_presentation.py
+```
+
 When adding/renaming/removing a documentation or AI-workspace file, update links
 and policy references before merging. Do not bypass these checks by replacing useful
 local links with plain text.
@@ -96,6 +124,14 @@ For normal Python/runtime changes, the applicable completion set is:
 bash -n install.sh run.sh doctor.sh repair-opencv.sh
 .venv/bin/python -m pip check
 git diff --check
+```
+
+For repository presentation/documentation maintenance, run the focused policy set
+first:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_repository_presentation.py
+.venv/bin/python -m pytest -q tests/test_documentation_links.py tests/test_graphify_navigation_policy.py
 ```
 
 Use focused Graphify-selected subsets first when debugging. A failure in one of
@@ -174,7 +210,8 @@ When GitHub Actions fails:
 2. use Graphify to connect that test/module to likely production ownership and
    dependencies before broad repository searching;
 3. determine whether the failure is product code, test/fixture, dependency,
-   Python-version compatibility, packaging, or environment/flakiness;
+   Python-version compatibility, packaging, repository-presentation policy, or
+   environment/flakiness;
 4. reproduce locally or with the smallest equivalent test when possible;
 5. fix the cause rather than weakening/skipping the check;
 6. rerun the failed focused test before the full suite.
@@ -195,6 +232,7 @@ Record what was actually proven:
 ```text
 Graphify freshness / queries used:
 Focused tests:
+Repository presentation/policy tests:
 Full pytest:
 Compile/shell/pip/diff checks:
 Original reproduction:
@@ -202,6 +240,7 @@ GitHub CI:
 Repository Safety:
 Graph refreshed after relationship changes:
 Manual target-device checks:
+Manual GitHub About/social-preview settings:
 Not tested / still required:
 ```
 
