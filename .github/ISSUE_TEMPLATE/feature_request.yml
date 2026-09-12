@@ -1,54 +1,119 @@
 name: Feature request
-description: Suggest an improvement to Laptop Guard
+description: Propose a new AngysGuard capability or compatible improvement
 title: "[FEATURE] "
-labels: ["enhancement"]
+labels:
+  - type:feature
 body:
   - type: markdown
     attributes:
       value: |
-        Prefer changes that make Laptop Guard safer, easier to install, or easier for non-technical users to operate.
+        Describe the **user problem first**, then the behavior you want. Roadmap ideas are evaluated against AngysGuard's owner-controlled security model, self-hosted/local-first path, maintainability, and target-platform validation requirements.
+
+        Do not include real credentials, private evidence, OS passwords, or other sensitive data.
+
   - type: textarea
     id: problem
     attributes:
-      label: Problem to solve
-      description: What user problem or limitation does this address?
+      label: User problem
+      description: What problem, friction, or missing workflow should AngysGuard solve?
     validations:
       required: true
+
   - type: textarea
     id: proposal
     attributes:
       label: Proposed behavior
-      description: Describe the user experience and expected behavior, not only implementation details.
+      description: Describe the desired user experience and outcome rather than only implementation details.
     validations:
       required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Target surface
+      options:
+        - Core runtime / platform-agnostic
+        - Linux CLI / setup
+        - Linux desktop app
+        - Bale bot
+        - Telegram bot
+        - Self-hosted bot onboarding
+        - Managed AngysGuard service
+        - Android companion app
+        - Windows app / agent
+        - Documentation / developer workflow
+        - Other / unsure
+    validations:
+      required: true
+
   - type: dropdown
     id: area
     attributes:
-      label: Area
+      label: Primary area
       options:
-        - Installation / setup
-        - Security / privacy
-        - Guided UX / CLI
-        - Telegram / Bale integration
-        - Camera / audio / screen
-        - Monitoring / alerts
-        - Service / autostart
-        - Testing / CI
+        - Installation / setup / doctor
+        - Security / privacy / authorization
+        - Monitoring / intrusion response
+        - Camera / screen / input / audio
+        - Provider / notifications / bot control
+        - Storage / events / evidence
+        - Service / autostart / lifecycle
+        - UI / UX / accessibility / RTL
+        - Cross-platform architecture
+        - Testing / CI / release
         - Documentation
         - Other
     validations:
       required: true
+
+  - type: dropdown
+    id: support_state
+    attributes:
+      label: Is this for a currently supported or future surface?
+      options:
+        - Current Linux product
+        - Existing Bale / Telegram-style control
+        - Future v13 Linux/self-hosted work
+        - Future v14 managed-control work
+        - Future Windows / Android work
+        - Unsure
+    validations:
+      required: true
+
   - type: textarea
     id: acceptance
     attributes:
       label: Suggested acceptance criteria
-      description: What must be true for this request to be considered complete?
-  - type: checkboxes
-    id: checks
+      placeholder: |
+        - [ ] User can ...
+        - [ ] Existing self-hosted/local behavior remains compatible
+        - [ ] Security/privacy behavior is documented
+
+  - type: textarea
+    id: alternatives
     attributes:
-      label: Checks
+      label: Alternatives or workarounds
+      description: What can users do today, if anything?
+
+  - type: dropdown
+    id: security
+    attributes:
+      label: Security / privacy impact
       options:
-        - label: This request does not require exposing tokens, private media, or sensitive user data.
+        - None expected
+        - Changes authorization or privileged actions
+        - Changes capture / evidence / privacy behavior
+        - Changes secrets / pairing / provider behavior
+        - Unsure
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Product-boundary acknowledgement
+      options:
+        - label: This proposal does not require a generic remote shell, arbitrary command execution, keylogging, stealth capture, or collecting the protected device's OS password through a bot/backend.
           required: true
-        - label: I searched existing issues for a similar request.
+        - label: I searched existing issues and roadmap items for a similar request.
           required: true
