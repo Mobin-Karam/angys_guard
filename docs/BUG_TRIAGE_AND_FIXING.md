@@ -5,8 +5,8 @@ machines, reported in a GitHub issue, or discovered during testing. The goal is
 to move from **symptom** to **reproducible cause** to **small verified fix**
 without guessing across the entire codebase.
 
-Read `AGENTS.md` first. Runtime changes also inherit `laptop_guard/AGENTS.md`;
-test changes inherit `tests/AGENTS.md`.
+Read `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md` first. Runtime changes also
+inherit `laptop_guard/AGENTS.md`; test changes inherit `tests/AGENTS.md`.
 
 ## 1. Start with evidence, not code changes
 
@@ -48,9 +48,28 @@ For a specific subsystem, use the existing manual checks:
 
 See `docs/TESTING.md` for target-device validation rules.
 
-## 2. Classify the failure
+## 2. Map the symptom with Graphify before broad searching
 
-Classifying the symptom reduces the search area.
+After collecting the symptom/error/entry point, check Graphify freshness and ask
+the smallest relationship question that can reduce the search area:
+
+```bash
+graphify query "where is <symptom/command/behavior> handled?"
+graphify explain "<symbol from traceback/error>"
+graphify query "what tests cover <symbol/behavior>?"
+graphify path "<entry point>" "<suspected state/store/side effect>"
+```
+
+Use Graphify to identify likely owners, callers/dependencies, config/state/storage,
+side effects, and tests. Then open only those source/test ranges and confirm them.
+Do not load the complete `graphify-out/graph.json` into context.
+
+If the graph is stale and can be refreshed, run `graphify update .` first. If it
+cannot be used, keep direct fallback search narrow and state the reason.
+
+## 3. Classify the failure
+
+Use the Graphify map plus the symptom class to narrow the subsystem:
 
 | Symptom | Likely first area |
 |---|---|
@@ -68,10 +87,11 @@ Classifying the symptom reduces the search area.
 | UI/RTL/chat problem | `chat_surface.py`, `chat_window.py`, `text_direction.py` |
 | Test-only failure | changed module + failing test + fixture assumptions |
 
-Use `docs/FILE_REFERENCE.md` for file ownership and `docs/SYSTEM_AUDIT.md` for
-runtime flow and known boundaries.
+`docs/FILE_REFERENCE.md` is the curated ownership map; use it after Graphify when
+ownership needs human-maintained context. `docs/SYSTEM_AUDIT.md` documents current
+runtime evidence and known boundaries.
 
-## 3. Reproduce the smallest failing case
+## 4. Reproduce the smallest failing case
 
 Do not debug the full application when a smaller component can reproduce the
 problem.
@@ -89,49 +109,41 @@ Examples:
 The preferred fix loop is:
 
 ```text
-make it reproducible
-        |
-        v
-write/locate failing regression test
-        |
-        v
-trace exact owning path
-        |
-        v
-smallest root-cause fix
-        |
-        v
-targeted tests
-        |
-        v
-broader verification + review
+Graphify map
+   -> make it reproducible
+   -> locate/write failing regression test
+   -> confirm exact owning path
+   -> smallest root-cause fix
+   -> targeted tests
+   -> broader verification + review
+   -> refresh Graphify after material relationship changes
 ```
 
 If you cannot reproduce the bug, do not make speculative broad changes. Improve
 logging/diagnostics or ask for the one missing piece of evidence that would
 separate the likely causes.
 
-## 4. Trace the cause using the repository docs
+## 5. Use canonical docs only after navigation is narrowed
 
-Use the documentation as a navigation system:
+Graphify finds the live relationship neighborhood. Then use canonical docs for
+the relevant rules/intent:
 
-1. `docs/README.md` — choose the relevant documentation area.
-2. `docs/FILE_REFERENCE.md` — identify the module that owns the behavior.
-3. `docs/SYSTEM_AUDIT.md` — understand the current runtime/data/control flow.
-4. `docs/CONFIGURATION.md` — verify defaults, persistence, secrets, migration.
-5. `docs/SECURITY.md` — check trust/authorization/privacy requirements.
-6. `docs/EXTENDING.md` / `docs/FEATURE_LIFECYCLE.md` — understand feature
-   registration and safe change/removal patterns.
-7. `docs/TESTING.md` — find existing test and manual verification boundaries.
-8. `docs/AI_AGENT_WORKFLOW.md` — choose the correct agent/skill workflow.
+1. `docs/FILE_REFERENCE.md` — curated module ownership/context.
+2. `docs/SYSTEM_AUDIT.md` — current runtime/data/control-flow evidence.
+3. `docs/ARCHITECTURE.md` / `docs/architecture/` — target boundaries for refactors.
+4. `docs/CONFIGURATION.md` — defaults, persistence, secrets, migration.
+5. `docs/SECURITY.md` — trust/authorization/privacy requirements.
+6. `docs/EXTENDING.md` / `docs/FEATURE_LIFECYCLE.md` — feature ownership/change rules.
+7. `docs/TESTING.md` — test/manual verification boundaries.
+8. `docs/AI_AGENT_WORKFLOW.md` — agent/skill handoffs.
 
-For broad cross-file investigation, use `graphify-out/graph.json` only as a
-navigation aid if present; current source remains authoritative.
+Current source remains authoritative if generated Graphify output or older docs
+disagree with actual behavior.
 
-## 5. Read failures in layers
+## 6. Read failures in layers
 
-A visible error may be several layers away from the actual cause. Trace it from
-outside inward.
+A visible error may be several layers away from the actual cause. Use Graphify
+paths to guide the layer trace, then verify each important transition in source.
 
 ### Startup/configuration
 
@@ -173,8 +185,9 @@ Separate these questions:
 
 A unit test can prove #1 but not necessarily #2–#5.
 
-## 6. Convert the bug into a regression test
+## 7. Convert the bug into a regression test
 
+Use Graphify to identify existing tests connected to the owning symbol/behavior.
 Before or alongside the fix, add a test that fails for the reported behavior and
 passes after the root-cause change.
 
@@ -182,23 +195,22 @@ A good regression test:
 
 - reproduces the smallest bad input/state;
 - does not require real credentials/private media;
-- tests observable behavior, not internal implementation trivia;
-- covers the failure/denial path when security-sensitive;
+- tests observable behavior, not implementation trivia;
+- covers failure/denial when security-sensitive;
 - uses temporary files/paths and fake providers/hardware;
 - has a name that explains the bug scenario.
 
-If the bug is only reproducible on a real Wayland/X11 session, camera, microphone,
-or systemd environment, add the strongest unit coverage possible and record the
-remaining manual validation separately.
+If only reproducible on real Wayland/X11, camera, microphone, or systemd, add the
+strongest unit coverage possible and record manual validation separately.
 
-## 7. Fix the root cause, not the symptom
+## 8. Fix the root cause, not the symptom
 
 Common bad fixes to avoid:
 
 - catching `Exception` and silently continuing when state is corrupted;
 - disabling a security/authorization check to make an action work;
 - retrying forever instead of bounding retries/timeouts;
-- adding a second special-case code path around the owning abstraction;
+- adding a second special-case path around the owning abstraction;
 - logging secrets/full provider payloads to diagnose auth problems;
 - replacing atomic persisted state with ad-hoc writes;
 - using shell interpolation for convenience;
@@ -208,10 +220,7 @@ Common bad fixes to avoid:
 Prefer a fix in the module that owns the invariant. If several callers are wrong
 in the same way, repair the shared boundary rather than each caller separately.
 
-## 8. Determine severity and GitHub handling
-
-Use a normal GitHub issue for reproducible product defects that do not disclose a
-vulnerability.
+## 9. Determine severity and GitHub handling
 
 Suggested priority:
 
@@ -232,63 +241,58 @@ Actual:
 Reproduction steps:
 Environment:
 Doctor/status evidence (sanitized):
-Suspected area (if known):
+Graphify owning path / relevant nodes (if available):
 Acceptance criteria:
 Manual validation required:
 ```
 
 Do not paste secrets or private evidence.
 
-## 9. AI-agent workflows for finding and fixing bugs
+## 10. AI-agent workflows for finding and fixing bugs
 
 ### Unknown cause
 
-Use the read-only architect first:
-
 ```text
-Have architect investigate this bug without editing code. Use
-BUG_TRIAGE_AND_FIXING.md, FILE_REFERENCE.md, SYSTEM_AUDIT.md, TESTING.md, and the
-actual failing test/error. Return the most likely root cause, exact paths/symbols,
-a minimal reproduction plan, and the smallest safe fix plan.
+Have navigator map the symptom/error to likely owners, callers/dependencies, and
+tests with Graphify. Then have tester reproduce it. Have architect reason about
+root cause using that graph/source evidence. Do not edit until sufficiently narrowed.
 ```
 
 ### Reproducible bug
 
 ```text
-Use implementer to reproduce and fix this bug. Add a failing regression test
-first where practical. Keep the patch limited to the owning abstraction. Then
-have tester run targeted and full applicable verification, and reviewer inspect
-the final diff.
+Use Graphify to confirm the owner and connected tests. Use implementer to add or
+locate a failing regression test and make the smallest root-cause fix. Then tester
+runs targeted/full checks and reviewer inspects graph-identified blast radius.
 ```
 
 ### Security-sensitive bug
 
 ```text
-Have architect trace the bug and trust boundary first. Then use implementer for
-the bounded fix, tester for regression coverage, and security_reviewer to review
-authorization, secrets, capture/privacy, network, subprocess, and OS-control
-impact before completion.
+Have navigator/architect trace the failing entry point to authorization/secrets/
+capture/network/process/OS-control boundaries. Implement the bounded fix, have
+tester verify success and denial paths, then security_reviewer confirm trust-boundary
+behavior using graph paths plus source verification.
 ```
 
 ### Existing GitHub issue
 
 ```text
-$issue-to-pr implement issue #<number>. Start by reproducing the issue using
-BUG_TRIAGE_AND_FIXING.md. Do not merge until the regression test and required
-checks are green.
+$issue-to-pr implement issue #<number>. The skill must Graphify-map the issue to
+code/tests/docs before implementation and keep the acceptance criteria visible.
 ```
 
 ### CI failure
 
 ```text
-Have tester triage the failing CI job. Identify whether it is a code regression,
-test/fixture bug, packaging/dependency problem, or environment-specific failure.
-Return the smallest diagnostic/fix; do not make unrelated changes.
+Have tester use Graphify to connect the failing test/job to production modules and
+dependencies, classify code vs fixture/environment/package failure, and return the
+smallest diagnostic/fix.
 ```
 
-## 10. Verification after the fix
+## 11. Verification after the fix
 
-Run focused tests first. Then run the applicable full checks described in
+Run focused graph-identified tests first. Then run applicable full checks from
 `docs/TESTING.md`, normally including:
 
 ```bash
@@ -299,21 +303,26 @@ bash -n install.sh run.sh doctor.sh repair-opencv.sh
 git diff --check
 ```
 
-Also rerun the exact user reproduction steps. If hardware/session/provider
-behavior is involved, list and perform the required target-device checks instead
-of claiming the unit suite proves them.
+Also rerun the exact user reproduction. If hardware/session/provider behavior is
+involved, perform required target-device checks instead of claiming unit tests
+prove them.
 
-## 11. Bug-fix completion checklist
+Refresh Graphify after material code/docs relationship changes when the tool is
+available.
 
-- [ ] problem reproduced or evidence is sufficient to identify the cause;
-- [ ] owning module/call path identified;
-- [ ] no secret/private evidence was copied into artifacts;
+## 12. Bug-fix completion checklist
+
+- [ ] Graphify freshness checked and owning neighborhood mapped, or fallback reason recorded;
+- [ ] problem reproduced or evidence sufficient to identify cause;
+- [ ] owning module/call path confirmed in current source;
+- [ ] no secret/private evidence copied into artifacts;
 - [ ] regression test added/updated where practical;
 - [ ] root cause fixed rather than hidden;
-- [ ] authorization/privacy behavior is at least as strict as before;
+- [ ] authorization/privacy at least as strict as before;
 - [ ] targeted test passes;
 - [ ] applicable full checks pass;
-- [ ] original reproduction steps now pass;
-- [ ] required target-device validation recorded;
+- [ ] original reproduction passes;
+- [ ] target-device validation recorded;
 - [ ] user-facing diagnostics/docs updated if behavior changed;
+- [ ] Graphify refreshed after material relationship changes when possible;
 - [ ] reviewer/security review completed when appropriate.
