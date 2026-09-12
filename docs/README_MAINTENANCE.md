@@ -23,9 +23,10 @@ The README should be useful without duplicating every detail from the canonical 
 
 | Surface | Purpose |
 | --- | --- |
-| `README.md` | GitHub repository landing page and primary public/project overview |
+| `README.md` | GitHub repository landing page and primary package/project overview |
 | `docs/assets/laptop-guard-overview.svg` | High-level product/flow visual used by the root README |
 | `.github/repository-profile.json` | Canonical GitHub About description, topics, social-preview source, and presentation metadata |
+| `scripts/sync_repository_profile.py` | Read-only preview / optional admin-token sync helper for GitHub About description/homepage/topics |
 | `pyproject.toml` | Package version, Python requirement, dependencies, package description, README source |
 | `docs/README.md` | Detailed task-oriented documentation index and maintainer entry point |
 | `CHANGELOG.md` | Shipped changes only |
@@ -111,7 +112,22 @@ Depending on the change, update only what is affected:
 
 `.github/repository-profile.json` is the canonical source for the GitHub About panel.
 
-The current GitHub connector/project automation may not have repository-administration permission to mutate About metadata automatically. When automated synchronization is unavailable, a maintainer should apply the file values in GitHub:
+Preview the values without making any network changes:
+
+```bash
+python scripts/sync_repository_profile.py
+```
+
+When running locally or in another trusted admin-capable environment, the same helper can apply description/homepage/topics:
+
+```bash
+export GH_TOKEN='<admin-capable token>'
+python scripts/sync_repository_profile.py --apply
+```
+
+The token must have **repository Administration write** permission. Never commit, print, log, or put that token in examples/issues/PRs. The helper reads `GH_TOKEN` / `GITHUB_TOKEN` from the environment and never writes the token into repository files.
+
+The current GitHub connector/project automation may not expose repository-administration mutation. When that access is unavailable, keep `.github/repository-profile.json` current and either use the helper from an admin-capable local environment or apply the file values in GitHub:
 
 ```text
 Repository → About → gear icon
@@ -120,9 +136,7 @@ Website       = repository-profile.json:homepage (blank when null)
 Topics        = repository-profile.json:topics
 ```
 
-For social preview, use the repository visual as the source design; GitHub may require a raster upload in the repository settings UI.
-
-Do not invent a website URL solely to fill the About panel.
+For social preview, use the repository visual as the source design; GitHub requires the preview image to be uploaded through repository settings. Do not invent a website URL solely to fill the About panel.
 
 ### 4. Verify consistency
 
@@ -131,7 +145,10 @@ At minimum run:
 ```bash
 .venv/bin/python -m pytest -q tests/test_repository_presentation.py
 .venv/bin/python -m pytest -q tests/test_documentation_links.py tests/test_graphify_navigation_policy.py
+python scripts/sync_repository_profile.py
 ```
+
+The last command is a read-only preview unless `--apply` is supplied.
 
 For a release, run the full checks required by `docs/TESTING.md` and `$release-readiness`.
 
@@ -252,6 +269,7 @@ For presentation-affecting work:
 - [ ] commands/install examples are copy-pasteable;
 - [ ] documentation links resolve;
 - [ ] `.github/repository-profile.json` is current;
+- [ ] About values preview correctly through `scripts/sync_repository_profile.py`;
 - [ ] overview graphic updated only if the product flow changed;
 - [ ] presentation regression tests pass;
 - [ ] Graphify refreshed after material relationship/doc changes when practical.
