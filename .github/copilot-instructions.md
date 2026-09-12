@@ -21,3 +21,9 @@ Core rules for this security project:
 
 Useful project workflows are documented in `.agents/skills/`. Codex-specific
 subagents/hooks live under `.codex/`.
+
+Reusable task prompts live under `.github/prompts/`. Prefer those prompt files for
+repeatable engineering work such as planning, feature changes, bug fixing,
+reviews, testing, refactoring, documentation, and releases. The prompt library is
+intentionally generic: project-specific rules stay in `AGENTS.md` and canonical
+docs rather than being duplicated into every prompt.
