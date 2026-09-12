@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,8 +31,8 @@ def test_all_declared_icon_sizes_are_committed() -> None:
         path = icon_dir / f"angysguard-{size}.svg"
         assert path.exists(), f"missing {size}px AngysGuard SVG export"
         text = path.read_text(encoding="utf-8")
-        assert re.search(rf'width=["\']{size}["\']', text)
-        assert re.search(rf'height=["\']{size}["\']', text)
+        assert f'width="{size}"' in text
+        assert f'height="{size}"' in text
 
 
 def test_readme_hero_contains_angysguard_identity() -> None:
