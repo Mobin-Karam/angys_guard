@@ -16,5 +16,6 @@
   "21": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P1","area:storage","area:provider"]},
   "22": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P2","area:runtime"]},
   "23": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","priority:P2","area:storage"]},
-  "24": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","type:testing","priority:P2","area:ci"]}
+  "24": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","type:testing","priority:P2","area:ci"]},
+  "27": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:maintenance","type:docs","priority:P1","area:ci","status:needs-validation"]}
 }
