@@ -19,7 +19,7 @@
   "24": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:architecture","type:testing","priority:P2","area:ci"]},
   "27": {"milestone":"Architecture Evolution — Modular Monolith","labels":["type:maintenance","type:docs","priority:P1","area:ci","status:needs-validation"]},
 
-  "30": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:maintenance","type:docs","priority:P2","area:release","area:platform","status:needs-design"]},
+  "30": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:maintenance","type:docs","priority:P1","area:release","area:platform"]},
   "31": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:feature","type:docs","priority:P2","area:release","area:platform","area:ux"]},
   "32": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:feature","priority:P1","area:desktop-app","area:platform","area:runtime","area:ux","status:needs-design"]},
   "37": {"milestone":"v13.0 — AngysGuard Self-Hosted UX & Linux App","labels":["type:feature","type:security","priority:P1","area:provider","area:setup","area:platform","status:needs-design"]},
