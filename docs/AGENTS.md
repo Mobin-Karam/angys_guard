@@ -25,6 +25,9 @@ when generated graph output disagrees.
 - When code changes user-visible setup, CLI commands, dependencies, architecture,
   target-device requirements, or release behavior, update the relevant doc in
   the same change.
+- When a release/version or material user-visible/setup/platform/security change
+  affects the repository landing page, follow `README_MAINTENANCE.md` and update
+  the root `../README.md` / repository profile as required.
 - Avoid duplicating long canonical instructions: link to the source-of-truth doc
   instead.
 - Keep `ROADMAP.md` focused on planned work and `CHANGELOG.md` focused on shipped
@@ -62,8 +65,16 @@ new architecture prose into many files, then refresh Graphify when available.
   full lifecycle/removal guide.
 - `TESTING.md` owns automated and target-device verification requirements.
 - `AI_AGENT_WORKFLOW.md` owns agent/skill selection and reusable AI task recipes.
+- `README_MAINTENANCE.md` owns root README, GitHub About/profile metadata,
+  package/version references, repository visual, and presentation synchronization
+  rules for releases and material product changes.
 - `FILE_REFERENCE.md` owns the curated file/module responsibility map; Graphify
   remains the first choice for live connection/dependency discovery.
 
-When adding a new maintenance or architecture guide, update `README.md` so a
-maintainer can reach it by task/goal rather than already knowing its filename.
+The root `../README.md` is the repository/product landing page. `docs/README.md`
+is the detailed task-oriented documentation index. Keep their roles distinct.
+
+When adding a new maintenance or architecture guide, update `docs/README.md` so a
+maintainer can reach it by task/goal rather than already knowing its filename. If
+the guide materially changes the repository's public/project story, also review
+the root README through `README_MAINTENANCE.md`.
