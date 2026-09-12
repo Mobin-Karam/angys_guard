@@ -1,0 +1,81 @@
+name: UI / UX improvement
+description: Suggest usability, accessibility, localization, or interaction improvements
+title: "[UX] "
+labels:
+  - type:feature
+  - area:ux
+body:
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      options:
+        - CLI / guided menu
+        - Setup wizard
+        - Local chat / visible UI
+        - Linux desktop app roadmap
+        - Bale bot
+        - Telegram bot
+        - Android companion roadmap
+        - Windows app roadmap
+        - Documentation / onboarding
+        - Other / unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: UX problem
+      description: What is hard to understand, slow, repetitive, inaccessible, or error-prone for the user?
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_flow
+    attributes:
+      label: Current workflow
+      placeholder: |
+        1. User ...
+        2. User ...
+        3. Problem occurs ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: improved_flow
+    attributes:
+      label: Proposed improved workflow
+      description: Describe the desired interaction, not only visual styling.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: concerns
+    attributes:
+      label: Relevant UX concerns
+      options:
+        - label: Accessibility / keyboard navigation
+        - label: Persian / RTL / mixed RTL-LTR text
+        - label: Clear security/privacy state
+        - label: Non-technical user guidance
+        - label: Recovery/error messages
+        - label: Fewer steps / less repetition
+        - label: Mobile / small-screen behavior
+        - label: Other
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Suggested acceptance criteria
+      description: What observable user outcome would make this complete?
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Reporter checklist
+      options:
+        - label: I checked existing UX/product roadmap issues for similar work.
+          required: true
+        - label: This proposal preserves visible consent/security boundaries and does not depend on stealth behavior or credential collection.
+          required: true
