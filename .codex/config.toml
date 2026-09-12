@@ -1,0 +1,34 @@
+# Project-local Codex configuration.
+# Codex loads this layer only when the repository is trusted.
+
+project_doc_max_bytes = 65536
+project_doc_fallback_filenames = ["AGENT.md"]
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4
+interrupt_message = true
+
+[agents.architect]
+description = "Read-only architecture planner for cross-module or security-sensitive changes."
+config_file = "agents/architect.toml"
+
+[agents.implementer]
+description = "Focused implementation agent that follows the agreed change boundary and adds tests."
+config_file = "agents/implementer.toml"
+
+[agents.reviewer]
+description = "Read-only correctness and regression reviewer for proposed changes."
+config_file = "agents/reviewer.toml"
+
+[agents.security_reviewer]
+description = "Read-only reviewer for authorization, privacy, secrets, remote control, and capture boundaries."
+config_file = "agents/security_reviewer.toml"
+
+[agents.tester]
+description = "Verification specialist for targeted tests, full suite checks, and failure triage."
+config_file = "agents/tester.toml"
+
+[agents.release_manager]
+description = "Release-readiness specialist for changelog, support matrix, CI, and release checklists."
+config_file = "agents/release_manager.toml"
