@@ -1,39 +1,34 @@
 # Project AI skills
 
-Repository-scoped reusable agent workflows live under `.agents/skills/<name>/SKILL.md`.
-Codex discovers these skills from their frontmatter metadata and loads the full
-instructions only when selected.
+Repository-scoped reusable agent workflows live under `.agents/skills/<name>/SKILL.md`. Codex discovers these skills from frontmatter metadata and loads the full instructions only when selected.
 
 ## Navigation baseline
 
-Every skill inherits the Graphify-first rule from `AGENTS.md` and
-`docs/GRAPHIFY_NAVIGATION.md`. When a workflow needs repository discovery, locate
-owners/callers/dependencies/tests/docs with Graphify before broad source reads.
-Use current source as final authority and never load all of `graphify-out/graph.json`
-into context.
+Every skill inherits the Graphify-first rule from `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md`. Use Graphify to locate owners/callers/dependencies/tests/docs before broad source reads. Current source remains final authority; never load all of `graphify-out/graph.json` into context.
 
 Current skills:
 
 | Skill | Use it for |
 | --- | --- |
-| `graphify-navigation` | Locating owners, symbols, callers, dependencies, tests/docs, and change impact with minimal context |
-| `issue-to-pr` | Turning a GitHub issue/roadmap item into a bounded implementation and PR workflow |
-| `safe-implementation` | Runtime features, fixes, refactors, setup/CLI/provider/hardware changes |
+| `graphify-navigation` | Owners, symbols, callers, dependencies, tests/docs, change impact |
+| `issue-to-pr` | GitHub issue -> bounded implementation/PR workflow |
+| `safe-implementation` | Runtime/setup/provider/hardware changes with security boundaries |
 | `security-review` | Authorization, secrets, remote control, capture/privacy, process/network review |
-| `test-and-verify` | Focused tests, full validation, failure triage, manual-check accounting |
-| `release-readiness` | Version/changelog/CI/security/release checklist validation |
-| `repository-presentation` | Keeping README, GitHub About/profile metadata, package/version references, docs navigation, and repository visuals synchronized with shipped behavior |
+| `test-and-verify` | Focused/full verification and manual-check accounting |
+| `release-readiness` | Version/changelog/CI/security/platform/release readiness |
+| `repository-presentation` | README, About/profile, package/version references, docs navigation, visuals |
+| `product-roadmap-maintenance` | AngysGuard product vision, OS/app support, Bale/Telegram/self-hosted/managed modes, roadmap issues/milestones, current-vs-future claims |
 
-Prefer `$graphify-navigation` as the first skill when ownership/scope is unclear.
-Other skills should consume its compact path/node handoff instead of repeating
-repository-wide discovery.
+Prefer `$graphify-navigation` first when ownership/scope is unclear.
 
-Use `$repository-presentation` after releases/version changes and whenever a
-material user-visible feature, command, setup/platform requirement, security
-boundary, or repository structure changes what the landing page/About panel should
-say. The canonical contract is `docs/README_MAINTENANCE.md`.
+Use `$product-roadmap-maintenance` when a release/product decision adds or changes an OS target, app target, bot/control mode, managed-service plan, platform request, milestone, or support state. Use `$repository-presentation` when that change affects public README/About/support copy.
 
-Keep skill descriptions narrow enough that automatic selection is predictable.
-Do not put secrets, machine-specific credentials, or personal paths in skills.
-Project policy belongs in `AGENTS.md`; skills describe repeatable workflows rather
-than duplicate all repository instructions.
+Current product-platform sources of truth:
+
+- `docs/ANGYSGUARD_PRODUCT_VISION.md`;
+- `docs/PLATFORM_SUPPORT.md`;
+- `docs/CONTROL_MODES.md`;
+- `docs/ROADMAP.md`;
+- `docs/PROJECT_MANAGEMENT.md`.
+
+Keep skill descriptions narrow enough that automatic selection is predictable. Do not put secrets, credentials, OS passwords, machine-specific paths, or private evidence in skills.

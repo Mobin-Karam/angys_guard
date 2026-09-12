@@ -12,6 +12,8 @@ Closes #
 - [ ] Feature
 - [ ] Security hardening
 - [ ] Installation/setup improvement
+- [ ] Platform / desktop / mobile
+- [ ] Provider / bot / managed service
 - [ ] Documentation / repository presentation
 - [ ] Refactor/maintenance
 
@@ -23,22 +25,36 @@ Closes #
 ## Validation
 
 - [ ] `python -m pytest -q` passes locally, or the reason it cannot run is documented below.
-- [ ] No tokens, chat IDs, private screenshots, recordings, or other secrets are included.
+- [ ] No tokens, chat IDs, OS passwords, private screenshots, recordings, or other secrets are included.
 - [ ] Setup/config migration impact was considered.
-- [ ] Linux/Wayland/X11 behavior was considered where relevant.
+- [ ] Platform/session behavior was considered where relevant.
 - [ ] User-facing errors remain understandable for non-technical users.
 - [ ] Security/privacy impact was reviewed where applicable.
 
+## Platform / control-mode impact
+
+If this changes OS support, Bale/Telegram behavior, self-hosted pairing, managed service, desktop/mobile apps, or remote/local authorization:
+
+- [ ] `docs/PLATFORM_SUPPORT.md` reflects the correct state: Supported / Best effort / Planned / Research / Requested.
+- [ ] `docs/CONTROL_MODES.md` remains accurate.
+- [ ] Planned/research targets are not described as shipped.
+- [ ] Local/self-hosted operation remains first-class unless an explicit approved product decision says otherwise.
+- [ ] No protected-device OS password is sent/stored through Bale, Telegram, mobile clients, managed backend, or ordinary environment variables.
+- [ ] No generic remote shell/PowerShell/Bash execution surface was introduced.
+- [ ] Target-device/provider validation still required is listed below.
+- [ ] If none apply, this PR does not change platform/control-mode claims.
+
+See `docs/ANGYSGUARD_PRODUCT_VISION.md`, `docs/PLATFORM_SUPPORT.md`, `docs/CONTROL_MODES.md`, and `$product-roadmap-maintenance`.
+
 ## Repository presentation
 
-For a release/version bump or a material change to user-visible features, commands,
-setup/platform requirements, security boundaries, or repository structure:
+For a release/version bump or material user-visible/platform/control/security/repository change:
 
-- [ ] `README.md` still describes current shipped behavior accurately.
+- [ ] `README.md` accurately separates current vs future behavior.
 - [ ] README version/status matches `pyproject.toml` / release state.
-- [ ] `.github/repository-profile.json` About description/topics are still correct.
-- [ ] `docs/README.md` and other canonical navigation docs are current.
-- [ ] The overview visual was updated only if the high-level product flow changed.
+- [ ] `.github/repository-profile.json` is current.
+- [ ] documentation navigation/roadmap is current.
+- [ ] overview visual was updated only if high-level product direction changed.
 - [ ] `tests/test_repository_presentation.py` passes.
 - [ ] If none apply, the change does not materially affect repository presentation.
 
@@ -46,10 +62,8 @@ See `docs/README_MAINTENANCE.md` / `$repository-presentation`.
 
 ## Manual checks
 
-List any setup, camera, microphone, provider, lock, service, autostart, UI, GitHub
-About/social-preview, or target-device checks performed or still required.
+List setup, camera, microphone, provider, pairing, lock, service, UI, OS/platform, GitHub About/social-preview, or target-device checks performed/still required.
 
 ## Risk / rollback
 
-Describe security impact, possible regressions, stale-documentation risk where
-relevant, and how to roll back if necessary.
+Describe security impact, regressions, migration/support/documentation risks, and rollback.

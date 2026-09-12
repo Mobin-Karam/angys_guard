@@ -1,146 +1,186 @@
 # Repository presentation and README maintenance
 
-This document defines how Laptop Guard keeps its **root README, GitHub About metadata, package metadata, documentation index, release/version references, and repository visuals** synchronized with the actual product.
+This document defines how AngysGuard / Laptop Guard keeps its **root README, GitHub About metadata, package metadata, documentation index, platform/control-mode claims, release/version references, roadmap state, and repository visuals** synchronized with the actual product.
 
 Repository presentation is a maintained product surface, not a one-time marketing file.
 
 ## Goals
 
-The repository landing page should let a new maintainer, reviewer, or authorized user understand in a few minutes:
+The repository landing page should let a new user, maintainer or reviewer understand quickly:
 
-- what Laptop Guard is and is not;
-- what the current shipped release can do;
+- what AngysGuard is and is not;
+- what the current shipped Linux release can do;
+- which OSes/apps/control modes are current, planned, research, or merely requested;
+- how to install and run the current supported platform;
+- how Bale/Telegram/self-hosted/managed control differs;
 - the security/privacy boundaries that must not be weakened;
-- how to install, configure, run, test, and contribute;
-- how the major runtime pieces connect;
-- where canonical detailed documentation lives;
-- what is shipped versus planned;
-- how AI agents and Graphify are expected to navigate the repository.
+- where detailed canonical documentation lives;
+- what is shipped versus future roadmap work.
 
-The README should be useful without duplicating every detail from the canonical docs.
-
-## Canonical presentation surfaces
+## Canonical presentation/product surfaces
 
 | Surface | Purpose |
 | --- | --- |
-| `README.md` | GitHub repository landing page and primary package/project overview |
-| `docs/assets/laptop-guard-overview.svg` | High-level product/flow visual used by the root README |
-| `.github/repository-profile.json` | Canonical GitHub About description, topics, social-preview source, and presentation metadata |
-| `scripts/sync_repository_profile.py` | Read-only preview / optional admin-token sync helper for GitHub About description/homepage/topics |
-| `pyproject.toml` | Package version, Python requirement, dependencies, package description, README source |
-| `docs/README.md` | Detailed task-oriented documentation index and maintainer entry point |
+| `README.md` | GitHub/project/package landing page |
+| `docs/ANGYSGUARD_PRODUCT_VISION.md` | Long-term product identity/principles/current-vs-future experience |
+| `docs/PLATFORM_SUPPORT.md` | Canonical current/best-effort/planned/research/not-targeted OS matrix and request policy |
+| `docs/CONTROL_MODES.md` | Local/Bale/Telegram/self-hosted/managed control model and credential rules |
+| `docs/ROADMAP.md` | Sequenced milestones/issues/future work |
+| `docs/PROJECT_MANAGEMENT.md` | Project fields/views/mapping/workflow |
+| `docs/assets/laptop-guard-overview.svg` | High-level AngysGuard product/flow visual |
+| `.github/repository-profile.json` | Canonical GitHub About description/topics/social-preview source |
+| `scripts/sync_repository_profile.py` | Read-only preview / optional admin-token About sync helper |
+| `pyproject.toml` | Package version/description/README/keywords/URLs |
+| `docs/README.md` | Task-oriented documentation index |
 | `CHANGELOG.md` | Shipped changes only |
-| `docs/ROADMAP.md` | Planned milestones/work only |
-| `SECURITY.md` / `docs/SECURITY.md` | Vulnerability reporting and product security/trust boundaries |
-| `docs/FILE_REFERENCE.md` | Detailed ownership/file map |
+| `SECURITY.md` / `docs/SECURITY.md` | Vulnerability reporting and product trust/security boundaries |
 
-Do not copy large canonical sections between these files. The root README should summarize and link.
+Do not duplicate long canonical content. README should summarize and link.
 
 ## Graphify first
 
-Before changing presentation because of a feature, release, refactor, or repository reorganization, follow the repository Graphify-first rule.
+Before changing presentation because of a feature, release, platform, provider, control mode, refactor or repository reorganization, use the Graphify-first workflow.
 
-Check freshness, then ask targeted questions such as:
+Useful queries:
 
 ```bash
 graphify query "what user-visible commands and capabilities exist?"
+graphify query "what provider/Bale/Telegram paths exist?"
 graphify query "what files define setup, doctor, service, and autostart behavior?"
 graphify query "what security boundaries connect remote control to system actions?"
-graphify query "what tests cover RuntimeApi and FeatureManager?"
 graphify explain "LaptopGuard"
 ```
 
-Use Graphify to identify the smallest authoritative files, then confirm the current source/tests/docs before changing README claims.
+Then confirm important current facts against source/tests/docs. A roadmap issue is not evidence that a feature is shipped.
 
-If Graphify is stale and cannot be refreshed, use the narrowest direct fallback search and record that limitation.
+## Required current/future vocabulary
 
-## When a presentation refresh is required
+Use these states consistently:
 
-A README/profile review is required when any of these materially changes:
+- **Current / shipped / supported** — implemented and release-validated to the documented level.
+- **Best effort / experimental** — may work but lacks complete release support/validation.
+- **Planned** — roadmap target with issue/milestone; not usable today.
+- **Research** — feasibility/architecture work; no delivery promise.
+- **User-requested** — demand signal only; not yet a roadmap commitment.
 
-1. package version or release status;
-2. user-visible feature added, changed, deprecated, or removed;
-3. CLI command, setup flow, doctor check, service/autostart behavior, or owner command changes;
-4. supported Python version, OS/session support, required packages, or hardware/backend requirements;
-5. provider/transport capabilities or local-only behavior;
-6. configuration location, secret handling, migration, or security defaults;
-7. authorization, capture/privacy, lock/stop/unlock, network, process, or other trust boundary;
-8. architecture ownership important enough to change the README architecture diagram or repository map;
-9. documentation files move or canonical docs change;
-10. repository AI/Graphify workflow changes;
-11. repository name, description, topics, license, or social-preview visual changes;
-12. a release is being prepared.
+Windows, Android, managed AngysGuard service and future requested platforms must remain clearly marked as future until implementation and validation exist.
 
-Small internal refactors that do not affect any README statement do not require cosmetic README churn.
+## When a presentation/product refresh is required
 
-## Required workflow
+Review README/profile/platform/control/roadmap docs when any of these changes materially:
 
-### 1. Establish the shipped baseline
+1. package version/release status;
+2. user-visible feature added/changed/deprecated/removed;
+3. CLI/setup/doctor/service/autostart/owner commands;
+4. supported Python/OS/session/distro/platform state;
+5. Linux/Windows/Android/other platform target or capability;
+6. Bale/Telegram/provider support or self-hosted pairing;
+7. managed AngysGuard account/bot/service behavior;
+8. account/device pairing, credential, revocation or privileged-action model;
+9. configuration/secret handling/migration/security defaults;
+10. authorization/capture/privacy/lock/stop/unlock/network/process trust boundary;
+11. major architecture ownership or repository structure;
+12. product/repository naming or branding;
+13. documentation/AI/Graphify workflow;
+14. a release is being prepared.
 
-Read only the relevant authoritative sources identified through Graphify. Common sources include:
+Small internal refactors that do not affect public/support claims do not require cosmetic churn.
+
+## Hard product/security copy rules
+
+Never write docs/README copy implying AngysGuard supports:
+
+- covert surveillance;
+- credential/password collection;
+- keylogging typed contents;
+- a generic remote shell/Bash/PowerShell executor;
+- arbitrary remote filesystem/process control;
+- bypassing OS/compositor privacy boundaries;
+- sending the protected device's OS password through Bale, Telegram, Android/mobile UI or managed backend;
+- storing OS passwords as ordinary environment variables for remote operation;
+- Windows/Android/other-platform support that has not been implemented and target-device validated.
+
+Managed service remains optional; self-hosted/local operation stays first-class.
+
+## Product roadmap workflow
+
+For platform/app/control-mode/managed-service changes, use:
+
+```text
+product_planner
+```
+
+or:
+
+```text
+$product-roadmap-maintenance
+```
+
+The workflow should reconcile:
+
+- `ANGYSGUARD_PRODUCT_VISION.md`;
+- `PLATFORM_SUPPORT.md`;
+- `CONTROL_MODES.md`;
+- `ROADMAP.md`;
+- `PROJECT_MANAGEMENT.md`;
+- issues/milestones/labels;
+- root README and repository profile where public claims changed.
+
+Substantial roadmap work belongs in focused GitHub issues rather than prose only.
+
+## Repository presentation workflow
+
+Use `repository_curator` / `$repository-presentation` after a release/version change or material public/support change.
+
+### 1. Establish the current shipped baseline
+
+Read only relevant Graphify-selected authoritative files. Common sources:
 
 ```text
 pyproject.toml
 CHANGELOG.md
+docs/PLATFORM_SUPPORT.md
+docs/CONTROL_MODES.md
 docs/ROADMAP.md
-docs/ARCHITECTURE.md
-docs/CONFIGURATION.md
 docs/SECURITY.md
 docs/TESTING.md
-docs/FILE_REFERENCE.md
 laptop_guard/cli.py
-laptop_guard/models.py
 laptop_guard/setup_wizard.py
-laptop_guard/doctor.py
 laptop_guard/features/
 ```
 
-Do not describe roadmap work as already available.
+### 2. Update the smallest affected set
 
-### 2. Update the smallest presentation set
-
-Depending on the change, update only what is affected:
-
-- `README.md` for user-facing/project-overview facts;
-- `docs/assets/laptop-guard-overview.svg` when the product flow or major capability groups change;
-- `.github/repository-profile.json` when description/topics/preview metadata should change;
-- `docs/README.md` when the documentation navigation changes;
-- `pyproject.toml` when version/package description/readme source changes;
-- `CHANGELOG.md` for shipped presentation/repository changes.
+- `README.md` for public/current/future summary;
+- `PLATFORM_SUPPORT.md` for OS support-state changes;
+- `CONTROL_MODES.md` for Bale/Telegram/self-hosted/managed changes;
+- `ANGYSGUARD_PRODUCT_VISION.md` for long-term direction/principles;
+- `ROADMAP.md` / `PROJECT_MANAGEMENT.md` for targets/issues/milestones;
+- overview SVG when high-level product direction changes;
+- repository profile when About/topics should change;
+- `pyproject.toml` when package description/version/keywords change;
+- `CHANGELOG.md` for shipped repository/presentation changes.
 
 ### 3. Keep GitHub About synchronized
 
-`.github/repository-profile.json` is the canonical source for the GitHub About panel.
-
-Preview the values without making any network changes:
+Preview:
 
 ```bash
 python scripts/sync_repository_profile.py
 ```
 
-When running locally or in another trusted admin-capable environment, the same helper can apply description/homepage/topics:
+Apply only from a trusted admin-capable environment:
 
 ```bash
 export GH_TOKEN='<admin-capable token>'
 python scripts/sync_repository_profile.py --apply
 ```
 
-The token must have **repository Administration write** permission. Never commit, print, log, or put that token in examples/issues/PRs. The helper reads `GH_TOKEN` / `GITHUB_TOKEN` from the environment and never writes the token into repository files.
-
-The current GitHub connector/project automation may not expose repository-administration mutation. When that access is unavailable, keep `.github/repository-profile.json` current and either use the helper from an admin-capable local environment or apply the file values in GitHub:
-
-```text
-Repository → About → gear icon
-Description   = repository-profile.json:description
-Website       = repository-profile.json:homepage (blank when null)
-Topics        = repository-profile.json:topics
-```
-
-For social preview, use the repository visual as the source design; GitHub requires the preview image to be uploaded through repository settings. Do not invent a website URL solely to fill the About panel.
+Never commit/log/share that token. Social preview still requires GitHub repository settings upload.
 
 ### 4. Verify consistency
 
-At minimum run:
+At minimum:
 
 ```bash
 .venv/bin/python -m pytest -q tests/test_repository_presentation.py
@@ -148,128 +188,75 @@ At minimum run:
 python scripts/sync_repository_profile.py
 ```
 
-The last command is a read-only preview unless `--apply` is supplied.
+For release work, also run `docs/TESTING.md` / `$release-readiness` checks.
 
-For a release, run the full checks required by `docs/TESTING.md` and `$release-readiness`.
-
-### 5. Refresh Graphify after material documentation relationships change
-
-When Graphify is available:
+### 5. Refresh Graphify when available
 
 ```bash
 graphify update .
 ```
 
-Generated graph output must be regenerated by Graphify rather than hand-edited to simulate freshness.
+Never hand-edit generated graph output to simulate freshness.
 
 ## Root README content contract
 
-The root README should retain these high-level sections unless a deliberate redesign replaces them with equivalent coverage:
+The root README should retain equivalent coverage for:
 
 ```text
-hero / product identity
+hero / AngysGuard identity + compatibility note
 what the product is
 project status
-capabilities
-explicit non-goals / safety boundaries
+OS/platform support today
+Bale / Telegram / local control surfaces
+self-hosted bot model
+future managed service model
+OS-password hard boundary
+current capabilities / explicit non-goals
 architecture / flow
-quick start
-operations / controls
+Linux quick start
 configuration
+future Linux/Windows/Android app targets
+platform request path
 repository map
-Graphify-first workflow
+Graphify-first engineering
 security/privacy
 validation/testing
 documentation index
-AI-assisted development
 roadmap
-contributing
-presentation maintenance
+AI/contributing/presentation maintenance
 license
 ```
 
-The exact wording can evolve. The coverage should not silently disappear.
-
 ## Version rule
 
-The current package version is authoritative in `pyproject.toml`.
+`pyproject.toml` is authoritative for the current package version. README current-version status must match. Releases should not silently move planned platform/control capabilities into shipped copy.
 
-The root README should expose the same current version in its status/badge area. `tests/test_repository_presentation.py` verifies this relationship so version bumps cannot silently leave the landing page stale.
+## Platform support promotion rule
 
-Release notes belong in `CHANGELOG.md` / GitHub Releases. Do not turn the README into a complete release log.
+A platform moves from Planned/Best effort to Supported only after:
 
-## Feature-claim rule
-
-Every concrete capability claimed by the root README must be supported by current source/tests/canonical documentation.
-
-For a new capability:
-
-```text
-implementation + tests + detailed docs
-        ↓
-README summary (if important to users/project identity)
-        ↓
-About/topic update (only if it changes repository discoverability)
-```
-
-For a removed capability, reverse the process and remove stale README/About claims in the same change when practical.
-
-## Security wording rule
-
-Do not use README copy that implies Laptop Guard supports:
-
-- covert surveillance;
-- credential theft;
-- keylogging typed contents;
-- unrestricted command execution;
-- arbitrary remote filesystem access;
-- bypassing desktop/compositor privacy boundaries.
-
-Security-sensitive descriptions should remain consistent with `docs/SECURITY.md` and the root `AGENTS.md` hard gates.
-
-## Visual maintenance rule
-
-The overview graphic is a documentation artifact, not a product screenshot.
-
-Update it only when the high-level capability flow changes. Keep it:
-
-- readable in GitHub light/dark contexts;
-- free of secrets, private screenshots, user names, chat IDs, or device identifiers;
-- independent of third-party trademarked UI screenshots;
-- descriptive rather than decorative;
-- small enough to render quickly in the README.
-
-## Agent and skill support
-
-Use one of these equivalent project workflows:
-
-```text
-$repository-presentation
-```
-
-```text
-Have repository_curator refresh the repository presentation for the current change/release.
-```
-
-```text
-Use .github/prompts/refresh-repository-presentation.prompt.md
-```
-
-The agent/skill must still verify current source and may not invent capabilities from roadmap text.
+- implementation exists;
+- installation/update steps are documented;
+- required capability limitations are explicit;
+- target-device testing exists;
+- provider/security behavior is validated where relevant;
+- release manager/product planner/repository curator agree that the support claim is accurate.
 
 ## Pull-request checklist
 
-For presentation-affecting work:
+For product/presentation-affecting work:
 
-- [ ] Graphify used first or narrow fallback documented;
-- [ ] current source/tests confirm user-facing claims;
+- [ ] Graphify used first or fallback documented;
+- [ ] current source/tests confirm shipped claims;
+- [ ] current/planned/research/requested states are distinct;
 - [ ] root README version matches `pyproject.toml`;
-- [ ] shipped and planned behavior remain clearly separated;
+- [ ] platform/control-mode docs updated when affected;
+- [ ] no OS-password-through-bot/backend design is documented as acceptable;
+- [ ] self-hosted/local remains a supported design path;
 - [ ] security/non-goal wording remains accurate;
-- [ ] commands/install examples are copy-pasteable;
+- [ ] commands/install examples are current;
 - [ ] documentation links resolve;
 - [ ] `.github/repository-profile.json` is current;
-- [ ] About values preview correctly through `scripts/sync_repository_profile.py`;
-- [ ] overview graphic updated only if the product flow changed;
-- [ ] presentation regression tests pass;
-- [ ] Graphify refreshed after material relationship/doc changes when practical.
+- [ ] overview graphic updated only if product direction changed;
+- [ ] presentation/policy tests pass;
+- [ ] Graphify refresh/follow-up accounted for.

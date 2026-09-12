@@ -1,70 +1,67 @@
 # Codex project workspace
 
-This directory contains project-local Codex configuration for Laptop Guard.
+This directory contains project-local Codex configuration for AngysGuard / Laptop Guard.
 
 ## Navigation rule
 
-Repository discovery is **Graphify-first**. Read `docs/GRAPHIFY_NAVIGATION.md`.
-The SessionStart hook reports graph freshness; use `graphify query`, `graphify
-explain`, or `graphify path` before broad source reads. The generated
-`graphify-out/graph.json` is machine data and should not be loaded wholesale into
-conversation context.
+Repository discovery is **Graphify-first**. Read `docs/GRAPHIFY_NAVIGATION.md`. SessionStart reports graph freshness; use `graphify query`, `graphify explain`, or `graphify path` before broad source reads. Never load all of `graphify-out/graph.json` into normal conversation context.
 
-If the graph is stale and Graphify is available, refresh with `graphify update .`.
-Current source/tests remain authoritative after Graphify narrows the scope.
+If the graph is stale and Graphify is available, refresh with `graphify update .`. Current source/tests remain authoritative.
 
 ## Layout
 
 - `config.toml` — project instruction discovery and custom subagent registry.
-- `agents/` — project-scoped custom subagent roles.
-- `hooks.json` — trusted lifecycle hooks.
-- `hooks/` — small dependency-free Python hook handlers.
+- `agents/` — project-scoped custom roles.
+- `hooks.json` / `hooks/` — trusted lifecycle guardrails/reminders.
 
 ## Trust
 
-Project-local `.codex/` configuration and hooks are intended to run only after
-you trust this repository in Codex. Review hook code before trusting a fork or
-unfamiliar branch.
+Project-local `.codex/` configuration and hooks should run only after trusting the repository/branch. Review hook code before trusting a fork or unfamiliar branch.
 
 ## Agent roles
 
-- `navigator`: read-only Graphify-first ownership/dependency/test/doc mapping.
-- `architect`: read-only graph-backed planning and architecture mapping.
-- `implementer`: bounded code changes/tests from a confirmed graph/source scope.
-- `reviewer`: read-only correctness/regression and blast-radius review.
-- `security_reviewer`: read-only trust-boundary/security impact review.
-- `tester`: Graphify-guided test discovery, verification, and failure triage.
-- `release_manager`: release readiness, graph freshness, CI/support/checklists,
-  including repository-presentation readiness.
-- `repository_curator`: root README, GitHub About/profile metadata, version/release
-  references, docs navigation, and overview visual maintenance.
+- `navigator` — Graphify-first ownership/dependency/test/doc mapping.
+- `architect` — graph-backed architecture/change planning.
+- `implementer` — bounded implementation/tests from confirmed scope.
+- `reviewer` — correctness/regression/blast-radius review.
+- `security_reviewer` — trust-boundary/security/privacy review.
+- `tester` — Graphify-guided test discovery/verification/failure triage.
+- `release_manager` — release readiness, platform/support/control-mode accuracy, CI/security/checklists.
+- `repository_curator` — README/About/profile/version/docs navigation/visual maintenance.
+- `product_planner` — AngysGuard current-vs-future OS/app/control-mode planning, issues/milestones, and roadmap consistency.
 
-No project agent pins a model. Roles inherit the parent session's model/reasoning
-and permission mode unless a future task explicitly needs a per-role override.
+No project agent pins a model; roles inherit the parent session's model/reasoning/permission mode.
 
-For releases, version bumps, or material user-visible changes, `release_manager`
-should ensure `repository_curator` / `$repository-presentation` has accounted for
-`README.md`, `.github/repository-profile.json`, package metadata, and related docs.
-The canonical contract is `docs/README_MAINTENANCE.md`.
+## Product/platform workflow
+
+For a new OS, app, provider/control mode, managed-service plan, or roadmap change:
+
+```text
+navigator (current implementation map)
+        -> product_planner
+        -> architect/security_reviewer when design-sensitive
+        -> repository_curator for public presentation
+        -> release_manager when a release/support claim changes
+```
+
+Canonical product sources:
+
+- `docs/ANGYSGUARD_PRODUCT_VISION.md`
+- `docs/PLATFORM_SUPPORT.md`
+- `docs/CONTROL_MODES.md`
+- `docs/ROADMAP.md`
+- `docs/PROJECT_MANAGEMENT.md`
+
+Keep current/shipped, best-effort, planned, research and user-requested states distinct. Managed mode remains optional. Never design or document sending the protected device's OS password through Bale/Telegram/mobile/backend; use device-scoped authorization plus local/native privilege boundaries.
 
 ## Hooks
 
-The hooks are intentionally narrow:
+- SessionStart: project/security + Graphify freshness.
+- PreToolUse: blocks destructive Git/repository deletion and protected secret-file reads/edits.
+- PostToolUse: reminds about tests/security/Graphify refresh and repository-presentation impact after relevant edits.
 
-- Session start adds project/security policy plus Graphify freshness status.
-- Pre-tool policy blocks destructive Git/repository deletion and direct secret-file
-  reads/edits.
-- Post-edit review adds verification/security-review context after runtime edits
-  and reminds agents to consider repository-presentation impact for material
-  user-visible changes.
-
-Hooks do not modify product code, commit/push changes, call external services, or
-read secrets. Graphify itself remains developer/agent tooling, not a product
-runtime dependency.
+Hooks do not modify product code, commit/push changes, call external services, or read secrets.
 
 ## Primary instructions
 
-`AGENTS.md` remains the authoritative project policy. `.codex/` augments it; it
-does not replace it. For substantial discovery, delegate to `navigator` and hand
-its compact paths/nodes/relationships to the next specialist rather than making
-each agent rediscover the repository independently.
+`AGENTS.md` remains authoritative. `.codex/` augments it. For substantial discovery use `navigator`; for product/platform planning use `product_planner`; for public presentation use `repository_curator`.

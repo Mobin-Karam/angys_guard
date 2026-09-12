@@ -5,16 +5,19 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "laptop-guard"
 version = "11.1.0"
-description = "Owner-controlled Linux laptop security agent with intrusion detection, bounded evidence capture, visible warning and lock response, owner controls, event history, guided setup and diagnostics"
+description = "AngysGuard / Laptop Guard: owner-controlled Linux device security with bounded evidence, Bale/Telegram owner controls, guided setup, and a cross-platform roadmap"
 readme = "README.md"
 requires-python = ">=3.11"
 keywords = [
+  "angysguard",
   "linux",
   "security",
   "laptop-security",
   "intrusion-detection",
   "endpoint-security",
   "monitoring",
+  "telegram-bot",
+  "bale",
   "opencv",
 ]
 dependencies = [

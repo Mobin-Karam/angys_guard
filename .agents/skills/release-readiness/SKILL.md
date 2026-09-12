@@ -1,39 +1,24 @@
 ---
 name: release-readiness
-description: Assess or prepare a Laptop Guard release using Graphify impact/freshness, CI, tests, changelog, roadmap, security status, version metadata, repository presentation, and target-device checks. Use for release planning, tagging preparation, or deciding whether a version is ready.
+description: Assess or prepare an AngysGuard / Laptop Guard release using Graphify impact/freshness, CI, tests, changelog, roadmap, security status, platform/control-mode support, version metadata, repository presentation, and target-device checks.
 ---
 
 # Release readiness
 
-1. Follow `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md`. Check graph freshness and
-   use Graphify to summarize changed communities/symbols, public/config/state/storage
-   surfaces, connected tests/docs, and architecture/security hotspots.
-2. Read `CHANGELOG.md`, `docs/ROADMAP.md`, `docs/TESTING.md`, `SECURITY.md`,
-   `docs/README_MAINTENANCE.md`, and relevant open release/milestone issues
-   identified by the release scope.
-3. Verify version consistency in `pyproject.toml`, `README.md`, and user-facing
-   release docs.
-4. Use `$repository-presentation` / `repository_curator` to verify the root README,
-   `.github/repository-profile.json`, package description/readme metadata,
-   documentation navigation, and overview visual against current shipped behavior.
-   Do not let roadmap/proposed work appear as released capabilities.
-5. Confirm CI and repository-safety workflows are green for the release commit.
-6. Run/use `test-and-verify` for applicable local verification, including
-   `tests/test_repository_presentation.py` and documentation policy tests.
-7. Check P0 security work, credential rotation, known regressions, migrations, and
-   material graph staleness are resolved or explicitly block the release.
-8. Confirm support matrix/known limitations for Ubuntu, Python, X11/Wayland,
-   hardware, and provider integrations are current.
-9. Record manual target-device results separately from unit-test results.
-10. Prepare changelog/release notes from shipped changes only; do not describe
-    roadmap items as released.
-11. Refresh Graphify before release when material source/docs relationships changed
-    and the tool is available.
-12. Report any GitHub About/social-preview settings that still require
-    repository-administration UI/API access.
-13. Do not create/push tags, publish packages, or create a GitHub Release unless the
-    user explicitly asks for that action.
+1. Follow `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md`; use Graphify to map changed product/config/state/storage/provider/platform surfaces and connected tests/docs.
+2. Read the release-relevant subset of `CHANGELOG.md`, `docs/ROADMAP.md`, `docs/TESTING.md`, `SECURITY.md`, `docs/README_MAINTENANCE.md`, `docs/PLATFORM_SUPPORT.md`, `docs/CONTROL_MODES.md`, `docs/ANGYSGUARD_PRODUCT_VISION.md`, and milestone issues.
+3. Verify version consistency in `pyproject.toml`, `README.md`, changelog/release docs.
+4. Use `$product-roadmap-maintenance` / `product_planner` if the release changes an OS/app/provider/control mode/support state. Keep current, best-effort, planned, research and requested states distinct.
+5. Use `$repository-presentation` / `repository_curator` to verify root README, repository profile, package metadata, docs navigation and visual against **shipped** behavior.
+6. Confirm CI and Repository Safety are green on the release commit.
+7. Use `$test-and-verify`, including repository-presentation/documentation policy tests for release docs.
+8. Check P0 security work, credential rotation, regressions, migrations and material Graphify staleness.
+9. Confirm supported platform/session/provider matrix is current. A platform must not move to Supported without implementation plus target-device validation.
+10. Confirm remote-control/onboarding design does not send/store protected-device OS passwords through Bale, Telegram, mobile apps, managed backend, or normal environment variables. Self-hosted/local remains first-class and no generic remote shell exists.
+11. Record real device/session/provider validation separately from unit CI. Linux CI does not prove Windows/Android behavior.
+12. Prepare changelog/release notes from shipped changes only.
+13. Refresh Graphify after material source/docs relationships changed when available.
+14. Report any GitHub About/social-preview/admin settings still pending.
+15. Do not tag/publish/create a GitHub Release unless explicitly requested.
 
-Return a checklist grouped as **Ready**, **Blocked**, and **Manual validation**,
-plus Graphify freshness/impact summary, repository-presentation status, and the
-exact next release action.
+Return **Ready**, **Blocked**, and **Manual validation** plus Graphify freshness, platform/control-mode support status, repository-presentation status, and exact next release action.

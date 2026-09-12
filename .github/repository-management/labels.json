@@ -8,6 +8,7 @@
   {"name":"type:testing","color":"0e8a16","description":"Automated/manual testing, CI, validation, or test infrastructure"},
   {"name":"type:maintenance","color":"c5def5","description":"Repository, tooling, dependency, or maintenance work"},
   {"name":"type:release","color":"fbca04","description":"Release preparation, support policy, packaging, or publication"},
+  {"name":"type:platform-request","color":"0366d6","description":"User request for another OS, distro, desktop environment, mobile platform, or device class"},
 
   {"name":"priority:P0","color":"b60205","description":"Critical: security/release blocker; do first"},
   {"name":"priority:P1","color":"d93f0b","description":"High priority; next important work"},
@@ -21,6 +22,10 @@
   {"name":"area:ux","color":"fef2c0","description":"Guided UX, CLI/menu experience, and non-technical usability"},
   {"name":"area:ci","color":"d4c5f9","description":"CI, repository automation, architecture checks, or validation gates"},
   {"name":"area:release","color":"fef2c0","description":"Versioning, releases, support matrix, and release validation"},
+  {"name":"area:platform","color":"b3e5fc","description":"Cross-platform capability design, OS support, ports, and platform requests"},
+  {"name":"area:desktop-app","color":"c5def5","description":"Linux/Windows desktop app, tray, and local management UI"},
+  {"name":"area:mobile","color":"f9d0c4","description":"Android/mobile companion or protected-device work"},
+  {"name":"area:managed-service","color":"d4c5f9","description":"AngysGuard managed accounts, backend, official bots, pairing, and multi-device control"},
 
   {"name":"status:blocked","color":"000000","description":"Blocked by another issue, decision, environment, or external dependency"},
   {"name":"status:needs-design","color":"7057ff","description":"Requires design/architecture decision before implementation"},
