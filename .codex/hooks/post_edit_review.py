@@ -46,18 +46,25 @@ def main() -> int:
         " If the edit materially changed calls/dependencies/ownership, refresh the "
         "Graphify map with `graphify update .` when available and report graph freshness."
     )
+    presentation_note = (
+        " If the edit changes a user-visible feature/command, setup or platform "
+        "requirement, security boundary, or repository structure described by the landing "
+        "page, follow docs/README_MAINTENANCE.md / $repository-presentation before completion."
+    )
     if sensitive:
         context = (
             "Security-sensitive Laptop Guard runtime code was edited. Before completion, "
             "run focused regression tests, then use the security-review workflow/agent and "
             "the applicable full checks from docs/TESTING.md."
             + graph_note
+            + presentation_note
         )
     else:
         context = (
             "Laptop Guard runtime code was edited. Add/run focused regression tests and "
             "finish with the applicable verification from docs/TESTING.md before completion."
             + graph_note
+            + presentation_note
         )
 
     print(
