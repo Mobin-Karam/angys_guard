@@ -12,7 +12,10 @@ Choose the document by what you are trying to do:
 
 | Goal | Read first |
 |---|---|
-| Understand the system/architecture | [System audit](SYSTEM_AUDIT.md) |
+| Understand the architecture contract/target design | [Architecture](ARCHITECTURE.md) |
+| See current architecture evidence, risks, and limitations | [System audit](SYSTEM_AUDIT.md) |
+| Review dependency rules / staged architecture evolution | [Architecture notes](architecture/) |
+| Understand architecture decisions | [ADRs](adr/) |
 | Find the file/module responsible for behavior | [File reference](FILE_REFERENCE.md) |
 | Add, change, fix, or remove a feature | [Feature lifecycle](FEATURE_LIFECYCLE.md) |
 | Find the cause of a bug or fix a GitHub issue | [Bug triage and fixing](BUG_TRIAGE_AND_FIXING.md) |
@@ -25,6 +28,20 @@ Choose the document by what you are trying to do:
 | Prepare/maintain the repository | [Maintainer checklist](MAINTAINER_CHECKLIST.md) |
 | Understand previous migrations/releases | [History](HISTORY.md) |
 
+## Architecture at a glance
+
+Laptop Guard is evolving as a **modular monolith with ports/adapters**, not as a
+microservice system. Existing seams such as `RuntimeApi`, `FeatureManager`,
+`FeatureHost`, `GuardRuntimeState`, and the event/outbox store should be strengthened
+incrementally instead of replaced by a flag-day rewrite.
+
+For new architecture work, start with `ARCHITECTURE.md`, then use:
+
+- `architecture/BOUNDARIES.md` for allowed dependency direction;
+- `architecture/FLOWS.md` for startup/security/delivery flows;
+- `architecture/EVOLUTION_PLAN.md` for staged refactor order;
+- `adr/` for accepted/proposed architecture decisions.
+
 ## Maintenance workflow
 
 For normal engineering work, use this sequence:
@@ -34,8 +51,9 @@ GitHub issue / user report / feature request
                 |
                 v
 classify the task
-  feature work -> FEATURE_LIFECYCLE.md
-  defect       -> BUG_TRIAGE_AND_FIXING.md
+  architecture  -> ARCHITECTURE.md + architecture/ + ADRs
+  feature work  -> FEATURE_LIFECYCLE.md
+  defect        -> BUG_TRIAGE_AND_FIXING.md
                 |
                 v
 find owner/path with FILE_REFERENCE.md + SYSTEM_AUDIT.md
