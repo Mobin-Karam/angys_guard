@@ -1,0 +1,33 @@
+name: AngysGuard Project v2 Bootstrap
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  sync-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Projects token
+        env:
+          PROJECT_TOKEN: ${{ secrets.ANGYSGUARD_PROJECT_TOKEN }}
+        run: |
+          if [ -z "$PROJECT_TOKEN" ]; then
+            echo "Missing repository secret ANGYSGUARD_PROJECT_TOKEN." >&2
+            echo "Use a fine-grained/classic token authorized for GitHub Projects and this repository, then rerun this workflow." >&2
+            exit 2
+          fi
+
+      - name: Validate bootstrap script
+        run: bash -n scripts/bootstrap_github_project.sh
+
+      - name: Synchronize AngysGuard Project v2
+        env:
+          GH_TOKEN: ${{ secrets.ANGYSGUARD_PROJECT_TOKEN }}
+        run: bash scripts/bootstrap_github_project.sh
