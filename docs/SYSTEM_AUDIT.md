@@ -4,6 +4,11 @@ Audit date: 2026-09-12. Scope: current working tree of Laptop Guard 11.1. This i
 a source and local-runtime audit; it is not proof of deployment, external Bale
 availability, every desktop environment, or every hardware backend.
 
+> **Architecture note:** this document records the **current implementation and
+> evidence**. The canonical target architecture and dependency contract are in
+> `ARCHITECTURE.md`, `architecture/`, and `adr/`. Transitional coupling described
+> here should not automatically be copied into new code.
+
 ## Executive assessment
 
 The system is a functional single-device Linux security agent with strong
@@ -13,6 +18,11 @@ passed doctor checks and 52 current tests. The highest architectural risk is
 remaining coexistence of old and new warning/system/audio facades. This audit's
 modularization pass added explicit runtime transport, state, feature, and event
 boundaries so new work no longer needs to extend the monolithic routing chain.
+
+The target architecture keeps those successful seams and evolves them into a
+modular monolith with inward dependency direction: delivery/infrastructure at the
+edges, application orchestration behind explicit ports, and infrastructure-free
+security/domain decisions where extraction is valuable. See `ARCHITECTURE.md`.
 
 ## Runtime topology
 
@@ -135,6 +145,9 @@ service environment.
 | P2 | Hardware/security flows lack end-to-end automation | Add disposable integration tests plus target-laptop checklist evidence |
 | Resolved | Historical legacy tests duplicated current tests | Removed the uncollected copies; current migration tests remain |
 | P3 | Some modules are formatting-dense and broadly catch exceptions | Gradually improve typing, structured logging, and narrow exception handling |
+
+The architecture evolution sequence for these findings is maintained in
+`architecture/EVOLUTION_PLAN.md`; architecture decisions are recorded in `adr/`.
 
 ## Evidence boundary
 
