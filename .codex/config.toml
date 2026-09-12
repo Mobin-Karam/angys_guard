@@ -40,3 +40,7 @@ config_file = "agents/release_manager.toml"
 [agents.repository_curator]
 description = "Repository presentation maintainer for README, About metadata, version/release references, documentation navigation, and overview visuals."
 config_file = "agents/repository_curator.toml"
+
+[agents.product_planner]
+description = "Read-only AngysGuard product/platform planner for current-vs-future support, apps, control modes, milestones/issues, and roadmap consistency."
+config_file = "agents/product_planner.toml"
