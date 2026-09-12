@@ -5,6 +5,10 @@ input activity, records local evidence, presents a five-second fullscreen warnin
 can lock the desktop, and exposes a constrained Bale control surface. It deliberately
 does not expose a remote shell, suppress capture indicators, or delete user data.
 
+The repository-level product landing page is [`../README.md`](../README.md). This
+`docs/README.md` is the task-oriented documentation index for maintainers and
+contributors.
+
 ## Before reading the repository broadly: use Graphify
 
 For humans and AI agents, repository discovery is Graphify-first. Read
@@ -38,6 +42,7 @@ scope**:
 
 | Goal | Read first |
 |---|---|
+| Understand the product quickly | [Root repository README](../README.md) |
 | Navigate/find files, symbols, callers, tests, or connections | [Graphify navigation](GRAPHIFY_NAVIGATION.md) |
 | Understand the architecture contract/target design | [Architecture](ARCHITECTURE.md) |
 | See current architecture evidence, risks, and limitations | [System audit](SYSTEM_AUDIT.md) |
@@ -48,6 +53,7 @@ scope**:
 | Find the cause of a bug or fix a GitHub issue | [Bug triage and fixing](BUG_TRIAGE_AND_FIXING.md) |
 | Add a new command/feature module | [Extending](EXTENDING.md) |
 | Work with Codex/AI agents | [AI agent workflow](AI_AGENT_WORKFLOW.md) |
+| Maintain README / GitHub About / version / repository visual | [README & repository presentation maintenance](README_MAINTENANCE.md) |
 | Change setup/config/secrets | [Configuration](CONFIGURATION.md) |
 | Review trust/privacy/security rules | [Security](SECURITY.md) |
 | Run tests or validate hardware/session behavior | [Testing](TESTING.md) |
@@ -78,6 +84,13 @@ Repository labels, milestones, issue mappings, and release notes are declared un
 `.github/repository-management/` and applied by the repository-management bootstrap
 workflow. `PROJECT_MANAGEMENT.md` defines the canonical GitHub Project v2 fields,
 views, workflow rules, and initial issue mapping.
+
+Repository landing-page/About metadata has its own canonical source:
+
+- root `README.md` — product/repository landing page;
+- `.github/repository-profile.json` — canonical About description/topics/social-preview source;
+- `README_MAINTENANCE.md` — synchronization and update rules;
+- `assets/laptop-guard-overview.svg` — high-level README product visual.
 
 The first formal GitHub release checkpoint is `v11.1.0`. Future releases should
 create a new semantic-version tag rather than moving an already-published tag.
@@ -114,6 +127,10 @@ focused regression tests
 TESTING.md + reviewer/security review when needed
                 |
                 v
+if release/version/user-visible/platform/security surface changed:
+README_MAINTENANCE.md / $repository-presentation
+                |
+                v
 refresh Graphify after material relationship changes
                 |
                 v
@@ -122,7 +139,9 @@ PR / release
 
 If using Codex in VS Code, `AGENTS.md` is authoritative;
 `docs/AI_AGENT_WORKFLOW.md` explains repo-local agents, skills, hooks, and the
-Graphify-first handoff pattern.
+Graphify-first handoff pattern. `repository_curator` / `$repository-presentation`
+owns README/About/profile synchronization for release or presentation-affecting
+changes.
 
 ## Install and run
 

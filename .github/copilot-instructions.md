@@ -32,14 +32,19 @@ Core rules for this security project:
 - Keep optional hardware/native integrations lazy and degradable.
 - Add focused success/failure/authorization tests for changed behavior.
 - Preserve unrelated working-tree changes; never use destructive Git recovery.
+- For releases/version bumps or material user-visible/setup/platform/security
+  changes, follow `docs/README_MAINTENANCE.md` and keep README/About/profile
+  metadata synchronized with current shipped behavior.
 - Before completion run the applicable checks from `docs/TESTING.md`, refresh the
   graph after material relationship changes when possible, and identify any manual
   target-device validation still required.
 
 Useful project workflows are documented in `.agents/skills/`; use
-`$graphify-navigation` when discovery/impact mapping is the main task.
+`$graphify-navigation` when discovery/impact mapping is the main task and
+`$repository-presentation` for README/About/version/docs/visual synchronization.
 Codex-specific subagents/hooks live under `.codex/`.
 
 Reusable task prompts live under `.github/prompts/`, including
-`graphify-navigation.prompt.md`. Prompt files remain generic; project-specific
-navigation/security policy stays in `AGENTS.md` and canonical docs.
+`graphify-navigation.prompt.md` and `refresh-repository-presentation.prompt.md`.
+Prompt files remain generic; project-specific navigation/security/presentation
+policy stays in `AGENTS.md` and canonical docs.

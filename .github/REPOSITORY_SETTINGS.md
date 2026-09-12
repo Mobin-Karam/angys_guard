@@ -1,6 +1,33 @@
 # Recommended GitHub Repository Settings
 
-These settings cannot be enforced from repository files alone. Configure them in GitHub repository settings.
+These settings cannot all be enforced from repository files alone. Configure repository-administration settings in GitHub when the connected tool/token does not expose them.
+
+## Repository About and presentation
+
+Canonical About metadata lives in `.github/repository-profile.json`.
+
+Keep the GitHub About panel synchronized with that file:
+
+- **Description** — use `repository-profile.json:description`.
+- **Website** — use `repository-profile.json:homepage`; leave blank when `null`.
+- **Topics** — use `repository-profile.json:topics`.
+- **Social preview** — use `docs/assets/laptop-guard-overview.svg` as the source design and upload the required raster preview through GitHub Settings when desired.
+
+Preview the canonical values locally:
+
+```bash
+python scripts/sync_repository_profile.py
+```
+
+An admin-capable local environment can apply description/homepage/topics with:
+
+```bash
+GH_TOKEN='<admin-capable token>' python scripts/sync_repository_profile.py --apply
+```
+
+Never commit or paste the token. Repository **Administration write** permission is required for the API update.
+
+Presentation/version synchronization rules are in `docs/README_MAINTENANCE.md` and protected by `tests/test_repository_presentation.py`.
 
 ## Main branch protection
 
@@ -31,6 +58,7 @@ Enable where available:
 - Keep Issues enabled for normal bugs/features.
 - Send vulnerability reports through the Security policy instead of normal issues.
 - Use the issue forms and pull request template in `.github/`.
+- Treat a stale README/About profile as a release/documentation defect when a material user-visible change caused the drift.
 
 ## Releases
 
@@ -38,7 +66,9 @@ Before a production release:
 
 - CI and Repository Safety must pass.
 - Update `CHANGELOG.md`.
-- Confirm `pyproject.toml` version.
+- Confirm `pyproject.toml` version matches the root README/version status.
+- Run `$repository-presentation` / `repository_curator` and the presentation policy test.
+- Confirm `.github/repository-profile.json` still describes the product and apply the About values where admin access is available.
 - Follow `docs/ROADMAP.md` and the release checklist tracked for v12.0.
 - Test installation/setup/doctor on a clean supported machine.
 

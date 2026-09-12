@@ -13,19 +13,21 @@ Generated caches, `.git`, `.venv`, local runtime data, and local
 
 | File | Responsibility |
 |---|---|
+| `README.md` | Primary GitHub/package landing page: product purpose, capabilities, security boundaries, architecture, quick start, operations, testing, docs, roadmap, contribution and maintenance routing. |
+| `.gitattributes` | GitHub Linguist/generated-asset rules; keeps Graphify-generated HTML/JSON from dominating language statistics. |
 | `.gitignore` | Excludes local environments, caches, credentials/secrets, media, logs, and runtime artifacts. |
-| `LICENSE` | Project licensing terms. |
-| `pyproject.toml` | Package metadata, Python requirement, runtime/test dependencies, console entry point, package discovery, and media package data. |
+| `LICENSE` | MIT project licensing terms. |
+| `pyproject.toml` | Package metadata, version, root README source, Python requirement, runtime/test dependencies, console entry point, package discovery, media package data, keywords and project URLs. |
 | `requirements.txt` | Installer-compatible runtime dependency list. |
 | `install.sh` | Creates the virtual environment and installs dependencies. |
 | `run.sh` | Secure launcher; selects virtual-environment Python and delegates to the package CLI. |
 | `doctor.sh` | Convenience launcher for dependency/configuration readiness checks. |
 | `repair-opencv.sh` | Repairs conflicting OpenCV variants for person/HOG compatibility. |
-| `AGENTS.md` | Authoritative repository-wide AI/Codex instructions, Graphify-first navigation, architecture guardrails, task routing, and validation rules. |
+| `AGENTS.md` | Authoritative repository-wide AI/Codex instructions, Graphify-first navigation, architecture/security guardrails, repository-presentation triggers, task routing, and validation rules. |
 | `AGENT.md` | Compatibility pointer; `AGENTS.md` remains authoritative. |
 | `CLAUDE.md` | Claude-oriented compatibility entry that defers to `AGENTS.md` and Graphify navigation policy. |
 | `GEMINI.md` | Gemini-oriented compatibility entry that defers to `AGENTS.md` and Graphify navigation policy. |
-| `CONTRIBUTING.md` | Human contribution workflow including Graphify-first discovery, architecture, branches, feature/bug, PR, testing, documentation, and vulnerability handling. |
+| `CONTRIBUTING.md` | Human contribution workflow including Graphify-first discovery, architecture, feature/bug work, repository presentation, PR/testing/docs and vulnerability handling. |
 | `SECURITY.md` | Repository vulnerability-reporting policy. |
 | `CHANGELOG.md` | Shipped/released changes; do not use for planned roadmap work. |
 
@@ -33,7 +35,7 @@ A project `.env` is not required by the current runtime and must not be committe
 Runtime secrets belong in protected user configuration storage described in
 `docs/CONFIGURATION.md`.
 
-## GitHub repository automation
+## GitHub repository automation and presentation
 
 | Path | Responsibility |
 |---|---|
@@ -41,47 +43,53 @@ Runtime secrets belong in protected user configuration storage described in
 | `.github/workflows/repository-safety.yml` | Rejects tracked secret files/private-key material and protects repository hygiene. |
 | `.github/workflows/repository-management-bootstrap.yml` | Applies declarative labels, milestones, issue metadata, and release baseline configuration. |
 | `.github/repository-management/` | Declarative label/milestone/issue/release management configuration. |
+| `.github/repository-profile.json` | Canonical GitHub About description, topics, social-preview source and presentation metadata. |
 | `.github/dependabot.yml` | Dependency update configuration. |
 | `.github/CODEOWNERS` | Review ownership for repository/security-sensitive areas. |
-| `.github/pull_request_template.md` | PR testing/security/configuration/manual-validation checklist. |
+| `.github/pull_request_template.md` | PR scope/testing/security/configuration/presentation/manual-validation checklist. |
 | `.github/ISSUE_TEMPLATE/` | Structured bug, feature, documentation, help, and security-report routing forms. |
-| `.github/copilot-instructions.md` | GitHub Copilot repository instructions; enforces Graphify-first discovery and defers policy to `AGENTS.md`. |
+| `.github/copilot-instructions.md` | GitHub Copilot repository instructions; enforces Graphify-first discovery and repository-presentation triggers while deferring policy to `AGENTS.md`. |
 | `.github/instructions/` | Path-scoped Copilot rules for runtime/tests, including Graphify-first discovery. |
 | `.github/prompts/` | Evergreen reusable engineering prompt library. |
 | `.github/prompts/graphify-navigation.prompt.md` | Standalone Graphify-first repository-navigation/impact-mapping prompt. |
+| `.github/prompts/refresh-repository-presentation.prompt.md` | Standalone README/About/version/docs/visual synchronization prompt. |
 | `.github/REPOSITORY_SETTINGS.md` | Settings/branch-protection/security features that must be configured in GitHub UI. |
 
 ## Codex / AI workspace
 
 | Path | Responsibility |
 |---|---|
-| `.codex/config.toml` | Project-local Codex configuration and custom subagent registry, including `navigator`. |
+| `.codex/config.toml` | Project-local Codex configuration and custom subagent registry, including `navigator` and `repository_curator`. |
 | `.codex/agents/navigator.toml` | Read-only Graphify-first repository navigator for owners, callers, dependencies, tests/docs, and impact mapping. |
 | `.codex/agents/architect.toml` | Read-only Graphify-backed architecture/dependency/change planner. |
 | `.codex/agents/implementer.toml` | Focused implementation role consuming a graph/source-confirmed scope. |
 | `.codex/agents/reviewer.toml` | Read-only correctness/regression reviewer using graph-backed blast-radius discovery. |
 | `.codex/agents/security_reviewer.toml` | Read-only trust-boundary/security/privacy reviewer using graph paths plus source confirmation. |
 | `.codex/agents/tester.toml` | Graphify-guided test selection, reproduction, CI-failure triage, and verification role. |
-| `.codex/agents/release_manager.toml` | Release-readiness role accounting for graph freshness/impact plus release checks. |
+| `.codex/agents/release_manager.toml` | Release-readiness role accounting for graph freshness/impact, repository presentation, and release checks. |
+| `.codex/agents/repository_curator.toml` | Focused maintainer for root README, GitHub About/profile metadata, package/version references, docs navigation, and repository visual. |
 | `.codex/hooks.json` | Session/pre-tool/post-tool Codex hook configuration. |
 | `.codex/hooks/session_start.py` | Injects project/security context plus Graphify freshness/build status at session start. |
 | `.codex/hooks/pre_tool_use_policy.py` | Blocks destructive Git/repository actions and protected-secret-file access. |
-| `.codex/hooks/post_edit_review.py` | Adds verification/security-review and Graphify-refresh reminders after relevant runtime edits. |
-| `.codex/README.md` | AI workspace layout, trust, roles, Graphify navigation, and hook explanation. |
+| `.codex/hooks/post_edit_review.py` | Adds verification/security-review, Graphify-refresh, and repository-presentation reminders after relevant runtime edits. |
+| `.codex/README.md` | AI workspace layout, trust, roles, Graphify navigation, presentation maintenance, and hook explanation. |
 | `.agents/skills/graphify-navigation/SKILL.md` | Reusable Graphify-first ownership/dependency/test/doc/change-impact workflow. |
-| `.agents/skills/issue-to-pr/SKILL.md` | GitHub issue to bounded Graphify-mapped branch/PR workflow. |
-| `.agents/skills/safe-implementation/SKILL.md` | Security-preserving product implementation workflow with graph-backed scope discovery. |
+| `.agents/skills/issue-to-pr/SKILL.md` | GitHub issue to bounded Graphify-mapped branch/PR workflow with presentation-impact accounting. |
+| `.agents/skills/safe-implementation/SKILL.md` | Security-preserving product implementation workflow with graph-backed scope discovery and presentation-impact trigger. |
 | `.agents/skills/security-review/SKILL.md` | Trust-boundary review workflow using Graphify paths plus source verification. |
 | `.agents/skills/test-and-verify/SKILL.md` | Progressive Graphify-guided automated/manual verification workflow. |
-| `.agents/skills/release-readiness/SKILL.md` | Release readiness and blocker workflow including graph freshness. |
-| `.agents/README.md` | Project skill index and Graphify-first skill baseline. |
+| `.agents/skills/release-readiness/SKILL.md` | Release readiness/blocker workflow including graph freshness and repository-presentation readiness. |
+| `.agents/skills/repository-presentation/SKILL.md` | README/About/package/version/docs/visual synchronization workflow verified against shipped behavior. |
+| `.agents/README.md` | Project skill index and Graphify-first/repository-presentation skill baseline. |
 
 ## Documentation
 
 | File | Responsibility |
 |---|---|
-| `docs/README.md` | Product entry point and task-oriented documentation index; routes repository discovery through Graphify first. |
+| `docs/README.md` | Detailed task-oriented documentation index; links back to the root product/repository landing page and routes discovery through Graphify first. |
 | `docs/GRAPHIFY_NAVIGATION.md` | Canonical graph-first discovery, freshness, query/path/explain, source verification, token/context discipline, fallback, and refresh rules for humans and AI. |
+| `docs/README_MAINTENANCE.md` | Canonical root README, GitHub About/profile, package/version, docs-navigation, visual, release-trigger and presentation-verification contract. |
+| `docs/assets/laptop-guard-overview.svg` | High-level repository landing-page visual showing detect → verify/evidence → respond → owner-control flow and security boundaries. |
 | `docs/ARCHITECTURE.md` | Canonical architecture contract: current seams, target modular-monolith/ports-adapters structure, layer responsibilities, state/persistence/concurrency/error/security rules, and architecture review checklist. |
 | `docs/architecture/BOUNDARIES.md` | Dependency/import direction and cross-layer boundary rules. |
 | `docs/architecture/FLOWS.md` | Startup, owner-command, intrusion, protected-stop, delivery, evidence, and configuration flow diagrams. |
@@ -95,15 +103,15 @@ Runtime secrets belong in protected user configuration storage described in
 | `docs/adr/0006-compatibility-facade-consolidation.md` | Proposed decision: converge duplicate/compatibility facades rather than adding new paths. |
 | `docs/FEATURE_LIFECYCLE.md` | Canonical Graphify-first add/change/fix/remove-feature process, migration/removal checklist, and AI recipes. |
 | `docs/BUG_TRIAGE_AND_FIXING.md` | Canonical Graphify-first symptom-to-root-cause bug/issue investigation and repair playbook. |
-| `docs/AI_AGENT_WORKFLOW.md` | Graphify-first Codex agents/skills/hooks and task-specific handoff recipes. |
+| `docs/AI_AGENT_WORKFLOW.md` | Graphify-first Codex agents/skills/hooks, repository curator/presentation flow, and task-specific handoff recipes. |
 | `docs/EXTENDING.md` | Focused feature-module template and extension contracts. |
 | `docs/SYSTEM_AUDIT.md` | Current architecture evidence, control/data flows, current behavior, risks/findings, and evidence boundary. It is evidence, not the target architecture contract. |
 | `docs/CONFIGURATION.md` | Setup, persisted paths, defaults, secret handling, migration, and service preparation. |
 | `docs/SECURITY.md` | Product trust model, authorization, protected exit, privacy, and residual risks. |
-| `docs/TESTING.md` | Graphify-guided test selection, automated checks, policy regressions, and target-device/manual validation requirements. |
+| `docs/TESTING.md` | Graphify-guided test selection, automated checks, Graphify/presentation/documentation policy regressions, and target-device/manual validation requirements. |
 | `docs/ROADMAP.md` | Planned milestones/issues and execution order. |
 | `docs/PROJECT_MANAGEMENT.md` | GitHub Project v2 field/view/workflow specification and repository-management conventions. |
-| `docs/MAINTAINER_CHECKLIST.md` | Repository/release checklist including Graphify freshness/refresh maintenance. |
+| `docs/MAINTAINER_CHECKLIST.md` | Repository/release checklist including Graphify freshness and README/About/profile maintenance. |
 | `docs/GITHUB_SETUP.md` | GitHub settings and repository setup guidance. |
 | `docs/HISTORY.md` | Consolidated release/migration history. |
 | `docs/FILE_REFERENCE.md` | This curated ownership/navigation map; live relationships should be discovered with Graphify first. |
@@ -198,7 +206,12 @@ runtime API/state, service/autostart, event/outbox persistence, failed-login
 monitoring, camera capability fallback, input privacy, screen parsing/capture,
 warning behavior/assets, Persian TTS, text direction, stop authorization, app
 allowlisting, local control API, chat persistence, AI workspace configuration,
-Codex hook policy, Graphify-navigation policy, and documentation link/navigation.
+Codex hook policy, Graphify-navigation policy, repository-presentation consistency,
+and documentation link/navigation.
+
+`tests/test_repository_presentation.py` protects root README/package version
+consistency, required landing sections, About-profile metadata, curator/skill/prompt
+wiring, overview visual presence, and generated Graphify Linguist rules.
 
 Use Graphify first to locate tests connected to the affected runtime symbol/behavior;
 `docs/BUG_TRIAGE_AND_FIXING.md` and `docs/TESTING.md` explain the workflow.

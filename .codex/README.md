@@ -34,10 +34,18 @@ unfamiliar branch.
 - `reviewer`: read-only correctness/regression and blast-radius review.
 - `security_reviewer`: read-only trust-boundary/security impact review.
 - `tester`: Graphify-guided test discovery, verification, and failure triage.
-- `release_manager`: release readiness, graph freshness, CI/support/checklists.
+- `release_manager`: release readiness, graph freshness, CI/support/checklists,
+  including repository-presentation readiness.
+- `repository_curator`: root README, GitHub About/profile metadata, version/release
+  references, docs navigation, and overview visual maintenance.
 
 No project agent pins a model. Roles inherit the parent session's model/reasoning
 and permission mode unless a future task explicitly needs a per-role override.
+
+For releases, version bumps, or material user-visible changes, `release_manager`
+should ensure `repository_curator` / `$repository-presentation` has accounted for
+`README.md`, `.github/repository-profile.json`, package metadata, and related docs.
+The canonical contract is `docs/README_MAINTENANCE.md`.
 
 ## Hooks
 
@@ -46,7 +54,9 @@ The hooks are intentionally narrow:
 - Session start adds project/security policy plus Graphify freshness status.
 - Pre-tool policy blocks destructive Git/repository deletion and direct secret-file
   reads/edits.
-- Post-edit review adds verification/security-review context after runtime edits.
+- Post-edit review adds verification/security-review context after runtime edits
+  and reminds agents to consider repository-presentation impact for material
+  user-visible changes.
 
 Hooks do not modify product code, commit/push changes, call external services, or
 read secrets. Graphify itself remains developer/agent tooling, not a product

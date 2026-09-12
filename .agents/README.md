@@ -22,10 +22,16 @@ Current skills:
 | `security-review` | Authorization, secrets, remote control, capture/privacy, process/network review |
 | `test-and-verify` | Focused tests, full validation, failure triage, manual-check accounting |
 | `release-readiness` | Version/changelog/CI/security/release checklist validation |
+| `repository-presentation` | Keeping README, GitHub About/profile metadata, package/version references, docs navigation, and repository visuals synchronized with shipped behavior |
 
 Prefer `$graphify-navigation` as the first skill when ownership/scope is unclear.
 Other skills should consume its compact path/node handoff instead of repeating
 repository-wide discovery.
+
+Use `$repository-presentation` after releases/version changes and whenever a
+material user-visible feature, command, setup/platform requirement, security
+boundary, or repository structure changes what the landing page/About panel should
+say. The canonical contract is `docs/README_MAINTENANCE.md`.
 
 Keep skill descriptions narrow enough that automatic selection is predictable.
 Do not put secrets, machine-specific credentials, or personal paths in skills.

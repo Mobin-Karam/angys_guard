@@ -34,5 +34,9 @@ description = "Verification specialist for Graphify-guided test discovery, targe
 config_file = "agents/tester.toml"
 
 [agents.release_manager]
-description = "Release-readiness specialist for changelog, support matrix, CI, release checklists, and graph freshness accounting."
+description = "Release-readiness specialist for changelog, support matrix, CI, release checklists, graph freshness, and repository-presentation readiness."
 config_file = "agents/release_manager.toml"
+
+[agents.repository_curator]
+description = "Repository presentation maintainer for README, About metadata, version/release references, documentation navigation, and overview visuals."
+config_file = "agents/repository_curator.toml"

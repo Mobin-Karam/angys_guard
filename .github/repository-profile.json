@@ -1,0 +1,30 @@
+{
+  "description": "Owner-controlled Linux laptop security agent with intrusion detection, bounded evidence capture, visible warning + lock response, Bale/bot owner controls, secure chat/audio, event history, guided setup and diagnostics.",
+  "homepage": null,
+  "topics": [
+    "linux",
+    "laptop-security",
+    "endpoint-security",
+    "intrusion-detection",
+    "python",
+    "opencv",
+    "computer-vision",
+    "systemd",
+    "wayland",
+    "x11",
+    "telegram-bot",
+    "bale",
+    "security",
+    "privacy",
+    "monitoring",
+    "incident-response",
+    "desktop-security",
+    "local-first",
+    "ai-assisted-development",
+    "graphify"
+  ],
+  "social_preview_source": "docs/assets/laptop-guard-overview.svg",
+  "version_source": "pyproject.toml",
+  "readme_source": "README.md",
+  "maintenance_guide": "docs/README_MAINTENANCE.md"
+}

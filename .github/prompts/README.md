@@ -11,7 +11,8 @@ name. You can also copy/paste a prompt into Codex, Copilot, Claude, Gemini, anot
 coding agent, or a normal AI chat.
 
 When a prompt contains placeholders such as `<task>`, `<feature>`, `<bug>`,
-`<issue>`, `<file>`, or `<goal>`, replace them or add context in the same message.
+`<issue>`, `<file>`, `<goal>`, or `<change/release/context>`, replace them or add
+context in the same message.
 
 ## Stable baseline used by every prompt
 
@@ -32,10 +33,12 @@ Unless a prompt says otherwise, the agent should:
 9. Reuse existing abstractions before introducing parallel mechanisms.
 10. Add/update focused tests for behavior changes and meaningful failure/denial paths.
 11. Run targeted verification first, then broader required checks.
-12. Refresh Graphify after material code/docs relationship changes when available.
-13. Distinguish facts, inferred graph relationships, assumptions, risks, and manual
+12. For releases/version bumps or material user-visible/setup/platform/security
+    changes, account for `docs/README_MAINTENANCE.md` / repository presentation.
+13. Refresh Graphify after material code/docs relationship changes when available.
+14. Distinguish facts, inferred graph relationships, assumptions, risks, and manual
     validation still required.
-14. Do not commit/push/merge/publish/deploy/destructively act unless explicitly requested.
+15. Do not commit/push/merge/publish/deploy/destructively act unless explicitly requested.
 
 ## Prompt index
 
@@ -82,7 +85,8 @@ Unless a prompt says otherwise, the agent should:
 - `dependency-upgrade.prompt.md`
 - `cross-platform-review.prompt.md`
 
-### Documentation and delivery
+### Documentation, presentation and delivery
+- `refresh-repository-presentation.prompt.md` — README/About/version/docs/visual synchronization after releases and material user-visible changes
 - `update-docs.prompt.md`
 - `explain-code.prompt.md`
 - `onboard-to-repo.prompt.md`
@@ -97,7 +101,8 @@ Unless a prompt says otherwise, the agent should:
 
 ## Maintenance rule
 
-Keep prompt text generic. The Graphify-first rule and project-specific policy live
-in `AGENTS.md` and `docs/GRAPHIFY_NAVIGATION.md`; prompts should reference those
-rather than copying changing implementation details. Update a prompt only when the
-workflow itself changes.
+Keep prompt text generic. The Graphify-first rule, repository-presentation contract,
+and project-specific policy live in `AGENTS.md`, `docs/GRAPHIFY_NAVIGATION.md`, and
+`docs/README_MAINTENANCE.md`; prompts should reference those rather than copying
+changing implementation details. Update a prompt only when the workflow itself
+changes.
