@@ -1,0 +1,3 @@
+# Recommended for reliable Persian/Arabic display in Tkinter:
+python-bidi
+arabic-reshaper
