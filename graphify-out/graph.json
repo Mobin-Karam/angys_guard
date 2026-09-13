@@ -626,7 +626,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_audio_indicator",
-      "community": 3,
+      "community": 190,
       "norm_label": "audio_indicator.py"
     },
     {
@@ -636,7 +636,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "laptop_guard_audio_indicator_indicator",
-      "community": 3,
+      "community": 190,
       "norm_label": "indicator"
     },
     {
@@ -646,7 +646,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "laptop_guard_audio_indicator_indicator_init",
-      "community": 3,
+      "community": 190,
       "norm_label": ".__init__()"
     },
     {
@@ -656,7 +656,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "laptop_guard_audio_indicator_indicator_stop",
-      "community": 3,
+      "community": 190,
       "norm_label": ".stop()"
     },
     {
@@ -666,7 +666,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "laptop_guard_audio_indicator_indicator_tick",
-      "community": 3,
+      "community": 190,
       "norm_label": ".tick()"
     },
     {
@@ -676,7 +676,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "laptop_guard_audio_indicator_main",
-      "community": 3,
+      "community": 190,
       "norm_label": "main()"
     },
     {
@@ -696,7 +696,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "laptop_guard_audio_intercom_notify",
-      "community": 1,
+      "community": 3,
       "norm_label": "notify()"
     },
     {
@@ -1356,7 +1356,7 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "laptop_guard_camera_devices_camera_label",
-      "community": 0,
+      "community": 5,
       "norm_label": "camera_label()"
     },
     {
@@ -1983,7 +1983,7 @@
       "label": "ensure_dirs()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L24",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "laptop_guard_config_ensure_dirs",
       "community": 7,
@@ -1993,27 +1993,47 @@
       "label": "default_api_base()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L36",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "laptop_guard_config_default_api_base",
-      "community": 19,
+      "community": 13,
       "norm_label": "default_api_base()"
     },
     {
       "label": "_read_secrets()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L45",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "laptop_guard_config_read_secrets",
-      "community": 19,
+      "community": 7,
       "norm_label": "_read_secrets()"
+    },
+    {
+      "label": "_atomic_write_private()",
+      "file_type": "code",
+      "source_file": "laptop_guard/config.py",
+      "source_location": "L58",
+      "_origin": "ast",
+      "id": "laptop_guard_config_atomic_write_private",
+      "community": 7,
+      "norm_label": "_atomic_write_private()"
+    },
+    {
+      "label": "Path",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "laptop_guard_config_py_path",
+      "community": 7,
+      "norm_label": "path"
     },
     {
       "label": "_write_secrets()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L57",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "laptop_guard_config_write_secrets",
       "community": 7,
@@ -2023,47 +2043,47 @@
       "label": "get_bot_token()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L72",
+      "source_location": "L89",
       "_origin": "ast",
       "id": "laptop_guard_config_get_bot_token",
-      "community": 19,
+      "community": 7,
       "norm_label": "get_bot_token()"
     },
     {
       "label": "set_bot_token()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L76",
+      "source_location": "L93",
       "_origin": "ast",
       "id": "laptop_guard_config_set_bot_token",
-      "community": 19,
+      "community": 7,
       "norm_label": "set_bot_token()"
     },
     {
       "label": "get_api_token()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L86",
+      "source_location": "L103",
       "_origin": "ast",
       "id": "laptop_guard_config_get_api_token",
-      "community": 19,
+      "community": 89,
       "norm_label": "get_api_token()"
     },
     {
       "label": "set_api_token()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L90",
+      "source_location": "L107",
       "_origin": "ast",
       "id": "laptop_guard_config_set_api_token",
-      "community": 19,
+      "community": 7,
       "norm_label": "set_api_token()"
     },
     {
       "label": "_toml_value()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L100",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "laptop_guard_config_toml_value",
       "community": 7,
@@ -2083,7 +2103,7 @@
       "label": "_section_dict()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L117",
+      "source_location": "L134",
       "_origin": "ast",
       "id": "laptop_guard_config_section_dict",
       "community": 7,
@@ -2093,7 +2113,7 @@
       "label": "save_config()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L129",
+      "source_location": "L146",
       "_origin": "ast",
       "id": "laptop_guard_config_save_config",
       "community": 7,
@@ -2103,7 +2123,7 @@
       "label": "_coerce_like()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L171",
+      "source_location": "L177",
       "_origin": "ast",
       "id": "laptop_guard_config_coerce_like",
       "community": 7,
@@ -2113,7 +2133,7 @@
       "label": "_apply_section()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L204",
+      "source_location": "L210",
       "_origin": "ast",
       "id": "laptop_guard_config_apply_section",
       "community": 7,
@@ -2123,7 +2143,7 @@
       "label": "_apply_legacy_env()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L215",
+      "source_location": "L221",
       "_origin": "ast",
       "id": "laptop_guard_config_apply_legacy_env",
       "community": 7,
@@ -2133,17 +2153,17 @@
       "label": "import_legacy_env_secrets()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L296",
+      "source_location": "L302",
       "_origin": "ast",
       "id": "laptop_guard_config_import_legacy_env_secrets",
-      "community": 13,
+      "community": 7,
       "norm_label": "import_legacy_env_secrets()"
     },
     {
       "label": "_migrate()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L307",
+      "source_location": "L313",
       "_origin": "ast",
       "id": "laptop_guard_config_migrate",
       "community": 7,
@@ -2153,7 +2173,7 @@
       "label": "load_config()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L339",
+      "source_location": "L345",
       "_origin": "ast",
       "id": "laptop_guard_config_load_config",
       "community": 0,
@@ -2163,19 +2183,29 @@
       "label": "setup_is_complete()",
       "file_type": "code",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L371",
+      "source_location": "L377",
       "_origin": "ast",
       "id": "laptop_guard_config_setup_is_complete",
       "community": 0,
       "norm_label": "setup_is_complete()"
     },
     {
+      "label": "Atomically write UTF-8 text with owner-only permissions from creation.",
+      "file_type": "rationale",
+      "source_file": "laptop_guard/config.py",
+      "source_location": "L59",
+      "_origin": "ast",
+      "id": "laptop_guard_config_rationale_59",
+      "community": 7,
+      "norm_label": "atomically write utf-8 text with owner-only permissions from creation."
+    },
+    {
       "label": "Persist non-secret configuration to config.toml.      Bot/API secrets deliberate",
       "file_type": "rationale",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L130",
+      "source_location": "L147",
       "_origin": "ast",
-      "id": "laptop_guard_config_rationale_130",
+      "id": "laptop_guard_config_rationale_147",
       "community": 7,
       "norm_label": "persist non-secret configuration to config.toml.      bot/api secrets deliberate"
     },
@@ -2183,9 +2213,9 @@
       "label": "One-way compatibility for users launching with exported old variables.      The",
       "file_type": "rationale",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L216",
+      "source_location": "L222",
       "_origin": "ast",
-      "id": "laptop_guard_config_rationale_216",
+      "id": "laptop_guard_config_rationale_222",
       "community": 7,
       "norm_label": "one-way compatibility for users launching with exported old variables.      the"
     },
@@ -2193,10 +2223,10 @@
       "label": "Import an already-exported legacy bot token into secrets.json once.",
       "file_type": "rationale",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L297",
+      "source_location": "L303",
       "_origin": "ast",
-      "id": "laptop_guard_config_rationale_297",
-      "community": 13,
+      "id": "laptop_guard_config_rationale_303",
+      "community": 7,
       "norm_label": "import an already-exported legacy bot token into secrets.json once."
     },
     {
@@ -2276,7 +2306,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_doctor",
-      "community": 8,
+      "community": 102,
       "norm_label": "doctor.py"
     },
     {
@@ -2286,7 +2316,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "laptop_guard_doctor_tk_ok",
-      "community": 8,
+      "community": 102,
       "norm_label": "_tk_ok()"
     },
     {
@@ -2296,7 +2326,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "laptop_guard_doctor_psutil_ok",
-      "community": 8,
+      "community": 102,
       "norm_label": "_psutil_ok()"
     },
     {
@@ -2306,7 +2336,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "laptop_guard_doctor_persian_tts_ok",
-      "community": 8,
+      "community": 102,
       "norm_label": "_persian_tts_ok()"
     },
     {
@@ -2316,7 +2346,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "laptop_guard_doctor_warning_video_ok",
-      "community": 8,
+      "community": 102,
       "norm_label": "_warning_video_ok()"
     },
     {
@@ -2326,7 +2356,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "laptop_guard_doctor_video_player_ok",
-      "community": 8,
+      "community": 102,
       "norm_label": "_video_player_ok()"
     },
     {
@@ -2336,7 +2366,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "laptop_guard_doctor_failed_login_monitor_ok",
-      "community": 8,
+      "community": 102,
       "norm_label": "_failed_login_monitor_ok()"
     },
     {
@@ -2346,7 +2376,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "laptop_guard_doctor_run_doctor",
-      "community": 8,
+      "community": 102,
       "norm_label": "run_doctor()"
     },
     {
@@ -2356,7 +2386,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "laptop_guard_doctor_main",
-      "community": 8,
+      "community": 102,
       "norm_label": "main()"
     },
     {
@@ -2426,7 +2456,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_exit_watchdog",
-      "community": 8,
+      "community": 186,
       "norm_label": "exit_watchdog.py"
     },
     {
@@ -2436,7 +2466,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "laptop_guard_exit_watchdog_pid_alive",
-      "community": 8,
+      "community": 186,
       "norm_label": "_pid_alive()"
     },
     {
@@ -2456,7 +2486,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "laptop_guard_exit_watchdog_watch",
-      "community": 8,
+      "community": 186,
       "norm_label": "watch()"
     },
     {
@@ -2466,7 +2496,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "laptop_guard_exit_watchdog_main",
-      "community": 8,
+      "community": 186,
       "norm_label": "main()"
     },
     {
@@ -2476,7 +2506,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "laptop_guard_exit_watchdog_rationale_47",
-      "community": 8,
+      "community": 186,
       "norm_label": "lock when the guard disappears unless it completed owner-authorized exit.      t"
     },
     {
@@ -3056,7 +3086,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_guard",
-      "community": 3,
+      "community": 43,
       "norm_label": "guard.py"
     },
     {
@@ -3066,7 +3096,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "laptop_guard_guard_inline_keyboard",
-      "community": 1,
+      "community": 12,
       "norm_label": "inline_keyboard()"
     },
     {
@@ -3076,7 +3106,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "laptop_guard_guard_py_any",
-      "community": 1,
+      "community": 189,
       "norm_label": "any"
     },
     {
@@ -3086,7 +3116,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "laptop_guard_guard_bounded_callback_int",
-      "community": 3,
+      "community": 191,
       "norm_label": "bounded_callback_int()"
     },
     {
@@ -3106,7 +3136,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_init",
-      "community": 14,
+      "community": 3,
       "norm_label": ".__init__()"
     },
     {
@@ -3116,7 +3146,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_authorized",
-      "community": 1,
+      "community": 189,
       "norm_label": "._authorized()"
     },
     {
@@ -3126,7 +3156,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_owner_chat",
-      "community": 1,
+      "community": 124,
       "norm_label": "._owner_chat()"
     },
     {
@@ -3136,7 +3166,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_send",
-      "community": 1,
+      "community": 124,
       "norm_label": "._send()"
     },
     {
@@ -3156,7 +3186,7 @@
       "source_location": "L150",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_send_file_async",
-      "community": 1,
+      "community": 124,
       "norm_label": "._send_file_async()"
     },
     {
@@ -3166,7 +3196,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "laptop_guard_guard_py_path",
-      "community": 1,
+      "community": 124,
       "norm_label": "path"
     },
     {
@@ -3196,7 +3226,7 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_unlock_screen",
-      "community": 1,
+      "community": 12,
       "norm_label": ".unlock_screen()"
     },
     {
@@ -3216,7 +3246,7 @@
       "source_location": "L212",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_cancel_pending_lock",
-      "community": 1,
+      "community": 12,
       "norm_label": "._cancel_pending_lock()"
     },
     {
@@ -3226,7 +3256,7 @@
       "source_location": "L217",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_disarm",
-      "community": 1,
+      "community": 12,
       "norm_label": ".disarm()"
     },
     {
@@ -3236,7 +3266,7 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_allow_for",
-      "community": 1,
+      "community": 12,
       "norm_label": ".allow_for()"
     },
     {
@@ -3246,7 +3276,7 @@
       "source_location": "L236",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_camera_snapshot_file",
-      "community": 1,
+      "community": 124,
       "norm_label": "._camera_snapshot_file()"
     },
     {
@@ -3256,7 +3286,7 @@
       "source_location": "L247",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_capture_input_evidence",
-      "community": 1,
+      "community": 124,
       "norm_label": "._capture_input_evidence()"
     },
     {
@@ -3316,7 +3346,7 @@
       "source_location": "L337",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_camera_worker",
-      "community": 1,
+      "community": 124,
       "norm_label": ".camera_worker()"
     },
     {
@@ -3326,7 +3356,7 @@
       "source_location": "L399",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_send_intercom_chunk",
-      "community": 1,
+      "community": 124,
       "norm_label": "._send_intercom_chunk()"
     },
     {
@@ -3336,7 +3366,7 @@
       "source_location": "L410",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_visitor_text",
-      "community": 1,
+      "community": 124,
       "norm_label": "._visitor_text()"
     },
     {
@@ -3346,7 +3376,7 @@
       "source_location": "L431",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_play_owner_voice",
-      "community": 1,
+      "community": 189,
       "norm_label": "._play_owner_voice()"
     },
     {
@@ -3356,7 +3386,7 @@
       "source_location": "L448",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_tts_result",
-      "community": 1,
+      "community": 12,
       "norm_label": "._tts_result()"
     },
     {
@@ -3366,7 +3396,7 @@
       "source_location": "L456",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_speak_text",
-      "community": 1,
+      "community": 12,
       "norm_label": "._speak_text()"
     },
     {
@@ -3386,7 +3416,7 @@
       "source_location": "L501",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_security_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".security_menu()"
     },
     {
@@ -3396,7 +3426,7 @@
       "source_location": "L513",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_camera_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".camera_menu()"
     },
     {
@@ -3406,7 +3436,7 @@
       "source_location": "L522",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_screen_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".screen_menu()"
     },
     {
@@ -3416,7 +3446,7 @@
       "source_location": "L531",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_audio_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".audio_menu()"
     },
     {
@@ -3426,7 +3456,7 @@
       "source_location": "L545",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_tts_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".tts_menu()"
     },
     {
@@ -3436,7 +3466,7 @@
       "source_location": "L566",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_chat_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".chat_menu()"
     },
     {
@@ -3446,7 +3476,7 @@
       "source_location": "L580",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_system_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".system_menu()"
     },
     {
@@ -3456,7 +3486,7 @@
       "source_location": "L591",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_power_menu",
-      "community": 1,
+      "community": 12,
       "norm_label": ".power_menu()"
     },
     {
@@ -3476,7 +3506,7 @@
       "source_location": "L622",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_reply_to_chat",
-      "community": 1,
+      "community": 12,
       "norm_label": "._reply_to_chat()"
     },
     {
@@ -3486,7 +3516,7 @@
       "source_location": "L629",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_feature_reply",
-      "community": 1,
+      "community": 12,
       "norm_label": ".feature_reply()"
     },
     {
@@ -3556,7 +3586,7 @@
       "source_location": "L650",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_edit_or_reply",
-      "community": 1,
+      "community": 12,
       "norm_label": "._edit_or_reply()"
     },
     {
@@ -3566,7 +3596,7 @@
       "source_location": "L659",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_notify_local",
-      "community": 1,
+      "community": 3,
       "norm_label": "._notify_local()"
     },
     {
@@ -3576,7 +3606,7 @@
       "source_location": "L666",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_handle_text",
-      "community": 1,
+      "community": 12,
       "norm_label": "._handle_text()"
     },
     {
@@ -3586,7 +3616,7 @@
       "source_location": "L852",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_handle_voice_or_audio",
-      "community": 1,
+      "community": 189,
       "norm_label": "._handle_voice_or_audio()"
     },
     {
@@ -3596,7 +3626,7 @@
       "source_location": "L879",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_handle_callback",
-      "community": 1,
+      "community": 12,
       "norm_label": "._handle_callback()"
     },
     {
@@ -3606,7 +3636,7 @@
       "source_location": "L1098",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_do_camera_photo",
-      "community": 1,
+      "community": 12,
       "norm_label": "._do_camera_photo()"
     },
     {
@@ -3616,7 +3646,7 @@
       "source_location": "L1106",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_do_camera_video",
-      "community": 1,
+      "community": 12,
       "norm_label": "._do_camera_video()"
     },
     {
@@ -3626,7 +3656,7 @@
       "source_location": "L1135",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_do_screen_shot",
-      "community": 1,
+      "community": 12,
       "norm_label": "._do_screen_shot()"
     },
     {
@@ -3636,7 +3666,7 @@
       "source_location": "L1146",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_do_screen_video",
-      "community": 1,
+      "community": 12,
       "norm_label": "._do_screen_video()"
     },
     {
@@ -3646,7 +3676,7 @@
       "source_location": "L1156",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_do_listen",
-      "community": 1,
+      "community": 12,
       "norm_label": "._do_listen()"
     },
     {
@@ -3656,7 +3686,7 @@
       "source_location": "L1177",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_start_intercom",
-      "community": 1,
+      "community": 12,
       "norm_label": "._start_intercom()"
     },
     {
@@ -3666,7 +3696,7 @@
       "source_location": "L1193",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_send_events",
-      "community": 1,
+      "community": 12,
       "norm_label": "._send_events()"
     },
     {
@@ -3686,7 +3716,7 @@
       "source_location": "L1216",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_handle_update",
-      "community": 1,
+      "community": 189,
       "norm_label": ".handle_update()"
     },
     {
@@ -3696,7 +3726,7 @@
       "source_location": "L1235",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_delete_sensitive_bale_message",
-      "community": 1,
+      "community": 189,
       "norm_label": "._delete_sensitive_bale_message()"
     },
     {
@@ -3706,7 +3736,7 @@
       "source_location": "L1247",
       "_origin": "ast",
       "id": "laptop_guard_guard_laptopguard_set_stop_pin",
-      "community": 1,
+      "community": 189,
       "norm_label": "._set_stop_pin()"
     },
     {
@@ -3826,7 +3856,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "laptop_guard_guard_rationale_54",
-      "community": 3,
+      "community": 191,
       "norm_label": "parse an integer callback suffix without letting malformed input crash polling."
     },
     {
@@ -4646,7 +4676,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "laptop_guard_providers_init_build_provider",
-      "community": 19,
+      "community": 13,
       "norm_label": "build_provider()"
     },
     {
@@ -5426,7 +5456,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state",
-      "community": 12,
+      "community": 19,
       "norm_label": "runtime_state.py"
     },
     {
@@ -5436,7 +5466,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_guardruntimestate",
-      "community": 12,
+      "community": 19,
       "norm_label": "guardruntimestate"
     },
     {
@@ -5446,7 +5476,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_guardruntimestate_init",
-      "community": 12,
+      "community": 19,
       "norm_label": ".__init__()"
     },
     {
@@ -5456,7 +5486,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_guardruntimestate_getattr",
-      "community": 12,
+      "community": 19,
       "norm_label": ".__getattr__()"
     },
     {
@@ -5466,7 +5496,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_guardruntimestate_setattr",
-      "community": 12,
+      "community": 19,
       "norm_label": ".__setattr__()"
     },
     {
@@ -5476,7 +5506,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_guardruntimestate_refresh",
-      "community": 12,
+      "community": 19,
       "norm_label": ".refresh()"
     },
     {
@@ -5486,7 +5516,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_guardruntimestate_mutate",
-      "community": 12,
+      "community": 19,
       "norm_label": ".mutate()"
     },
     {
@@ -5496,7 +5526,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_guardruntimestate_active",
-      "community": 12,
+      "community": 19,
       "norm_label": ".active()"
     },
     {
@@ -5506,7 +5536,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "laptop_guard_runtime_state_rationale_9",
-      "community": 12,
+      "community": 19,
       "norm_label": "live facade over the shared persisted runtime state.      assignments are immedi"
     },
     {
@@ -5656,7 +5686,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "laptop_guard_service_set_autostart",
-      "community": 0,
+      "community": 89,
       "norm_label": "set_autostart()"
     },
     {
@@ -5706,7 +5736,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "laptop_guard_service_rationale_22",
-      "community": 0,
+      "community": 89,
       "norm_label": "enable/disable startup at graphical user login.      laptop guard needs the user"
     },
     {
@@ -5716,7 +5746,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_setup_wizard",
-      "community": 19,
+      "community": 89,
       "norm_label": "setup_wizard.py"
     },
     {
@@ -5726,7 +5756,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "laptop_guard_setup_wizard_detect_audio_sources",
-      "community": 19,
+      "community": 89,
       "norm_label": "detect_audio_sources()"
     },
     {
@@ -5736,7 +5766,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "laptop_guard_setup_wizard_pair_chat",
-      "community": 19,
+      "community": 89,
       "norm_label": "pair_chat()"
     },
     {
@@ -5746,7 +5776,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "laptop_guard_setup_wizard_py_console",
-      "community": 19,
+      "community": 89,
       "norm_label": "console"
     },
     {
@@ -5756,7 +5786,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "laptop_guard_setup_wizard_choose_camera",
-      "community": 19,
+      "community": 89,
       "norm_label": "_choose_camera()"
     },
     {
@@ -5766,7 +5796,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "laptop_guard_setup_wizard_run_setup",
-      "community": 19,
+      "community": 89,
       "norm_label": "run_setup()"
     },
     {
@@ -5976,7 +6006,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_state",
-      "community": 12,
+      "community": 19,
       "norm_label": "state.py"
     },
     {
@@ -5986,7 +6016,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestate",
-      "community": 12,
+      "community": 19,
       "norm_label": "runtimestate"
     },
     {
@@ -5996,7 +6026,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestate_active",
-      "community": 12,
+      "community": 19,
       "norm_label": ".active()"
     },
     {
@@ -6006,7 +6036,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestatestore",
-      "community": 12,
+      "community": 19,
       "norm_label": "runtimestatestore"
     },
     {
@@ -6016,7 +6046,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestatestore_init",
-      "community": 12,
+      "community": 19,
       "norm_label": ".__init__()"
     },
     {
@@ -6026,7 +6056,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "laptop_guard_state_py_path",
-      "community": 12,
+      "community": 19,
       "norm_label": "path"
     },
     {
@@ -6036,7 +6066,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestatestore_load",
-      "community": 12,
+      "community": 19,
       "norm_label": "._load()"
     },
     {
@@ -6046,7 +6076,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestatestore_get",
-      "community": 12,
+      "community": 19,
       "norm_label": ".get()"
     },
     {
@@ -6056,7 +6086,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestatestore_mutate",
-      "community": 12,
+      "community": 19,
       "norm_label": ".mutate()"
     },
     {
@@ -6066,7 +6096,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestatestore_refresh",
-      "community": 12,
+      "community": 19,
       "norm_label": ".refresh()"
     },
     {
@@ -6076,7 +6106,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "laptop_guard_state_runtimestatestore_save",
-      "community": 12,
+      "community": 19,
       "norm_label": "._save()"
     },
     {
@@ -6446,7 +6476,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_system_actions",
-      "community": 3,
+      "community": 43,
       "norm_label": "system_actions.py"
     },
     {
@@ -6456,7 +6486,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_run_first",
-      "community": 3,
+      "community": 43,
       "norm_label": "_run_first()"
     },
     {
@@ -6466,7 +6496,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_lock_screen",
-      "community": 3,
+      "community": 43,
       "norm_label": "lock_screen()"
     },
     {
@@ -6476,7 +6506,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_unlock_screen",
-      "community": 3,
+      "community": 43,
       "norm_label": "unlock_screen()"
     },
     {
@@ -6486,7 +6516,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_suspend_system",
-      "community": 3,
+      "community": 43,
       "norm_label": "suspend_system()"
     },
     {
@@ -6496,7 +6526,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_reboot_system",
-      "community": 3,
+      "community": 43,
       "norm_label": "reboot_system()"
     },
     {
@@ -6506,7 +6536,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_poweroff_system",
-      "community": 3,
+      "community": 43,
       "norm_label": "poweroff_system()"
     },
     {
@@ -6516,7 +6546,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_human_bytes",
-      "community": 3,
+      "community": 43,
       "norm_label": "_human_bytes()"
     },
     {
@@ -6526,7 +6556,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_system_snapshot",
-      "community": 3,
+      "community": 43,
       "norm_label": "system_snapshot()"
     },
     {
@@ -6536,7 +6566,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_format_duration",
-      "community": 3,
+      "community": 43,
       "norm_label": "_format_duration()"
     },
     {
@@ -6546,7 +6576,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "laptop_guard_system_actions_rationale_46",
-      "community": 3,
+      "community": 43,
       "norm_label": "best-effort owner-requested session unlock.      windows intentionally returns u"
     },
     {
@@ -7016,7 +7046,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence",
-      "community": 3,
+      "community": 45,
       "norm_label": "warning_sequence.py"
     },
     {
@@ -7026,7 +7056,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_notify",
-      "community": 3,
+      "community": 45,
       "norm_label": "_notify()"
     },
     {
@@ -7036,7 +7066,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_build_player_command",
-      "community": 3,
+      "community": 45,
       "norm_label": "_build_player_command()"
     },
     {
@@ -7046,7 +7076,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_py_path",
-      "community": 3,
+      "community": 45,
       "norm_label": "path"
     },
     {
@@ -7056,7 +7086,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_notification_fallback",
-      "community": 3,
+      "community": 45,
       "norm_label": "_notification_fallback()"
     },
     {
@@ -7066,7 +7096,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_launch_warning",
-      "community": 3,
+      "community": 45,
       "norm_label": "launch_warning()"
     },
     {
@@ -7076,7 +7106,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "popen",
-      "community": 3,
+      "community": 45,
       "norm_label": "popen"
     },
     {
@@ -7086,7 +7116,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_terminate_player",
-      "community": 3,
+      "community": 45,
       "norm_label": "_terminate_player()"
     },
     {
@@ -7096,7 +7126,7 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_dismiss_warning",
-      "community": 3,
+      "community": 45,
       "norm_label": "dismiss_warning()"
     },
     {
@@ -7106,7 +7136,7 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_play_warning_video",
-      "community": 3,
+      "community": 45,
       "norm_label": "play_warning_video()"
     },
     {
@@ -7116,7 +7146,7 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_main",
-      "community": 3,
+      "community": 45,
       "norm_label": "main()"
     },
     {
@@ -7126,7 +7156,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "laptop_guard_warning_sequence_rationale_95",
-      "community": 3,
+      "community": 45,
       "norm_label": "launch the fullscreen mp4 warning and return immediately.      the video player"
     },
     {
@@ -7281,6 +7311,46 @@
       "id": "scripts_bootstrap_github_project_set_field",
       "community": 116,
       "norm_label": "set_field()"
+    },
+    {
+      "label": "check_tracked_secrets.py",
+      "file_type": "code",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "scripts_check_tracked_secrets",
+      "community": 187,
+      "norm_label": "check_tracked_secrets.py"
+    },
+    {
+      "label": "is_blocked_path()",
+      "file_type": "code",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "scripts_check_tracked_secrets_is_blocked_path",
+      "community": 187,
+      "norm_label": "is_blocked_path()"
+    },
+    {
+      "label": "tracked_paths()",
+      "file_type": "code",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "scripts_check_tracked_secrets_tracked_paths",
+      "community": 187,
+      "norm_label": "tracked_paths()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "scripts_check_tracked_secrets_main",
+      "community": 187,
+      "norm_label": "main()"
     },
     {
       "label": "generate_brand_assets.py",
@@ -7469,7 +7539,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_bale_api",
-      "community": 43,
+      "community": 68,
       "norm_label": "test_bale_api.py"
     },
     {
@@ -7479,7 +7549,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tests_test_bale_api_fakeresponse",
-      "community": 43,
+      "community": 68,
       "norm_label": "fakeresponse"
     },
     {
@@ -7489,7 +7559,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_test_bale_api_fakeresponse_json",
-      "community": 43,
+      "community": 68,
       "norm_label": ".json()"
     },
     {
@@ -7499,7 +7569,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_test_bale_api_fakeresponse_raise_for_status",
-      "community": 43,
+      "community": 68,
       "norm_label": ".raise_for_status()"
     },
     {
@@ -7509,7 +7579,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "tests_test_bale_api_fakesession",
-      "community": 43,
+      "community": 68,
       "norm_label": "fakesession"
     },
     {
@@ -7519,7 +7589,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_test_bale_api_fakesession_init",
-      "community": 43,
+      "community": 68,
       "norm_label": ".__init__()"
     },
     {
@@ -7529,7 +7599,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_test_bale_api_fakesession_post",
-      "community": 43,
+      "community": 68,
       "norm_label": ".post()"
     },
     {
@@ -7539,7 +7609,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "tests_test_bale_api_test_send_message_serializes_inline_keyboard",
-      "community": 43,
+      "community": 68,
       "norm_label": "test_send_message_serializes_inline_keyboard()"
     },
     {
@@ -7549,7 +7619,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tests_test_bale_api_test_file_download_url",
-      "community": 43,
+      "community": 68,
       "norm_label": "test_file_download_url()"
     },
     {
@@ -7559,7 +7629,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_test_bale_api_test_client_ignores_ambient_proxy_and_uses_explicit_proxy",
-      "community": 43,
+      "community": 68,
       "norm_label": "test_client_ignores_ambient_proxy_and_uses_explicit_proxy()"
     },
     {
@@ -7569,7 +7639,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "tests_test_bale_api_test_download_limit_removes_partial_file",
-      "community": 43,
+      "community": 68,
       "norm_label": "test_download_limit_removes_partial_file()"
     },
     {
@@ -7699,7 +7769,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_cli",
-      "community": 45,
+      "community": 192,
       "norm_label": "test_cli.py"
     },
     {
@@ -7709,7 +7779,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "tests_test_cli_test_lock_command_reports_failure",
-      "community": 45,
+      "community": 192,
       "norm_label": "test_lock_command_reports_failure()"
     },
     {
@@ -7719,7 +7789,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tests_test_cli_test_lock_command_reports_success",
-      "community": 45,
+      "community": 192,
       "norm_label": "test_lock_command_reports_success()"
     },
     {
@@ -7999,7 +8069,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_exit_watchdog",
-      "community": 8,
+      "community": 186,
       "norm_label": "test_exit_watchdog.py"
     },
     {
@@ -8009,7 +8079,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tests_test_exit_watchdog_test_current_pid_is_alive",
-      "community": 8,
+      "community": 186,
       "norm_label": "test_current_pid_is_alive()"
     },
     {
@@ -8019,7 +8089,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_test_exit_watchdog_test_invalid_pid_is_not_alive",
-      "community": 8,
+      "community": 186,
       "norm_label": "test_invalid_pid_is_not_alive()"
     },
     {
@@ -8309,7 +8379,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_guard_helpers",
-      "community": 3,
+      "community": 191,
       "norm_label": "test_guard_helpers.py"
     },
     {
@@ -8319,7 +8389,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "tests_test_guard_helpers_test_callback_integer_is_bounded",
-      "community": 3,
+      "community": 191,
       "norm_label": "test_callback_integer_is_bounded()"
     },
     {
@@ -8329,7 +8399,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tests_test_guard_helpers_test_malformed_callback_integer_uses_default",
-      "community": 3,
+      "community": 191,
       "norm_label": "test_malformed_callback_integer_uses_default()"
     },
     {
@@ -8613,6 +8683,76 @@
       "norm_label": "test_graphify_generated_assets_do_not_dominate_language_stats()"
     },
     {
+      "label": "test_repository_secret_safety.py",
+      "file_type": "code",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_test_repository_secret_safety",
+      "community": 188,
+      "norm_label": "test_repository_secret_safety.py"
+    },
+    {
+      "label": "_load_checker()",
+      "file_type": "code",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "tests_test_repository_secret_safety_load_checker",
+      "community": 188,
+      "norm_label": "_load_checker()"
+    },
+    {
+      "label": "test_secret_filename_policy()",
+      "file_type": "code",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "tests_test_repository_secret_safety_test_secret_filename_policy",
+      "community": 188,
+      "norm_label": "test_secret_filename_policy()"
+    },
+    {
+      "label": "test_current_git_index_contains_no_blocked_secret_paths()",
+      "file_type": "code",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "tests_test_repository_secret_safety_test_current_git_index_contains_no_blocked_secret_paths",
+      "community": 188,
+      "norm_label": "test_current_git_index_contains_no_blocked_secret_paths()"
+    },
+    {
+      "label": "test_checker_command_rejects_blocked_tracked_file()",
+      "file_type": "code",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "tests_test_repository_secret_safety_test_checker_command_rejects_blocked_tracked_file",
+      "community": 188,
+      "norm_label": "test_checker_command_rejects_blocked_tracked_file()"
+    },
+    {
+      "label": "Path",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "tests_test_repository_secret_safety_py_path",
+      "community": 188,
+      "norm_label": "path"
+    },
+    {
+      "label": "test_workflow_invokes_checker_with_python3()",
+      "file_type": "code",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "tests_test_repository_secret_safety_test_workflow_invokes_checker_with_python3",
+      "community": 188,
+      "norm_label": "test_workflow_invokes_checker_with_python3()"
+    },
+    {
       "label": "test_runtime_api.py",
       "file_type": "code",
       "source_file": "tests/test_runtime_api.py",
@@ -8649,7 +8789,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_runtime_state",
-      "community": 12,
+      "community": 19,
       "norm_label": "test_runtime_state.py"
     },
     {
@@ -8659,7 +8799,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "tests_test_runtime_state_test_guard_state_persists_assignments",
-      "community": 12,
+      "community": 19,
       "norm_label": "test_guard_state_persists_assignments()"
     },
     {
@@ -8669,8 +8809,78 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_test_runtime_state_test_guard_state_observes_external_cli_changes",
-      "community": 12,
+      "community": 19,
       "norm_label": "test_guard_state_observes_external_cli_changes()"
+    },
+    {
+      "label": "test_secret_config.py",
+      "file_type": "code",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_test_secret_config",
+      "community": 128,
+      "norm_label": "test_secret_config.py"
+    },
+    {
+      "label": "_redirect_paths()",
+      "file_type": "code",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "tests_test_secret_config_redirect_paths",
+      "community": 128,
+      "norm_label": "_redirect_paths()"
+    },
+    {
+      "label": "Path",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "tests_test_secret_config_py_path",
+      "community": 128,
+      "norm_label": "path"
+    },
+    {
+      "label": "test_tokens_are_private_and_separate_from_config()",
+      "file_type": "code",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "tests_test_secret_config_test_tokens_are_private_and_separate_from_config",
+      "community": 128,
+      "norm_label": "test_tokens_are_private_and_separate_from_config()"
+    },
+    {
+      "label": "test_legacy_secret_import_is_optional_without_environment()",
+      "file_type": "code",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "tests_test_secret_config_test_legacy_secret_import_is_optional_without_environment",
+      "community": 128,
+      "norm_label": "test_legacy_secret_import_is_optional_without_environment()"
+    },
+    {
+      "label": "test_private_write_preserves_destination_on_replace_failure()",
+      "file_type": "code",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "tests_test_secret_config_test_private_write_preserves_destination_on_replace_failure",
+      "community": 128,
+      "norm_label": "test_private_write_preserves_destination_on_replace_failure()"
+    },
+    {
+      "label": "test_private_write_normalizes_existing_permissions()",
+      "file_type": "code",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "tests_test_secret_config_test_private_write_normalizes_existing_permissions",
+      "community": 128,
+      "norm_label": "test_private_write_normalizes_existing_permissions()"
     },
     {
       "label": "test_service.py",
@@ -8789,7 +8999,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_state",
-      "community": 12,
+      "community": 19,
       "norm_label": "test_state.py"
     },
     {
@@ -8799,7 +9009,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tests_test_state_test_state_roundtrip",
-      "community": 12,
+      "community": 19,
       "norm_label": "test_state_roundtrip()"
     },
     {
@@ -8809,7 +9019,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_state_py_path",
-      "community": 12,
+      "community": 19,
       "norm_label": "path"
     },
     {
@@ -15066,7 +15276,7 @@
       "label": "Protected termination",
       "file_type": "document",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L14",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "docs_security_protected_termination",
       "community": 22,
@@ -15076,7 +15286,7 @@
       "label": "Remote controls",
       "file_type": "document",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L35",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "docs_security_remote_controls",
       "community": 22,
@@ -15086,7 +15296,7 @@
       "label": "Capture and privacy",
       "file_type": "document",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L45",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "docs_security_capture_and_privacy",
       "community": 22,
@@ -15096,7 +15306,7 @@
       "label": "Residual risks",
       "file_type": "document",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L61",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "docs_security_residual_risks",
       "community": 22,
@@ -22015,7 +22225,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L215",
+      "source_location": "L221",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_apply_legacy_env",
@@ -22025,7 +22235,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L204",
+      "source_location": "L210",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_apply_section",
@@ -22035,7 +22245,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L171",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "laptop_guard_config",
+      "target": "laptop_guard_config_atomic_write_private",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "laptop_guard/config.py",
+      "source_location": "L177",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_coerce_like",
@@ -22045,7 +22265,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_default_api_base",
@@ -22055,7 +22275,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_ensure_dirs",
@@ -22065,7 +22285,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L86",
+      "source_location": "L103",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_get_api_token",
@@ -22075,7 +22295,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L72",
+      "source_location": "L89",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_get_bot_token",
@@ -22085,7 +22305,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L296",
+      "source_location": "L302",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_import_legacy_env_secrets",
@@ -22095,7 +22315,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L339",
+      "source_location": "L345",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_load_config",
@@ -22105,7 +22325,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L307",
+      "source_location": "L313",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_migrate",
@@ -22115,7 +22335,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_read_secrets",
@@ -22125,7 +22345,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L129",
+      "source_location": "L146",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_save_config",
@@ -22135,7 +22355,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L117",
+      "source_location": "L134",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_section_dict",
@@ -22145,7 +22365,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L90",
+      "source_location": "L107",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_set_api_token",
@@ -22155,7 +22375,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L76",
+      "source_location": "L93",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_set_bot_token",
@@ -22165,7 +22385,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L371",
+      "source_location": "L377",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_setup_is_complete",
@@ -22175,7 +22395,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L100",
+      "source_location": "L117",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_toml_value",
@@ -22185,7 +22405,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L57",
+      "source_location": "L81",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_config_write_secrets",
@@ -22196,7 +22416,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_models",
@@ -22207,7 +22427,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "laptop_guard_config",
       "target": "laptop_guard_models_appconfig",
@@ -22426,6 +22646,17 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "laptop_guard_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "tests/test_v4_config_roundtrip.py",
       "source_location": "L3",
       "weight": 1.0,
@@ -22471,7 +22702,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L135",
+      "source_location": "L152",
       "weight": 1.0,
       "source": "laptop_guard_config_save_config",
       "target": "laptop_guard_config_ensure_dirs",
@@ -22482,7 +22713,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L58",
+      "source_location": "L82",
       "weight": 1.0,
       "source": "laptop_guard_config_write_secrets",
       "target": "laptop_guard_config_ensure_dirs",
@@ -22581,7 +22812,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L87",
+      "source_location": "L104",
       "weight": 1.0,
       "source": "laptop_guard_config_get_api_token",
       "target": "laptop_guard_config_read_secrets",
@@ -22592,7 +22823,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L73",
+      "source_location": "L90",
       "weight": 1.0,
       "source": "laptop_guard_config_get_bot_token",
       "target": "laptop_guard_config_read_secrets",
@@ -22603,7 +22834,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L91",
+      "source_location": "L108",
       "weight": 1.0,
       "source": "laptop_guard_config_set_api_token",
       "target": "laptop_guard_config_read_secrets",
@@ -22614,21 +22845,42 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L77",
+      "source_location": "L94",
       "weight": 1.0,
       "source": "laptop_guard_config_set_bot_token",
       "target": "laptop_guard_config_read_secrets",
       "confidence_score": 1.0
     },
     {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "laptop_guard/config.py",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "laptop_guard_config_atomic_write_private",
+      "target": "laptop_guard_config_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "laptop_guard/config.py",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "laptop_guard_config_rationale_59",
+      "target": "laptop_guard_config_atomic_write_private",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L97",
+      "source_location": "L174",
       "weight": 1.0,
-      "source": "laptop_guard_config_set_api_token",
-      "target": "laptop_guard_config_write_secrets",
+      "source": "laptop_guard_config_save_config",
+      "target": "laptop_guard_config_atomic_write_private",
       "confidence_score": 1.0
     },
     {
@@ -22638,6 +22890,28 @@
       "source_file": "laptop_guard/config.py",
       "source_location": "L83",
       "weight": 1.0,
+      "source": "laptop_guard_config_write_secrets",
+      "target": "laptop_guard_config_atomic_write_private",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "laptop_guard/config.py",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "laptop_guard_config_set_api_token",
+      "target": "laptop_guard_config_write_secrets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "laptop_guard/config.py",
+      "source_location": "L100",
+      "weight": 1.0,
       "source": "laptop_guard_config_set_bot_token",
       "target": "laptop_guard_config_write_secrets",
       "confidence_score": 1.0
@@ -22647,7 +22921,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L298",
+      "source_location": "L304",
       "weight": 1.0,
       "source": "laptop_guard_config_import_legacy_env_secrets",
       "target": "laptop_guard_config_get_bot_token",
@@ -22801,7 +23075,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L303",
+      "source_location": "L309",
       "weight": 1.0,
       "source": "laptop_guard_config_import_legacy_env_secrets",
       "target": "laptop_guard_config_set_bot_token",
@@ -22900,7 +23174,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L142",
+      "source_location": "L159",
       "weight": 1.0,
       "source": "laptop_guard_config_save_config",
       "target": "laptop_guard_config_toml_value",
@@ -22911,7 +23185,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L100",
+      "source_location": "L117",
       "weight": 1.0,
       "source": "laptop_guard_config_toml_value",
       "target": "laptop_guard_config_py_any",
@@ -22922,7 +23196,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L204",
+      "source_location": "L210",
       "weight": 1.0,
       "source": "laptop_guard_config_apply_section",
       "target": "laptop_guard_config_py_any",
@@ -22933,7 +23207,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L171",
+      "source_location": "L177",
       "weight": 1.0,
       "source": "laptop_guard_config_coerce_like",
       "target": "laptop_guard_config_py_any",
@@ -22944,7 +23218,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L307",
+      "source_location": "L313",
       "weight": 1.0,
       "source": "laptop_guard_config_migrate",
       "target": "laptop_guard_config_py_any",
@@ -22955,7 +23229,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L117",
+      "source_location": "L134",
       "weight": 1.0,
       "source": "laptop_guard_config_section_dict",
       "target": "laptop_guard_config_py_any",
@@ -22966,7 +23240,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L153",
+      "source_location": "L170",
       "weight": 1.0,
       "source": "laptop_guard_config_save_config",
       "target": "laptop_guard_config_section_dict",
@@ -22976,9 +23250,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L130",
+      "source_location": "L147",
       "weight": 1.0,
-      "source": "laptop_guard_config_rationale_130",
+      "source": "laptop_guard_config_rationale_147",
       "target": "laptop_guard_config_save_config",
       "confidence_score": 1.0
     },
@@ -22987,7 +23261,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L129",
+      "source_location": "L146",
       "weight": 1.0,
       "source": "laptop_guard_config_save_config",
       "target": "laptop_guard_models_appconfig",
@@ -23075,7 +23349,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L212",
+      "source_location": "L218",
       "weight": 1.0,
       "source": "laptop_guard_config_apply_section",
       "target": "laptop_guard_config_coerce_like",
@@ -23086,7 +23360,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L366",
+      "source_location": "L372",
       "weight": 1.0,
       "source": "laptop_guard_config_load_config",
       "target": "laptop_guard_config_apply_section",
@@ -23097,7 +23371,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L215",
+      "source_location": "L221",
       "weight": 1.0,
       "source": "laptop_guard_config_apply_legacy_env",
       "target": "laptop_guard_models_appconfig",
@@ -23108,7 +23382,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L342",
+      "source_location": "L348",
       "weight": 1.0,
       "source": "laptop_guard_config_load_config",
       "target": "laptop_guard_config_apply_legacy_env",
@@ -23118,9 +23392,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L216",
+      "source_location": "L222",
       "weight": 1.0,
-      "source": "laptop_guard_config_rationale_216",
+      "source": "laptop_guard_config_rationale_222",
       "target": "laptop_guard_config_apply_legacy_env",
       "confidence_score": 1.0
     },
@@ -23128,9 +23402,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L297",
+      "source_location": "L303",
       "weight": 1.0,
-      "source": "laptop_guard_config_rationale_297",
+      "source": "laptop_guard_config_rationale_303",
       "target": "laptop_guard_config_import_legacy_env_secrets",
       "confidence_score": 1.0
     },
@@ -23161,7 +23435,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L368",
+      "source_location": "L374",
       "weight": 1.0,
       "source": "laptop_guard_config_load_config",
       "target": "laptop_guard_config_migrate",
@@ -23172,7 +23446,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L307",
+      "source_location": "L313",
       "weight": 1.0,
       "source": "laptop_guard_config_migrate",
       "target": "laptop_guard_models_appconfig",
@@ -23183,7 +23457,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L339",
+      "source_location": "L345",
       "weight": 1.0,
       "source": "laptop_guard_config_load_config",
       "target": "laptop_guard_models_appconfig",
@@ -23194,7 +23468,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "laptop_guard/config.py",
-      "source_location": "L372",
+      "source_location": "L378",
       "weight": 1.0,
       "source": "laptop_guard_config_setup_is_complete",
       "target": "laptop_guard_config_load_config",
@@ -29263,6 +29537,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "laptop_guard_models",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "tests/test_sound_detection.py",
       "source_location": "L6",
       "weight": 1.0,
@@ -29904,6 +30189,39 @@
       "source_location": "L24",
       "weight": 1.0,
       "source": "tests_test_runtime_api_test_remote_runtime_receives_configured_proxy",
+      "target": "laptop_guard_models_appconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "laptop_guard_models_appconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_legacy_secret_import_is_optional_without_environment",
+      "target": "laptop_guard_models_appconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_tokens_are_private_and_separate_from_config",
       "target": "laptop_guard_models_appconfig",
       "confidence_score": 1.0
     },
@@ -35955,6 +36273,58 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "scripts_check_tracked_secrets",
+      "target": "scripts_check_tracked_secrets_is_blocked_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "scripts_check_tracked_secrets",
+      "target": "scripts_check_tracked_secrets_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "scripts_check_tracked_secrets",
+      "target": "scripts_check_tracked_secrets_tracked_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "scripts_check_tracked_secrets_main",
+      "target": "scripts_check_tracked_secrets_is_blocked_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/check_tracked_secrets.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "scripts_check_tracked_secrets_main",
+      "target": "scripts_check_tracked_secrets_tracked_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "scripts/generate_brand_assets.py",
       "source_location": "L19",
       "weight": 1.0,
@@ -37304,6 +37674,89 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety",
+      "target": "tests_test_repository_secret_safety_load_checker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety",
+      "target": "tests_test_repository_secret_safety_test_checker_command_rejects_blocked_tracked_file",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety",
+      "target": "tests_test_repository_secret_safety_test_current_git_index_contains_no_blocked_secret_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety",
+      "target": "tests_test_repository_secret_safety_test_secret_filename_policy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety",
+      "target": "tests_test_repository_secret_safety_test_workflow_invokes_checker_with_python3",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety_test_current_git_index_contains_no_blocked_secret_paths",
+      "target": "tests_test_repository_secret_safety_load_checker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety_test_secret_filename_policy",
+      "target": "tests_test_repository_secret_safety_load_checker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_repository_secret_safety.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "tests_test_repository_secret_safety_test_checker_command_rejects_blocked_tracked_file",
+      "target": "tests_test_repository_secret_safety_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "tests/test_runtime_api.py",
       "source_location": "L5",
       "weight": 1.0,
@@ -37339,6 +37792,133 @@
       "weight": 1.0,
       "source": "tests_test_runtime_state",
       "target": "tests_test_runtime_state_test_guard_state_persists_assignments",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "tests_test_secret_config_redirect_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "tests_test_secret_config_test_legacy_secret_import_is_optional_without_environment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "tests_test_secret_config_test_private_write_normalizes_existing_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "tests_test_secret_config_test_private_write_preserves_destination_on_replace_failure",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "tests_test_secret_config",
+      "target": "tests_test_secret_config_test_tokens_are_private_and_separate_from_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_redirect_paths",
+      "target": "tests_test_secret_config_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_legacy_secret_import_is_optional_without_environment",
+      "target": "tests_test_secret_config_redirect_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_tokens_are_private_and_separate_from_config",
+      "target": "tests_test_secret_config_redirect_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_legacy_secret_import_is_optional_without_environment",
+      "target": "tests_test_secret_config_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_private_write_normalizes_existing_permissions",
+      "target": "tests_test_secret_config_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_private_write_preserves_destination_on_replace_failure",
+      "target": "tests_test_secret_config_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_secret_config.py",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "tests_test_secret_config_test_tokens_are_private_and_separate_from_config",
+      "target": "tests_test_secret_config_py_path",
       "confidence_score": 1.0
     },
     {
@@ -43039,7 +43619,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L45",
+      "source_location": "L53",
       "weight": 1.0,
       "source": "docs_security_security_and_privacy",
       "target": "docs_security_capture_and_privacy",
@@ -43049,7 +43629,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L14",
+      "source_location": "L22",
       "weight": 1.0,
       "source": "docs_security_security_and_privacy",
       "target": "docs_security_protected_termination",
@@ -43059,7 +43639,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L35",
+      "source_location": "L43",
       "weight": 1.0,
       "source": "docs_security_security_and_privacy",
       "target": "docs_security_remote_controls",
@@ -43069,7 +43649,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/SECURITY.md",
-      "source_location": "L61",
+      "source_location": "L69",
       "weight": 1.0,
       "source": "docs_security_security_and_privacy",
       "target": "docs_security_residual_risks",
@@ -44397,5 +44977,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e8232d5d2a45e06581d9c0d46bc8ec19836cf41f"
+  "built_at_commit": "46dff44bc217a3fe5bf5e2bde65edbf7928d8eef"
 }

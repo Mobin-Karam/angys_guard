@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 import tomllib
 from dataclasses import fields, is_dataclass
 from pathlib import Path
@@ -54,19 +55,35 @@ def _read_secrets() -> dict[str, str]:
     return {str(k): str(v) for k, v in data.items() if v is not None}
 
 
+def _atomic_write_private(path: Path, content: str) -> None:
+    """Atomically write UTF-8 text with owner-only permissions from creation."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}-", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(tmp_name, 0o600)
+        os.replace(tmp_name, path)
+        try:
+            path.chmod(0o600)
+        except OSError:
+            pass
+    finally:
+        try:
+            if os.path.exists(tmp_name):
+                os.unlink(tmp_name)
+        except OSError:
+            pass
+
+
 def _write_secrets(data: dict[str, str]) -> None:
     ensure_dirs()
-    tmp = SECRETS_PATH.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    try:
-        tmp.chmod(0o600)
-    except OSError:
-        pass
-    tmp.replace(SECRETS_PATH)
-    try:
-        SECRETS_PATH.chmod(0o600)
-    except OSError:
-        pass
+    _atomic_write_private(
+        SECRETS_PATH,
+        json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+    )
 
 
 def get_bot_token() -> str:
@@ -154,18 +171,7 @@ def save_config(cfg: AppConfig) -> None:
             lines.append(f"{key} = {_toml_value(value)}")
         lines.append("")
 
-    tmp = CONFIG_PATH.with_suffix(".toml.tmp")
-    tmp.parent.mkdir(parents=True, exist_ok=True)
-    tmp.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
-    try:
-        tmp.chmod(0o600)
-    except OSError:
-        pass
-    tmp.replace(CONFIG_PATH)
-    try:
-        CONFIG_PATH.chmod(0o600)
-    except OSError:
-        pass
+    _atomic_write_private(CONFIG_PATH, "\n".join(lines).rstrip() + "\n")
 
 
 def _coerce_like(current: Any, value: Any) -> Any:

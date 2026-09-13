@@ -11,6 +11,14 @@ Bot tokens live in an owner-readable secrets file. The stop PIN is validated as
 4–10 digits and stored only as a salted scrypt digest. Sensitive PIN messages are
 deleted from Bale on a best-effort basis after processing.
 
+Configuration and secret files are written atomically with owner-only `0600`
+permissions from creation. Repository safety CI checks tracked filenames without
+opening local secret files and rejects `.env` variants, runtime secret stores,
+credential files, and private-key files. `.env.example` is the only intentional
+exception. If a real credential was ever committed, removing the file is not
+enough: its owner must revoke or rotate it at the provider and audit repository
+history and forks. AngysGuard cannot perform that external account action.
+
 ## Protected termination
 
 Ctrl+C starts this flow:

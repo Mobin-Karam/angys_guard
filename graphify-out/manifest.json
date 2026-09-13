@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/config.py": {
-    "mtime": 1789265734.8205776,
-    "ast_hash": "406c3af5b0946bc1c2cbc93c4a1a8864",
+    "mtime": 1789268311.1797981,
+    "ast_hash": "fc6d00ad993f4fd035117ce85ec09a0c",
     "semantic_hash": ""
   },
   "laptop_guard/control_api.py": {
@@ -485,8 +485,8 @@
     "semantic_hash": ""
   },
   "docs/SECURITY.md": {
-    "mtime": 1789265801.5791016,
-    "ast_hash": "281e49563cc6afad93d02ae61d76a75a",
+    "mtime": 1789268329.134939,
+    "ast_hash": "c8e7b744bb71b578487931c6860ddb00",
     "semantic_hash": ""
   },
   "docs/SYSTEM_AUDIT.md": {
@@ -1030,8 +1030,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/repository-safety.yml": {
-    "mtime": 1789238776.1146657,
-    "ast_hash": "d956136976ceb05c4f74d44c224ddc8c",
+    "mtime": 1789314075.4896863,
+    "ast_hash": "536b46477a8c254c5eec2e41b2de60ff",
     "semantic_hash": ""
   },
   "AGENT.md": {
@@ -1337,6 +1337,21 @@
   "tests/test_audio_cleanup.py": {
     "mtime": 1789267633.5714798,
     "ast_hash": "273223007e80f3da0ecfaf01056e0be5",
+    "semantic_hash": ""
+  },
+  "scripts/check_tracked_secrets.py": {
+    "mtime": 1789314075.4896863,
+    "ast_hash": "512d3ca23cc6e83541ba42e272c0e823",
+    "semantic_hash": ""
+  },
+  "tests/test_repository_secret_safety.py": {
+    "mtime": 1789314075.4896863,
+    "ast_hash": "004ef0a521a23c8942077196d6632c83",
+    "semantic_hash": ""
+  },
+  "tests/test_secret_config.py": {
+    "mtime": 1789314075.4906862,
+    "ast_hash": "a9a418b1f8d828af2a41ffba25c11582",
     "semantic_hash": ""
   }
 }
