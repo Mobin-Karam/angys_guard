@@ -1,4 +1,8 @@
 import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+import pytest
 import laptop_guard.bale_api as mod
 
 
@@ -42,3 +46,23 @@ def test_client_ignores_ambient_proxy_and_uses_explicit_proxy():
     api = mod.BaleApi('123:secret', proxy='http://127.0.0.1:8080')
     assert api.session.trust_env is False
     assert api.session.proxies['https'] == 'http://127.0.0.1:8080'
+
+
+def test_download_limit_removes_partial_file():
+    class DownloadResponse:
+        headers = {}
+        def __enter__(self): return self
+        def __exit__(self, *_args): return None
+        def raise_for_status(self): return None
+        def iter_content(self, _size): yield b'1234'; yield b'5678'
+
+    api = object.__new__(mod.BaleApi)
+    api.token = 'test'
+    api.base_url = 'https://example.invalid'
+    api.get_file = lambda _file_id: {'file_path': 'voice.ogg'}
+    api.session = type('Session', (), {'get': lambda *_args, **_kwargs: DownloadResponse()})()
+    with TemporaryDirectory() as raw:
+        target = Path(raw) / 'voice.ogg'
+        with pytest.raises(mod.BaleApiError):
+            api.download_file('voice', target, max_bytes=6)
+        assert not target.exists()

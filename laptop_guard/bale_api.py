@@ -173,16 +173,29 @@ class BaleApi:
     def get_file(self, file_id: str) -> dict[str, Any]:
         return self.request("getFile", data={"file_id": file_id})
 
-    def download_file(self, file_id: str, destination: Path) -> Path:
+    def download_file(self, file_id: str, destination: Path, max_bytes: int | None = None) -> Path:
         meta = self.get_file(file_id)
         file_path = str(meta.get("file_path") or "")
         if not file_path:
             raise BaleApiError("getFile returned no file_path")
         destination.parent.mkdir(parents=True, exist_ok=True)
-        with self.session.get(self._file_url(file_path), stream=True, timeout=120) as response:
-            response.raise_for_status()
-            with destination.open("wb") as out:
-                for chunk in response.iter_content(1024 * 128):
-                    if chunk:
+        limit = max(1, int(max_bytes)) if max_bytes is not None else None
+        total = 0
+        try:
+            with self.session.get(self._file_url(file_path), stream=True, timeout=120) as response:
+                response.raise_for_status()
+                declared = int(response.headers.get("Content-Length") or 0)
+                if limit is not None and declared > limit:
+                    raise BaleApiError(f"download exceeds {limit} byte limit")
+                with destination.open("wb") as out:
+                    for chunk in response.iter_content(1024 * 128):
+                        if not chunk:
+                            continue
+                        total += len(chunk)
+                        if limit is not None and total > limit:
+                            raise BaleApiError(f"download exceeds {limit} byte limit")
                         out.write(chunk)
+        except Exception:
+            destination.unlink(missing_ok=True)
+            raise
         return destination

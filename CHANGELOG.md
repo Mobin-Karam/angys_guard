@@ -10,6 +10,12 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Audio security and communication
+
+- Added opt-in, armed-mode sound-level detection that discards idle samples and sends one bounded recording to the authorized owner after a configurable trigger.
+- Kept owner voice playback one-way unless the owner explicitly starts `/voicechat`, and pause sound detection during playback to prevent echoing that message back.
+- Added duration, sensitivity, consecutive-trigger, cooldown, incoming-size and local privacy-notification safeguards. Linux microphone/backend and live Bale delivery still require target-device validation.
+
 ### AngysGuard brand system
 
 - Established **owner-controlled endpoint security and device protection platform** as the preferred AngysGuard product category; explicitly avoid an antivirus claim until a real maintained malware-detection engine exists.

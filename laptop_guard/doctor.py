@@ -71,6 +71,7 @@ def run_doctor() -> int:
         ("Persian TTS package", (not cfg.tts.enabled) or _persian_tts_ok(), cfg.tts.enabled),
         ("Audio playback backend", bool(shutil.which("ffplay") or shutil.which("paplay") or shutil.which("pw-play") or shutil.which("aplay")), cfg.tts.enabled),
         ("ffmpeg audio/video", bool(shutil.which("ffmpeg")), False),
+        ("Sound detection/recording", bool(shutil.which("ffmpeg")), cfg.audio.sound_detection_enabled),
         ("notify-send", (not linux) or bool(shutil.which("notify-send")), False),
         ("Linux lock backend", (not linux) or bool(shutil.which("loginctl") or shutil.which("xdg-screensaver")), True),
         ("Linux unlock backend", (not linux) or bool(shutil.which("loginctl")), False),

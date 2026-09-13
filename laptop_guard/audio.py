@@ -57,6 +57,7 @@ class AudioRecorder:
         seconds = max(1, min(int(seconds), self.config.max_seconds))
         MEDIA_DIR.mkdir(parents=True, exist_ok=True)
         path = MEDIA_DIR / f"audio-api-{datetime.now().strftime('%Y%m%d-%H%M%S-%f')}.ogg"
+        keep_file = False
         if self.config.local_notification:
             desktop_notify("Laptop Guard", f"Microphone recording started for {seconds} seconds")
         try:
@@ -65,6 +66,7 @@ class AudioRecorder:
                 proc = self._proc
             _, stderr = proc.communicate(timeout=seconds + 20)
             if proc.returncode == 0 and path.exists() and path.stat().st_size > 0:
+                keep_file = True
                 return path, "ok"
             return None, (stderr or b"").decode(errors="ignore").strip()[-500:] or f"ffmpeg exited with {proc.returncode}"
         except Exception as exc:
@@ -72,6 +74,8 @@ class AudioRecorder:
         finally:
             with self._lock:
                 self._proc = None
+            if not keep_file:
+                path.unlink(missing_ok=True)
 
     def _record(self, seconds: int) -> None:
         if not shutil.which("ffmpeg"):
@@ -79,6 +83,7 @@ class AudioRecorder:
             return
         MEDIA_DIR.mkdir(parents=True, exist_ok=True)
         path = MEDIA_DIR / f"audio-{datetime.now().strftime('%Y%m%d-%H%M%S-%f')}.ogg"
+        keep_file = False
         if self.config.local_notification:
             desktop_notify("Laptop Guard", f"Microphone recording started for {seconds} seconds")
         try:
@@ -87,6 +92,7 @@ class AudioRecorder:
                 proc = self._proc
             _, stderr = proc.communicate()
             if proc.returncode == 0 and path.exists() and path.stat().st_size > 0:
+                keep_file = True
                 self.on_done(path, "ok")
             elif proc.returncode in {-15, 143}:
                 self.on_done(None, "cancelled")
@@ -98,6 +104,8 @@ class AudioRecorder:
         finally:
             with self._lock:
                 self._proc = None
+            if not keep_file:
+                path.unlink(missing_ok=True)
 
 
 class RemoteAudioPlayer:

@@ -145,7 +145,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `laptop_guard/features/manager.py` | Conflict-safe command/callback registry plus deterministic feature lifecycle. Accepted extension mechanism. |
 | `laptop_guard/features/system_info.py` | Extracted status/system/help feature. |
 | `laptop_guard/features/failed_login.py` | Journal auth-failure parsing, filtering, dedupe, event/owner alert behavior. |
-| `laptop_guard/features/sound_detection.py` | Sound-triggered detection/recording feature. |
+| `laptop_guard/sound_detection.py` | Optional armed-mode volume monitor and bounded recording adapter. |
 | `laptop_guard/features/__init__.py` | Public feature-system exports. |
 | `laptop_guard/AGENTS.md` | Runtime-specific Graphify-first AI/security/architecture instructions. |
 

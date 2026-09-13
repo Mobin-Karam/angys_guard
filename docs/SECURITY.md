@@ -50,6 +50,7 @@ configuration directory.
   not retain idle audio or transcribe speech; after a configured trigger it
   records one bounded clip and sends it to the owner. Detection pauses while an
   owner voice message plays, preventing that playback from being echoed back.
+  Automatic capture also requires an armed guard and a configured owner chat.
 - Camera privacy-light suppression is intentionally unsupported.
 - Screen and global-input behavior is capability-dependent under Wayland.
 - Media and failed outbound work remain in the user's local data directory.

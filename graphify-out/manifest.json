@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/audio.py": {
-    "mtime": 1789153916.0,
-    "ast_hash": "4d7ca5dd6406177e53b80248d2777ad2",
+    "mtime": 1789267633.5714798,
+    "ast_hash": "37d6f7f548331679d1efd570d1015147",
     "semantic_hash": ""
   },
   "laptop_guard/audio_indicator.py": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/bale_api.py": {
-    "mtime": 1789233115.7015667,
-    "ast_hash": "20b7e3ebaf1ee59a35136f11db21c648",
+    "mtime": 1789265998.114644,
+    "ast_hash": "93591494fe4b029f50e07beea6339101",
     "semantic_hash": ""
   },
   "laptop_guard/camera.py": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/config.py": {
-    "mtime": 1789234178.0759046,
-    "ast_hash": "821bd7d5c9b527e63ba5ccc79a1462cb",
+    "mtime": 1789265734.8205776,
+    "ast_hash": "406c3af5b0946bc1c2cbc93c4a1a8864",
     "semantic_hash": ""
   },
   "laptop_guard/control_api.py": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/doctor.py": {
-    "mtime": 1789234288.8047736,
-    "ast_hash": "316ea81fedd6f008b0f2985e3de8e6eb",
+    "mtime": 1789265786.3419821,
+    "ast_hash": "ac13baca8daecda3cc904418282d9a2e",
     "semantic_hash": ""
   },
   "laptop_guard/events.py": {
@@ -95,12 +95,12 @@
     "semantic_hash": ""
   },
   "laptop_guard/features/__init__.py": {
-    "mtime": 1789234256.6865215,
+    "mtime": 1789265925.4710739,
     "ast_hash": "ceef7fe4af6fe8692fbd1110dc76a897",
     "semantic_hash": ""
   },
   "laptop_guard/features/base.py": {
-    "mtime": 1789234256.6855216,
+    "mtime": 1789265925.472074,
     "ast_hash": "a7990752dedd26cadb55e373e36e9ee9",
     "semantic_hash": ""
   },
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/guard.py": {
-    "mtime": 1789235227.5701416,
-    "ast_hash": "44e9d7bf023b3171b6b1904f789b7a56",
+    "mtime": 1789267523.4876158,
+    "ast_hash": "e63b0ba036fc3d783662fd8ea3aca003",
     "semantic_hash": ""
   },
   "laptop_guard/health.py": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/models.py": {
-    "mtime": 1789235227.5681417,
-    "ast_hash": "31d65712e49bdaf469138cb8bc156e30",
+    "mtime": 1789235752.6772628,
+    "ast_hash": "fb493f911e3a7974b51d9d1cb35219c7",
     "semantic_hash": ""
   },
   "laptop_guard/persian_speech.py": {
@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/runtime_api.py": {
-    "mtime": 1789233062.0231454,
-    "ast_hash": "555b0074734351fe521657396ea1ceb8",
+    "mtime": 1789265998.1136441,
+    "ast_hash": "6384c5176b0ff61b2390f75f47f3b6b9",
     "semantic_hash": ""
   },
   "laptop_guard/runtime_config.py": {
@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "laptop_guard/setup_wizard.py": {
-    "mtime": 1789234187.2419765,
-    "ast_hash": "64ba9787afbd8e37ca04856d0b6f267d",
+    "mtime": 1789235781.737491,
+    "ast_hash": "f0dec46ad4fae32bb510d5468103907b",
     "semantic_hash": ""
   },
   "laptop_guard/state.py": {
@@ -255,8 +255,8 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1789232771.5688658,
-    "ast_hash": "b843ecc7313142c6440beb0f1b1aa332",
+    "mtime": 1789248204.0762386,
+    "ast_hash": "dc3b596889059965f7fa36f1359d66b1",
     "semantic_hash": ""
   },
   "repair-opencv.sh": {
@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "tests/test_bale_api.py": {
-    "mtime": 1789233115.7025666,
-    "ast_hash": "d2cbf8b925b60c0f229082e09e368c5b",
+    "mtime": 1789265998.1156442,
+    "ast_hash": "a3204b63fc847b059ca88bca7cfe92d2",
     "semantic_hash": ""
   },
   "tests/test_camera_capability.py": {
@@ -455,23 +455,23 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789233925.4239216,
-    "ast_hash": "5ba943b41ad8b19f8972440b37124f7e",
+    "mtime": 1789247409.3077495,
+    "ast_hash": "a3ac74d9dd1137eaaee77ec278666168",
     "semantic_hash": ""
   },
   "docs/CONFIGURATION.md": {
-    "mtime": 1789235227.5711417,
-    "ast_hash": "39bcd38831283ab7d29c89d46c3a0fb5",
+    "mtime": 1789235781.737491,
+    "ast_hash": "e39c9f252e4291944b25e1efa2356d8a",
     "semantic_hash": ""
   },
   "docs/EXTENDING.md": {
-    "mtime": 1789233379.8166394,
-    "ast_hash": "4348a41954983e9d00c495e3046d701d",
+    "mtime": 1789239992.8460777,
+    "ast_hash": "644d13370e2c4c949fd552da09b62700",
     "semantic_hash": ""
   },
   "docs/FILE_REFERENCE.md": {
-    "mtime": 1789234362.22135,
-    "ast_hash": "02726b4f1104a6c9d463e9602919d70d",
+    "mtime": 1789265925.473074,
+    "ast_hash": "1f81eddcb113e883c2466546e2878fd5",
     "semantic_hash": ""
   },
   "docs/HISTORY.md": {
@@ -480,23 +480,23 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1789234362.2203498,
-    "ast_hash": "ddda6f1b0421d713a7b202e09a266c86",
+    "mtime": 1789247409.3097496,
+    "ast_hash": "795e0f709229618d04938a7045063ab0",
     "semantic_hash": ""
   },
   "docs/SECURITY.md": {
-    "mtime": 1789234883.2914395,
-    "ast_hash": "d9c8c2627780a7d8393cdcd4d073f2f4",
+    "mtime": 1789265801.5791016,
+    "ast_hash": "281e49563cc6afad93d02ae61d76a75a",
     "semantic_hash": ""
   },
   "docs/SYSTEM_AUDIT.md": {
-    "mtime": 1789234362.22135,
-    "ast_hash": "a650c0745411f7e0b2f59c9524147390",
+    "mtime": 1789242417.413571,
+    "ast_hash": "810aa5b8f7e3ef2e8831d321fa0c126c",
     "semantic_hash": ""
   },
   "docs/TESTING.md": {
-    "mtime": 1789234429.2958763,
-    "ast_hash": "0122169aaec72c86d75695499e1d42c5",
+    "mtime": 1789247409.3097496,
+    "ast_hash": "4521a79b1e5dd78ad03a8318269e6e11",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -517,6 +517,826 @@
   "tests/test_chat_defaults.py": {
     "mtime": 1789235227.5721416,
     "ast_hash": "10bf5a56447ad5926c5cc207f05e8bac",
+    "semantic_hash": ""
+  },
+  ".codex/hooks.json": {
+    "mtime": 1789243524.0652564,
+    "ast_hash": "7c2c555b6974f966658b1c3c518a0722",
+    "semantic_hash": ""
+  },
+  ".codex/hooks/post_edit_review.py": {
+    "mtime": 1789247409.3038793,
+    "ast_hash": "428cb1f9ee24f82ed739147c1988f56e",
+    "semantic_hash": ""
+  },
+  ".codex/hooks/pre_tool_use_policy.py": {
+    "mtime": 1789239455.0882416,
+    "ast_hash": "36efc7da88b640916af54f05581c86bc",
+    "semantic_hash": ""
+  },
+  ".codex/hooks/session_start.py": {
+    "mtime": 1789243524.0652564,
+    "ast_hash": "85be080dd31b34463933de9333a3a3ac",
+    "semantic_hash": ""
+  },
+  ".github/repository-management/issues.json": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "9ec101b9d655876fcd9125ed97eec32f",
+    "semantic_hash": ""
+  },
+  ".github/repository-management/labels.json": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "0ca414604089dd29de8859d4376edfcf",
+    "semantic_hash": ""
+  },
+  ".github/repository-management/milestones.json": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "e4bc22b9be3056c6f5efff6257621069",
+    "semantic_hash": ""
+  },
+  ".github/repository-management/project-v2.json": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "42e10d2ea3db6b399648499181b9cda6",
+    "semantic_hash": ""
+  },
+  ".github/repository-profile.json": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "c8211e5fec5d51161cb954cb923f822f",
+    "semantic_hash": ""
+  },
+  ".github/scripts/bootstrap_repository_management.py": {
+    "mtime": 1789242417.4132683,
+    "ast_hash": "1960b30b6dc038e77b8750ed1c9f24e2",
+    "semantic_hash": ""
+  },
+  "laptop_guard/sound_detection.py": {
+    "mtime": 1789266803.3659642,
+    "ast_hash": "0881df9841bc6bddd19ad13dd29ef5f0",
+    "semantic_hash": ""
+  },
+  "scripts/bootstrap_github_project.sh": {
+    "mtime": 1789247409.3117495,
+    "ast_hash": "ec2e8aa6bf7392987c2d75303b85134a",
+    "semantic_hash": ""
+  },
+  "scripts/generate_brand_assets.py": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "fbd1b2f38d1217cef3afdc8c66845d10",
+    "semantic_hash": ""
+  },
+  "scripts/sync_repository_profile.py": {
+    "mtime": 1789247409.3117495,
+    "ast_hash": "42aac14ee5e04ca9fa0415b43b7efbca",
+    "semantic_hash": ""
+  },
+  "tests/test_ai_workspace_config.py": {
+    "mtime": 1789239455.0893173,
+    "ast_hash": "4d7a070c3bae593194704cd7c66bd7b9",
+    "semantic_hash": ""
+  },
+  "tests/test_brand_assets.py": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "f72df62c14b48600acee957d0ee2dde7",
+    "semantic_hash": ""
+  },
+  "tests/test_codex_hooks.py": {
+    "mtime": 1789239455.0893173,
+    "ast_hash": "80d3ecda695eba0429079d910c96d49e",
+    "semantic_hash": ""
+  },
+  "tests/test_documentation_links.py": {
+    "mtime": 1789239992.847357,
+    "ast_hash": "015f10783dae61314f2d74d84565a534",
+    "semantic_hash": ""
+  },
+  "tests/test_graphify_navigation_policy.py": {
+    "mtime": 1789243524.0682564,
+    "ast_hash": "c0b9d0b088cd57479daf4a16f77eaa48",
+    "semantic_hash": ""
+  },
+  "tests/test_issue_templates.py": {
+    "mtime": 1789247409.3117495,
+    "ast_hash": "e65297d0a8fb0af4514be27522c8208c",
+    "semantic_hash": ""
+  },
+  "tests/test_repository_presentation.py": {
+    "mtime": 1789247409.3117495,
+    "ast_hash": "3d28e8c143306dc9621216eb372653f7",
+    "semantic_hash": ""
+  },
+  "tests/test_sound_detection.py": {
+    "mtime": 1789267546.323795,
+    "ast_hash": "23a792a4b2d6e50e2c5f3d94bfaacb04",
+    "semantic_hash": ""
+  },
+  ".agents/README.md": {
+    "mtime": 1789248204.072987,
+    "ast_hash": "541f628bbfb6e282dcca107e2cfd52a8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/brand-assets/SKILL.md": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "acbb858b19253591deed8ea953c1aa44",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify-navigation/SKILL.md": {
+    "mtime": 1789243524.064326,
+    "ast_hash": "940971501542f1481ff088cdad5372ae",
+    "semantic_hash": ""
+  },
+  ".agents/skills/issue-to-pr/SKILL.md": {
+    "mtime": 1789247409.3038793,
+    "ast_hash": "ccc50c37f21611a932946f60ebc07c83",
+    "semantic_hash": ""
+  },
+  ".agents/skills/product-roadmap-maintenance/SKILL.md": {
+    "mtime": 1789247409.3038793,
+    "ast_hash": "a6531858ce0c116c454c60d74c9c4b3a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/release-readiness/SKILL.md": {
+    "mtime": 1789247409.3038793,
+    "ast_hash": "c15d184994b6e8305876bf06cf04798e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/repository-presentation/SKILL.md": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "0a4c14567238df03e43eeed310296a32",
+    "semantic_hash": ""
+  },
+  ".agents/skills/safe-implementation/SKILL.md": {
+    "mtime": 1789247409.3038793,
+    "ast_hash": "077cdc5cd011b7d381fe43758829e699",
+    "semantic_hash": ""
+  },
+  ".agents/skills/security-review/SKILL.md": {
+    "mtime": 1789243524.064326,
+    "ast_hash": "25180236f72a67f50552e9051fdf0007",
+    "semantic_hash": ""
+  },
+  ".agents/skills/test-and-verify/SKILL.md": {
+    "mtime": 1789243524.064326,
+    "ast_hash": "fe6c0311cf8274a8334b52e450f94001",
+    "semantic_hash": ""
+  },
+  ".codex/README.md": {
+    "mtime": 1789247409.3038793,
+    "ast_hash": "2098fa8cef214b1a9d721a337d2f2152",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/architecture_proposal.yml": {
+    "mtime": 1789247409.3047495,
+    "ast_hash": "bc5798d018b0f0d0e9add41b38b80c93",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/bug_report.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "caee4a1642927d62713ddbf0d9d79e96",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/config.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "f3f3fa0323e123d2089c2b830cafbe44",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/documentation.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "1559dde021f931d7fa37a0e58ce499fd",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/feature_request.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "2036692b0c99d03a74dc440f8f1a4747",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/platform_request.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "e4497be8bcbc0118e9e998dd2c694c91",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/provider_bot.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "5548416b38a843b2b05e91ea8d8564cf",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/question.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "73939d6640268a9f7867dd267e9c4ffd",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/release_packaging.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "160330d88cfa432de48d8c5ac67db101",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/security-advisory.md": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "886135c41cec4ad959eda218053825c2",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/setup_installation.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "b68462227ac2e5b76fcfb09edc559750",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/ui_ux.yml": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "58756e3824b9468061a1ef521730f8c1",
+    "semantic_hash": ""
+  },
+  ".github/REPOSITORY_SETTINGS.md": {
+    "mtime": 1789247409.3057494,
+    "ast_hash": "e4647f0615aa81219b05ce884d24f44e",
+    "semantic_hash": ""
+  },
+  ".github/copilot-instructions.md": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "2e6ce5fba307fd378e0c538f7e6ec0a9",
+    "semantic_hash": ""
+  },
+  ".github/dependabot.yml": {
+    "mtime": 1789239976.2197156,
+    "ast_hash": "1fb64303539444796428a691063af582",
+    "semantic_hash": ""
+  },
+  ".github/instructions/runtime.instructions.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "2c605fe1f6f4193fe4e25b76000e79a5",
+    "semantic_hash": ""
+  },
+  ".github/instructions/tests.instructions.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "a39f904292711a7f089d55eb7d50ad59",
+    "semantic_hash": ""
+  },
+  ".github/prompts/README.md": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "04147235ef4ccd8dddc6c0e5744ab09b",
+    "semantic_hash": ""
+  },
+  ".github/prompts/add-feature.prompt.md": {
+    "mtime": 1789240438.0473745,
+    "ast_hash": "a7072ada62c0d34b5c1de841e6dcc265",
+    "semantic_hash": ""
+  },
+  ".github/prompts/api-change.prompt.md": {
+    "mtime": 1789240438.0473745,
+    "ast_hash": "4f1685ef38b73dd5c37b9155311bf8db",
+    "semantic_hash": ""
+  },
+  ".github/prompts/architecture-map.prompt.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "fce4fe4bfca66c226664ad2d4b1b21bc",
+    "semantic_hash": ""
+  },
+  ".github/prompts/backward-compatibility.prompt.md": {
+    "mtime": 1789240438.0473745,
+    "ast_hash": "8c55bc5c541c018e5ee909c91f649595",
+    "semantic_hash": ""
+  },
+  ".github/prompts/ci-failure.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "5b832d8637d2929f1b2a5c3118b50553",
+    "semantic_hash": ""
+  },
+  ".github/prompts/cleanup-dead-code.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "3e216f484275e576e4b97da62fc8861f",
+    "semantic_hash": ""
+  },
+  ".github/prompts/commit-message.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "b6f96b98e8685f1481005c732f27cf13",
+    "semantic_hash": ""
+  },
+  ".github/prompts/config-migration.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "9cf8983671d903fecf94d51c9d7ee811",
+    "semantic_hash": ""
+  },
+  ".github/prompts/cross-platform-review.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "2449719e71e0effa3af1be8876bdfc1b",
+    "semantic_hash": ""
+  },
+  ".github/prompts/debug-unknown-bug.prompt.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "b03c8838df25ab709f75fbafb0c73546",
+    "semantic_hash": ""
+  },
+  ".github/prompts/dependency-upgrade.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "01ed03fb53d6b014abc509680374755e",
+    "semantic_hash": ""
+  },
+  ".github/prompts/design-or-refresh-brand.prompt.md": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "72a57d7ef1b8e3ff381355c2a2f86e66",
+    "semantic_hash": ""
+  },
+  ".github/prompts/draft-issue.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "7b4e4da98f691ffae0cee4ea70626153",
+    "semantic_hash": ""
+  },
+  ".github/prompts/engineering-task.prompt.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "3914975cb26a7bec474dc42cbb050a74",
+    "semantic_hash": ""
+  },
+  ".github/prompts/explain-code.prompt.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "9f4ea47d2b66b85447784a0f53da7808",
+    "semantic_hash": ""
+  },
+  ".github/prompts/fix-failing-tests.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "0dcbd2a2ea4d6ac36e3c92adbfd4268c",
+    "semantic_hash": ""
+  },
+  ".github/prompts/fix-reproducible-bug.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "09581c2263945931c7e545a23eff1da0",
+    "semantic_hash": ""
+  },
+  ".github/prompts/graphify-navigation.prompt.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "bf3b6920fbf3aac3f3b5c6b3d415e97e",
+    "semantic_hash": ""
+  },
+  ".github/prompts/incident-analysis.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "0d7f3d45abae3e9032690e7308be6954",
+    "semantic_hash": ""
+  },
+  ".github/prompts/minimal-implementation.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "f2331e59ff325c103ec2cd41ac97ebba",
+    "semantic_hash": ""
+  },
+  ".github/prompts/modify-feature.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "acbd6dab261946b07cf6529f7a0406ed",
+    "semantic_hash": ""
+  },
+  ".github/prompts/onboard-to-repo.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "a3a2722400b1f993047206e59dcddf44",
+    "semantic_hash": ""
+  },
+  ".github/prompts/performance-investigation.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "c0dc543e44468a7e9b2dcff74c1885fb",
+    "semantic_hash": ""
+  },
+  ".github/prompts/plan-change.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "ce6b51c7b6eb5f85727405177171721a",
+    "semantic_hash": ""
+  },
+  ".github/prompts/pr-description.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "d7ecce02a55750e6bded3670f14676fe",
+    "semantic_hash": ""
+  },
+  ".github/prompts/privacy-review.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "9b75e14ee1c3365117ae745d755fcc3d",
+    "semantic_hash": ""
+  },
+  ".github/prompts/refactor-safely.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "b85f5ce8fd337d1270e0e6b36262fdbb",
+    "semantic_hash": ""
+  },
+  ".github/prompts/refresh-repository-presentation.prompt.md": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "c1905d81b007e816c08735e23034de47",
+    "semantic_hash": ""
+  },
+  ".github/prompts/release-notes.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "31512c69ec12dc04eb8c98924a762763",
+    "semantic_hash": ""
+  },
+  ".github/prompts/release-readiness.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "1f4f26913705ed2db76e600bc3654c54",
+    "semantic_hash": ""
+  },
+  ".github/prompts/reliability-review.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "c6e1f8c768a3c81d8a27e0cbafb17686",
+    "semantic_hash": ""
+  },
+  ".github/prompts/remove-feature.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "49789f6ed04a235884e36c343e5c782c",
+    "semantic_hash": ""
+  },
+  ".github/prompts/review-code.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "2604afbc85d2e9b47440693e2da6140f",
+    "semantic_hash": ""
+  },
+  ".github/prompts/review-pr.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "6e1e41973b02acaf3fc98db90bfd38b3",
+    "semantic_hash": ""
+  },
+  ".github/prompts/risk-assessment.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "a36e3cc1e353fd06559efccedfe47302",
+    "semantic_hash": ""
+  },
+  ".github/prompts/root-cause-analysis.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "4c51e982b363327234c745b824cfe5a8",
+    "semantic_hash": ""
+  },
+  ".github/prompts/security-review.prompt.md": {
+    "mtime": 1789240438.0475733,
+    "ast_hash": "bd0cf5598d76f2e5b1c224cebad2dca6",
+    "semantic_hash": ""
+  },
+  ".github/prompts/simplify-code.prompt.md": {
+    "mtime": 1789240438.0480359,
+    "ast_hash": "12df8aa8e7e0d959e209a777e8a24855",
+    "semantic_hash": ""
+  },
+  ".github/prompts/technical-debt-plan.prompt.md": {
+    "mtime": 1789240438.0480359,
+    "ast_hash": "5c9409bde89cf370e632816f7b1c7c47",
+    "semantic_hash": ""
+  },
+  ".github/prompts/triage-issue.prompt.md": {
+    "mtime": 1789240438.0480359,
+    "ast_hash": "d9a22e3e7f847557b8d7b8326714e369",
+    "semantic_hash": ""
+  },
+  ".github/prompts/understand-repository.prompt.md": {
+    "mtime": 1789243524.0662563,
+    "ast_hash": "0b3fb34720022521f96b8de03b7464d7",
+    "semantic_hash": ""
+  },
+  ".github/prompts/update-docs.prompt.md": {
+    "mtime": 1789240438.0480359,
+    "ast_hash": "cde9c464328f81eeb296fd65b6edec47",
+    "semantic_hash": ""
+  },
+  ".github/prompts/update-product-roadmap.prompt.md": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "abe94101e7a70842335e47add6e1cb97",
+    "semantic_hash": ""
+  },
+  ".github/prompts/verify-change.prompt.md": {
+    "mtime": 1789240438.0480359,
+    "ast_hash": "e40e33efac1514ab92a6a86953b1c683",
+    "semantic_hash": ""
+  },
+  ".github/prompts/write-tests.prompt.md": {
+    "mtime": 1789240438.0480359,
+    "ast_hash": "7d4d81cef554b89abb40a6ce5a78e691",
+    "semantic_hash": ""
+  },
+  ".github/pull_request_template.md": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "cdeb746a82439ebb7667bd97a77bcb89",
+    "semantic_hash": ""
+  },
+  ".github/repository-management/README.md": {
+    "mtime": 1789242417.4124615,
+    "ast_hash": "d1fe0cda5a7f95dca39aa48c9b0b3213",
+    "semantic_hash": ""
+  },
+  ".github/repository-management/releases/v11.1.0.md": {
+    "mtime": 1789242417.4131176,
+    "ast_hash": "b3a7cab4109a98d35bce7956fbc0318d",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1789238776.1146102,
+    "ast_hash": "5fb8c0ea88f40697dce89937780605ed",
+    "semantic_hash": ""
+  },
+  ".github/workflows/project-v2-bootstrap.yml": {
+    "mtime": 1789247409.3067496,
+    "ast_hash": "f8bbb0f84a7f59888dadda80ce93a465",
+    "semantic_hash": ""
+  },
+  ".github/workflows/repository-management-bootstrap.yml": {
+    "mtime": 1789242417.4132683,
+    "ast_hash": "74c6a11e1febc093b136f60ea1f64d38",
+    "semantic_hash": ""
+  },
+  ".github/workflows/repository-safety.yml": {
+    "mtime": 1789238776.1146657,
+    "ast_hash": "d956136976ceb05c4f74d44c224ddc8c",
+    "semantic_hash": ""
+  },
+  "AGENT.md": {
+    "mtime": 1789243524.0672565,
+    "ast_hash": "3e992149aae0d9f20f5452d41936254a",
+    "semantic_hash": ""
+  },
+  "CHANGELOG.md": {
+    "mtime": 1789265786.342982,
+    "ast_hash": "5c849bafa52ec5ae8b7e1bd8c0e33854",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1789243524.0672565,
+    "ast_hash": "509eb13b5988de5f94dc25d1cb4895d7",
+    "semantic_hash": ""
+  },
+  "CONTRIBUTING.md": {
+    "mtime": 1789247409.3086123,
+    "ast_hash": "7afed365755e1eca9ebd9d62ec5dbe74",
+    "semantic_hash": ""
+  },
+  "GEMINI.md": {
+    "mtime": 1789243524.0672565,
+    "ast_hash": "5d6a42286ac5ededdab579c0b3c92213",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1789265786.342982,
+    "ast_hash": "add3ef13a394dfc66bcb9a59d382658a",
+    "semantic_hash": ""
+  },
+  "SECURITY.md": {
+    "mtime": 1789238776.1154876,
+    "ast_hash": "fa5485104d8e9cd8e956e094fc1e7a98",
+    "semantic_hash": ""
+  },
+  "docs/AGENTS.md": {
+    "mtime": 1789247409.3087494,
+    "ast_hash": "49f73f33fb2f8c01eb9508f09b72e2fb",
+    "semantic_hash": ""
+  },
+  "docs/AI_AGENT_WORKFLOW.md": {
+    "mtime": 1789247409.3087494,
+    "ast_hash": "4492a6289625f894a32a3da37f59f7ec",
+    "semantic_hash": ""
+  },
+  "docs/ANGYSGUARD_PRODUCT_VISION.md": {
+    "mtime": 1789247409.3087494,
+    "ast_hash": "e0368ac7b47f38c69b7ff49b82a8a3fa",
+    "semantic_hash": ""
+  },
+  "docs/ARCHITECTURE.md": {
+    "mtime": 1789242417.413571,
+    "ast_hash": "d474cf7203abd4abcf58e47e31f8c731",
+    "semantic_hash": ""
+  },
+  "docs/BRAND_GUIDE.md": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "276654a93eea66712ece6f429659bfb7",
+    "semantic_hash": ""
+  },
+  "docs/BUG_TRIAGE_AND_FIXING.md": {
+    "mtime": 1789243524.0672565,
+    "ast_hash": "a6d1c39940c02e4beed9c8f34ef1aa1d",
+    "semantic_hash": ""
+  },
+  "docs/CONTROL_MODES.md": {
+    "mtime": 1789247409.3087494,
+    "ast_hash": "cc4483596147d884e50e673697ba89e3",
+    "semantic_hash": ""
+  },
+  "docs/FEATURE_LIFECYCLE.md": {
+    "mtime": 1789243524.0672565,
+    "ast_hash": "d70f6e13e83a8fecaeb3b486a3b3ddb8",
+    "semantic_hash": ""
+  },
+  "docs/GITHUB_SETUP.md": {
+    "mtime": 1789247409.3097496,
+    "ast_hash": "f976810a19e33fb43c8b1151a90e6f29",
+    "semantic_hash": ""
+  },
+  "docs/GRAPHIFY_NAVIGATION.md": {
+    "mtime": 1789243524.0682564,
+    "ast_hash": "fc44d75b32f1a8715f16e71b1ec5e65a",
+    "semantic_hash": ""
+  },
+  "docs/ISSUE_TRIAGE.md": {
+    "mtime": 1789247409.3097496,
+    "ast_hash": "53b5ab8d772c4fe71d134c9109f613ba",
+    "semantic_hash": ""
+  },
+  "docs/MAINTAINER_CHECKLIST.md": {
+    "mtime": 1789247409.3097496,
+    "ast_hash": "a370cca8be0b957e3f670b29a3663c27",
+    "semantic_hash": ""
+  },
+  "docs/PLATFORM_SUPPORT.md": {
+    "mtime": 1789247409.3097496,
+    "ast_hash": "e622ae738eb9d58802bfe1eb5352a231",
+    "semantic_hash": ""
+  },
+  "docs/PROJECT_MANAGEMENT.md": {
+    "mtime": 1789247409.3097496,
+    "ast_hash": "3aced4dbf9c9c90a1f84ce0eb3776b9f",
+    "semantic_hash": ""
+  },
+  "docs/README_MAINTENANCE.md": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "28ebca0b93c95bc25d126d903cf5c307",
+    "semantic_hash": ""
+  },
+  "docs/REPOSITORY_RENAME_AND_PROJECTS.md": {
+    "mtime": 1789247409.3097496,
+    "ast_hash": "596744d809f6cdaeb32bcaeec3a58839",
+    "semantic_hash": ""
+  },
+  "docs/ROADMAP.md": {
+    "mtime": 1789247409.3097496,
+    "ast_hash": "f798410cdd814cb641e3b3a2e9f17882",
+    "semantic_hash": ""
+  },
+  "docs/adr/0001-explicit-feature-registration.md": {
+    "mtime": 1789242417.413571,
+    "ast_hash": "dd0f161c24898686922713f5296aad5d",
+    "semantic_hash": ""
+  },
+  "docs/adr/0002-runtime-api-port.md": {
+    "mtime": 1789242417.4148982,
+    "ast_hash": "29c3929cfed699aaaee7cb5222df332a",
+    "semantic_hash": ""
+  },
+  "docs/adr/0003-shared-runtime-state.md": {
+    "mtime": 1789242417.4148982,
+    "ast_hash": "ba3e1bf129f97cccf24b80fea589eabb",
+    "semantic_hash": ""
+  },
+  "docs/adr/0004-layered-modular-monolith.md": {
+    "mtime": 1789242417.4148982,
+    "ast_hash": "fa75f6cd4c58794bbcc09090ac2aa36f",
+    "semantic_hash": ""
+  },
+  "docs/adr/0005-durable-owner-delivery.md": {
+    "mtime": 1789242417.4148982,
+    "ast_hash": "3530e310a29fd67d5af50d27257f3d6d",
+    "semantic_hash": ""
+  },
+  "docs/adr/0006-compatibility-facade-consolidation.md": {
+    "mtime": 1789242417.4148982,
+    "ast_hash": "207fcb0d94ca5a08bdd42f05a5da8f0b",
+    "semantic_hash": ""
+  },
+  "docs/adr/0007-passwordless-device-pairing.md": {
+    "mtime": 1789247409.3107495,
+    "ast_hash": "552efa622f726b104722609a53e13cba",
+    "semantic_hash": ""
+  },
+  "docs/adr/0008-cross-platform-capability-adapters.md": {
+    "mtime": 1789247409.3107495,
+    "ast_hash": "e358afcbcfc29b722d0cf13881bc1a1c",
+    "semantic_hash": ""
+  },
+  "docs/adr/README.md": {
+    "mtime": 1789247409.3107495,
+    "ast_hash": "7907a97147b904e62823b3df8e5523b8",
+    "semantic_hash": ""
+  },
+  "docs/architecture/BOUNDARIES.md": {
+    "mtime": 1789242417.4148982,
+    "ast_hash": "081d56a2a6673d76a059aaeac0354018",
+    "semantic_hash": ""
+  },
+  "docs/architecture/EVOLUTION_PLAN.md": {
+    "mtime": 1789242417.41539,
+    "ast_hash": "a09b5c6a90583baa9ea76327a228d1e8",
+    "semantic_hash": ""
+  },
+  "docs/architecture/FLOWS.md": {
+    "mtime": 1789242417.41539,
+    "ast_hash": "f9f8e0bc1c1f08e77d18873597dc86e5",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/README.md": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "fe127a869ba0b4157dc45e7bb1785140",
+    "semantic_hash": ""
+  },
+  "laptop_guard/AGENTS.md": {
+    "mtime": 1789243524.0682564,
+    "ast_hash": "fc5a12b063ad9c018162337558c338bc",
+    "semantic_hash": ""
+  },
+  "tests/AGENTS.md": {
+    "mtime": 1789243524.0682564,
+    "ast_hash": "9788b6f713d351099e5b3d875ab5963d",
+    "semantic_hash": ""
+  },
+  "docs/assets/angys_guard_logo.png": {
+    "mtime": 1789247447.633116,
+    "ast_hash": "e98a587bff0511cd21172fe09c81e1b3",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/angysguard-app-icon.svg": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "1a528d02c7c215568332be2a3cbf30c8",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/angysguard-mark-monochrome.svg": {
+    "mtime": 1789248204.0739872,
+    "ast_hash": "d0b49b9a0322ad1ad140fe668d9447e7",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/angysguard-mark.svg": {
+    "mtime": 1789247409.3113956,
+    "ast_hash": "2597e4faeb9a703fa71d60b607e35aa2",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/angysguard-readme-hero.svg": {
+    "mtime": 1789248204.0749872,
+    "ast_hash": "2f16f24e346b80503e12725e8a72e341",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/angysguard-wordmark-dark.svg": {
+    "mtime": 1789248204.0749872,
+    "ast_hash": "fe73ec612a18a3dce6ef2f5b3c89e001",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/angysguard-wordmark-light.svg": {
+    "mtime": 1789248204.0749872,
+    "ast_hash": "61f757ac3e96681f4ffb66277a667977",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-1024.svg": {
+    "mtime": 1789248204.0761497,
+    "ast_hash": "b4a0c6b994c2bb7992835774eeb18c63",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-128.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "7cda8ef35b46637d69df73389d5edf27",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-16.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "2692b1ce6d4df0629f2a3d5315bbfc80",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-180.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "4402c2d5d187bc44648dc4c82fa48fb2",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-192.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "082048d666bc4a55112726fc45697176",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-20.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "4d465e94d2bf8cc6bca44689095c580f",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-24.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "8488596ffe58d53a2c96ea863834679e",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-256.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "be3eadc7cb36e44153a6fc5b9854d1ab",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-32.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "640af8a8d3f18183ca1251cd9cb8ddf2",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-48.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "fe1654826afcd023ec33c074858fe00e",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-512.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "ed1de04e42886fa49401614f13f9427f",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-64.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "8f3475cd5ad15255a9fcc475fbdedd54",
+    "semantic_hash": ""
+  },
+  "docs/assets/brand/icons/svg/angysguard-96.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "a727bae2857ea82382f4daa611f25f85",
+    "semantic_hash": ""
+  },
+  "docs/assets/laptop-guard-overview.svg": {
+    "mtime": 1789248204.0762386,
+    "ast_hash": "2f16f24e346b80503e12725e8a72e341",
+    "semantic_hash": ""
+  },
+  "tests/test_audio_cleanup.py": {
+    "mtime": 1789267633.5714798,
+    "ast_hash": "273223007e80f3da0ecfaf01056e0be5",
     "semantic_hash": ""
   }
 }

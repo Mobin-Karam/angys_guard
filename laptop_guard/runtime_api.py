@@ -27,7 +27,7 @@ class RuntimeApi(Protocol):
     def send_voice(self, chat_id: int, path: Path, caption: str = "") -> Any: ...
     def send_document(self, chat_id: int, path: Path, caption: str = "") -> Any: ...
     def get_file(self, file_id: str) -> dict[str, Any]: ...
-    def download_file(self, file_id: str, destination: Path) -> Path: ...
+    def download_file(self, file_id: str, destination: Path, max_bytes: int | None = None) -> Path: ...
 
 
 class LocalRuntimeApi:
@@ -57,7 +57,7 @@ class LocalRuntimeApi:
     def get_file(self, file_id: str) -> dict[str, Any]:
         return {}
 
-    def download_file(self, file_id: str, destination: Path) -> Path:
+    def download_file(self, file_id: str, destination: Path, max_bytes: int | None = None) -> Path:
         raise RuntimeError("Remote file download is unavailable in local mode")
 
 

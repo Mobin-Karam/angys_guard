@@ -27,8 +27,9 @@ from .screen_capture import ScreenCapture
 from .stop_auth import StopPinStore, read_secret_with_timeout
 from .runtime_api import RuntimeApi, build_runtime_api
 from .runtime_state import GuardRuntimeState
-from .features import FailedLoginFeature, FeatureManager, SoundDetectionFeature, SystemInfoFeature
+from .features import FailedLoginFeature, FeatureManager, SystemInfoFeature
 from .input_monitor import InputMonitor
+from .sound_detection import SoundDetectionMonitor
 from .warning_sequence import dismiss_warning, launch_warning
 from .system_actions import (
     lock_screen as native_lock_screen,
@@ -76,12 +77,17 @@ class LaptopGuard:
         self.features = FeatureManager()
         self.features.install(SystemInfoFeature(self))
         self.features.install(FailedLoginFeature(self, self.config.monitors.failed_login_events))
-        self.sound_detection = SoundDetectionFeature(self, self.config.audio)
-        self.features.install(self.sound_detection)
         self.state = GuardRuntimeState()
         self.state_lock = threading.RLock()
         self.stop_event = threading.Event()
         self.events = EventLog()
+        self.sound_detection = SoundDetectionMonitor(
+            self.config.audio,
+            is_active=self.state.active,
+            owner_available=lambda: self._owner_chat() is not None,
+            on_event=lambda kind, detail, severity: self.events.add(kind, detail, severity),
+            on_clip=self._send_file_async,
+        )
         self.screen = ScreenCapture()
         self.chat = SecurityChatManager(visitor_callback=self._visitor_text)
         self.intercom = AudioIntercom(self._send_intercom_chunk, self.config.audio.intercom_chunk_seconds)
@@ -213,6 +219,7 @@ class LaptopGuard:
         with self.state_lock:
             self.state.mutate(armed=False, grace_until=0.0)
             self.mouse_anchor = None
+        self.sound_detection.cancel_capture()
         self.events.add("disarm", "Guard disarmed")
 
     def allow_for(self, minutes: int) -> None:
@@ -221,6 +228,7 @@ class LaptopGuard:
         with self.state_lock:
             self.state.mutate(grace_until=time.time() + minutes * 60)
             self.mouse_anchor = None
+        self.sound_detection.cancel_capture()
         self.events.add("grace", f"Local use allowed for {minutes} minutes")
 
     # --------------------------- warning / input detection
@@ -424,19 +432,9 @@ class LaptopGuard:
         def worker() -> None:
             self.sound_detection.pause()
             try:
-                meta = self.api.get_file(file_id)
-                suffix = Path(str(meta.get("file_path") or "voice.ogg")).suffix or ".ogg"
-                path = MEDIA_DIR / f"owner-voice-{datetime.now():%Y%m%d-%H%M%S-%f}{suffix}"
-                # Avoid a second getFile call by downloading directly from metadata.
-                file_path = str(meta.get("file_path") or "")
-                if not file_path:
-                    return
-                with self.api.session.get(self.api._file_url(file_path), stream=True, timeout=120) as response:
-                    response.raise_for_status()
-                    with path.open("wb") as out:
-                        for chunk in response.iter_content(131072):
-                            if chunk:
-                                out.write(chunk)
+                path = MEDIA_DIR / f"owner-voice-{datetime.now():%Y%m%d-%H%M%S-%f}.ogg"
+                max_bytes = max(1, int(self.config.audio.max_remote_file_mb)) * 1024 * 1024
+                self.api.download_file(file_id, path, max_bytes=max_bytes)
                 notify("پیام صوتی مالک در حال پخش است")
                 ok = play_audio(path)
                 self.events.add("owner_voice", f"played={ok}", "info", str(path))
@@ -649,12 +647,6 @@ class LaptopGuard:
     def feature_notify_owner(self, text: str) -> None:
         self._send_async(text)
 
-    def feature_send_owner_file(self, kind: str, path: object, caption: str = "") -> None:
-        self._send_file_async(kind, Path(path), caption)
-
-    def feature_guard_active(self) -> bool:
-        return self.state.active()
-
     def _edit_or_reply(self, chat_id: int, message_id: int | None, text: str, markup: dict | None = None) -> None:
         if message_id is not None:
             try:
@@ -866,6 +858,15 @@ class LaptopGuard:
         file_id = str(attachment.get("file_id") or "")
         if not file_id:
             return False
+        try:
+            file_size = int(attachment.get("file_size") or 0)
+        except (TypeError, ValueError):
+            file_size = 0
+        max_bytes = max(1, int(self.config.audio.max_remote_file_mb)) * 1024 * 1024
+        if file_size > max_bytes:
+            self._reply_to_chat(chat_id, f"⚠️ فایل صوتی بزرگ‌تر از حد مجاز {self.config.audio.max_remote_file_mb} MB است.")
+            self.events.add("owner_voice_rejected", f"oversize={file_size}", "warning")
+            return True
         if self.config.audio.auto_play_owner_voice or self.intercom.active:
             if self.chat.active:
                 self.chat.send_owner("🔊 پیام صوتی مالک در حال پخش است. / Owner voice message is playing.", self.config.chat.seconds)
@@ -1158,21 +1159,35 @@ class LaptopGuard:
         except Exception: pass
         notify(f"ضبط صدای محیط برای {seconds} ثانیه فعال شد")
         self._reply_to_chat(chat_id, f"🎙 ضبط صدای محیط برای {seconds} ثانیه شروع شد.")
+        self.sound_detection.pause()
         def worker():
-            path, kind = record_audio(seconds, "listen")
-            if not path: self._reply_to_chat(chat_id, "⚠️ میکروفون/ابزار ضبط در دسترس نیست."); return
             try:
+                path, kind = record_audio(seconds, "listen")
+                if not path:
+                    self._reply_to_chat(chat_id, "⚠️ میکروفون/ابزار ضبط در دسترس نیست.")
+                    return
                 if kind == "voice": self.api.send_voice(chat_id, path, "🎙 صدای محیط")
                 elif kind == "audio": self.api.send_audio(chat_id, path, "🎙 صدای محیط")
                 else: self.api.send_document(chat_id, path, "🎙 فایل صدای محیط")
             except Exception as exc: self._reply_to_chat(chat_id, f"⚠️ ارسال صدا ناموفق بود: {exc}")
+            finally:
+                self.sound_detection.resume()
         threading.Thread(target=worker, daemon=True).start()
 
     def _start_intercom(self, chat_id: int, seconds: int) -> None:
         seconds = max(10, min(seconds, self.config.audio.intercom_max_seconds))
+        self.sound_detection.pause()
         if self.intercom.start(seconds):
             self._reply_to_chat(chat_id, f"🗣 Voice Intercom برای {seconds} ثانیه فعال شد. Voiceهای شما هم‌زمان روی لپ‌تاپ پخش می‌شوند.")
+
+            def resume_after_intercom() -> None:
+                while self.intercom.active and not self.stop_event.wait(0.2):
+                    pass
+                self.sound_detection.resume()
+
+            threading.Thread(target=resume_after_intercom, daemon=True, name="sound-resume-after-intercom").start()
         else:
+            self.sound_detection.resume()
             self._reply_to_chat(chat_id, "ℹ️ Voice Intercom از قبل فعال است.")
 
     def _send_events(self, chat_id: int) -> None:
@@ -1475,6 +1490,7 @@ class LaptopGuard:
             self.state.input_ok = False
             print(f"[input] listener startup failed: {exc}")
             self._send_async(f"⚠️ Input monitoring شروع نشد: {exc}")
+        self.sound_detection.start()
         if self.config.security.auto_arm:
             self.arm()
         else:
@@ -1489,6 +1505,7 @@ class LaptopGuard:
         self.stop_event.set()
         self._cancel_pending_lock()
         self.intercom.stop()
+        self.sound_detection.stop()
         self.tts.stop()
         self.chat.stop()
         self.features.stop()

@@ -204,7 +204,7 @@ Linux can use a deliberately designed local service/policy boundary; Windows sho
 | **Protected stopping** | Local stop protection with PIN/owner confirmation paths and fail-closed watchdog behavior where configured. |
 | **Event history** | SQLite-backed event history and durable outbound queue foundations. |
 | **Secure state/config** | Protected local configuration/secrets; a tracked project `.env` is not required. |
-| **Audio + communication** | Recording/playback, TTS, intercom-style communication and visible chat/notepad surfaces. |
+| **Audio + communication** | Recording/playback, one-way owner voice, TTS, intercom-style communication and visible chat/notepad surfaces. Optional armed-mode sound-triggered clips are experimental and require target microphone validation. |
 | **RTL/LTR support** | Persian/RTL-aware rendering alongside LTR text. |
 | **Service/autostart** | systemd user-service support with startup and automatic arming as separate decisions. |
 | **Local control API** | Optional authenticated loopback-only fixed-action API. |
