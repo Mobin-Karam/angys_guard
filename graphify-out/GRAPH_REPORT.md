@@ -1,16 +1,16 @@
 # Graph Report - laptop_guard_v3  (2026-09-13)
 
 ## Corpus Check
-- 229 files · ~164,958 words
+- 232 files · ~165,570 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1675 nodes · 2635 edges · 181 communities (140 shown, 41 thin omitted)
+- 1696 nodes · 2670 edges · 193 communities (147 shown, 46 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 84 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e8232d5d`
+- Built from commit: `46dff44b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -58,6 +58,7 @@
 - Laptop Guard 11.1
 - Laptop Guard agent guide
 - test_config_robustness.py
+- test_config_robustness.py
 - Security-preserving extension rules
 - Guided setup and owner pairing
 - Secure configuration defaults
@@ -80,6 +81,7 @@
 - HTTP transport duplication
 - Automated validation suite
 - Target-device validation
+- build_runtime_api
 - Feature lifecycle: add, change, fix, and remove features
 - AngysGuard brand guide
 - Repository presentation and README maintenance
@@ -99,6 +101,7 @@
 - test_repository_presentation.py
 - Runtime and security flows
 - pull_request_template.md
+- GRAPHIFY_NAVIGATION.md
 - AngysGuard brand assets
 - Codex project workspace
 - Future mode B — AngysGuard managed bot/service
@@ -111,6 +114,7 @@
 - Recommended GitHub Repository Settings
 - Current owner interfaces
 - AngysGuard repository rename and GitHub Projects runbook
+- apply_profile
 - Laptop Guard v11.1.0
 - Runtime code instructions
 - Security Policy
@@ -130,9 +134,11 @@
 - Repository management configuration
 - sync_repository_profile.py
 - pre_tool_use_policy.py
+- test_persian_tts.py
 - Test instructions
 - Project AI skills
 - Laptop Guard AI instructions
+- test_secret_config.py
 - SKILL.md
 - SKILL.md
 - SKILL.md
@@ -142,10 +148,16 @@
 - SKILL.md
 - security-advisory.md
 - design-or-refresh-brand.prompt.md
+- Target self-hosted setup
+- check_tracked_secrets.py
+- test_repository_secret_safety.py
+- test_config_robustness.py
+- test_v6_config_migration.py
+- bounded_callback_int
 
 ## God Nodes (most connected - your core abstractions)
 1. `LaptopGuard` - 89 edges
-2. `AppConfig` - 52 edges
+2. `AppConfig` - 55 edges
 3. `FeatureManager` - 31 edges
 4. `load_config()` - 27 edges
 5. `SoundDetectionMonitor` - 26 edges
@@ -170,23 +182,19 @@
 ## Import Cycles
 - None detected.
 
-## Communities (181 total, 41 thin omitted)
+## Communities (193 total, 46 thin omitted)
 
 ### Community 0 - "cli.py"
 Cohesion: 0.12
-Nodes (35): camera_label(), build_parser(), cmd_arm(), cmd_autostart(), cmd_config(), cmd_disarm(), cmd_doctor(), cmd_events() (+27 more)
-
-### Community 1 - "LaptopGuard"
-Cohesion: 0.07
-Nodes (6): notify(), inline_keyboard(), LaptopGuard, main(), Any, Path
+Nodes (32): build_parser(), cmd_arm(), cmd_autostart(), cmd_config(), cmd_disarm(), cmd_doctor(), cmd_events(), cmd_health() (+24 more)
 
 ### Community 2 - "FeatureManager"
 Cohesion: 0.05
 Nodes (28): CallbackHandler, CommandHandler, Feature, FeatureHost, Protocol, Narrow host surface available to features., Explicit extension point; features are registered, never auto-imported., FailedLoginEvent (+20 more)
 
 ### Community 3 - "guard.py"
-Cohesion: 0.05
-Nodes (40): Indicator, main(), AudioIntercom, play_audio(), Path, Visible near-live voice intercom.      Bale Bot API transports voice/audio messa, record_audio(), bounded_callback_int() (+32 more)
+Cohesion: 0.09
+Nodes (14): AudioIntercom, notify(), play_audio(), Path, Visible near-live voice intercom.      Bale Bot API transports voice/audio messa, record_audio(), normalize_voice(), package_available() (+6 more)
 
 ### Community 4 - "SecurityChatManager"
 Cohesion: 0.06
@@ -194,19 +202,19 @@ Nodes (30): Direction, DirectionMode, _append(), _atomic_text(), Path, Visible l
 
 ### Community 5 - "CameraMonitor"
 Cohesion: 0.09
-Nodes (19): CameraMonitor, CameraDevice, _decode_c_string(), discover_cameras(), _linux_capability(), open_camera(), probe_camera(), Path (+11 more)
+Nodes (20): CameraMonitor, camera_label(), CameraDevice, _decode_c_string(), discover_cameras(), _linux_capability(), open_camera(), probe_camera() (+12 more)
 
 ### Community 6 - "HttpBotProvider"
 Cohesion: 0.12
 Nodes (10): ABC, BotProvider, ProviderError, Any, Path, RuntimeError, HttpBotProvider, Any (+2 more)
 
 ### Community 7 - "BaleApi"
-Cohesion: 0.14
-Nodes (12): _apply_legacy_env(), _apply_section(), _coerce_like(), ensure_dirs(), _migrate(), Any, Persist non-secret configuration to config.toml.      Bot/API secrets deliberate, One-way compatibility for users launching with exported old variables.      The (+4 more)
+Cohesion: 0.11
+Nodes (21): _apply_legacy_env(), _apply_section(), _atomic_write_private(), _coerce_like(), ensure_dirs(), get_bot_token(), import_legacy_env_secrets(), _migrate() (+13 more)
 
 ### Community 8 - "StopPinStore"
-Cohesion: 0.10
-Nodes (24): _failed_login_monitor_ok(), main(), _persian_tts_ok(), _psutil_ok(), run_doctor(), _tk_ok(), _video_player_ok(), _warning_video_ok() (+16 more)
+Cohesion: 0.16
+Nodes (10): _authorized_safe_exit(), PinCheck, Path, Read one hidden terminal line with a hard timeout.      Returns None when no int, Persistent local shutdown PIN verifier.      The plaintext PIN is never stored., read_secret_with_timeout(), StopPinStore, test_safe_exit_token_is_one_time() (+2 more)
 
 ### Community 9 - "Full system audit"
 Cohesion: 0.13
@@ -220,16 +228,12 @@ Nodes (10): EventLog, Path, EventStore, OutboxItem, Path, test_event_log_roundtr
 Cohesion: 0.07
 Nodes (22): AudioRecorder, Path, Local TTS for short owner messages. No cloud service is used., Record a short clip synchronously for the localhost control API., RemoteAudioPlayer, TextToSpeechPlayer, AudioConfig, pcm_rms() (+14 more)
 
-### Community 12 - "RuntimeStateStore"
-Cohesion: 0.17
-Nodes (9): GuardRuntimeState, Live facade over the shared persisted runtime state.      Assignments are immedi, Path, RuntimeState, RuntimeStateStore, test_guard_state_observes_external_cli_changes(), test_guard_state_persists_assignments(), Path (+1 more)
-
 ### Community 13 - "config.py"
-Cohesion: 0.24
-Nodes (17): BaseException, import_legacy_env_secrets(), Import an already-exported legacy bot token into secrets.json once., _ask_valid_token(), _auth_error(), ensure_runtime_configuration(), _interactive(), _pair_owner_chat() (+9 more)
+Cohesion: 0.25
+Nodes (17): BaseException, default_api_base(), build_provider(), _ask_valid_token(), _auth_error(), ensure_runtime_configuration(), _interactive(), _pair_owner_chat() (+9 more)
 
 ### Community 14 - "AppConfig"
-Cohesion: 0.07
+Cohesion: 0.08
 Nodes (30): ApiConfig, AppConfig, AppsConfig, BotConfig, ChatConfig, CommunicationConfig, MonitorConfig, ScreenConfig (+22 more)
 
 ### Community 15 - "RuntimeApi"
@@ -249,8 +253,8 @@ Cohesion: 0.24
 Nodes (6): collect_health(), HealthMonitor, HealthSnapshot, _temperature(), HealthConfig, test_health_snapshot_is_non_throwing()
 
 ### Community 19 - "runtime_config.py"
-Cohesion: 0.33
-Nodes (12): default_api_base(), get_api_token(), get_bot_token(), _read_secrets(), set_api_token(), set_bot_token(), build_provider(), _choose_camera() (+4 more)
+Cohesion: 0.17
+Nodes (9): GuardRuntimeState, Live facade over the shared persisted runtime state.      Assignments are immedi, Path, RuntimeState, RuntimeStateStore, test_guard_state_observes_external_cli_changes(), test_guard_state_persists_assignments(), Path (+1 more)
 
 ### Community 20 - "models.py"
 Cohesion: 0.05
@@ -309,12 +313,20 @@ Cohesion: 0.09
 Nodes (23): Application layer, Architectural goal, Architecture, Architecture review checklist, Compatibility layers, Composition root, Concurrency model, Current runtime (+15 more)
 
 ### Community 43 - "Laptop Guard agent guide"
-Cohesion: 0.22
-Nodes (3): FakeResponse, FakeSession, test_send_message_serializes_inline_keyboard()
+Cohesion: 0.36
+Nodes (10): _format_duration(), _human_bytes(), lock_screen(), poweroff_system(), Best-effort owner-requested session unlock.      Windows intentionally returns u, reboot_system(), _run_first(), suspend_system() (+2 more)
 
 ### Community 44 - "test_config_robustness.py"
 Cohesion: 0.10
 Nodes (21): 10. AI-agent workflows for finding and fixing bugs, 11. Verification after the fix, 12. Bug-fix completion checklist, 1. Start with evidence, not code changes, 2. Map the symptom with Graphify before broad searching, 3. Classify the failure, 4. Reproduce the smallest failing case, 5. Use canonical docs only after navigation is narrowed (+13 more)
+
+### Community 45 - "test_config_robustness.py"
+Cohesion: 0.35
+Nodes (11): _build_player_command(), dismiss_warning(), launch_warning(), main(), _notification_fallback(), _notify(), play_warning_video(), Path (+3 more)
+
+### Community 68 - "build_runtime_api"
+Cohesion: 0.22
+Nodes (3): FakeResponse, FakeSession, test_send_message_serializes_inline_keyboard()
 
 ### Community 69 - "Feature lifecycle: add, change, fix, and remove features"
 Cohesion: 0.10
@@ -388,6 +400,10 @@ Nodes (9): Configuration change while running, Event and owner delivery, Evidenc
 Cohesion: 0.20
 Nodes (9): Discovery / scope, Manual checks, Platform / control-mode impact, Related work, Repository presentation, Risk / rollback, Summary, Type of change (+1 more)
 
+### Community 89 - "GRAPHIFY_NAVIGATION.md"
+Cohesion: 0.42
+Nodes (8): get_api_token(), Enable/disable startup at graphical user login.      Laptop Guard needs the user, set_autostart(), _choose_camera(), detect_audio_sources(), pair_chat(), Console, run_setup()
+
 ### Community 90 - "AngysGuard brand assets"
 Cohesion: 0.22
 Nodes (8): AngysGuard brand assets, Canonical sources, Handoff, Logo rule, Palette, Product/category rule, Review checklist, Workflow
@@ -435,6 +451,10 @@ Nodes (11): 1. Local CLI and guided setup — available now, 2. Bale bot — cur
 ### Community 101 - "AngysGuard repository rename and GitHub Projects runbook"
 Cohesion: 0.29
 Nodes (6): AngysGuard repository rename and GitHub Projects runbook, Canonical repository name, GitHub Project v2, Project bootstrap, Rename action, Security
+
+### Community 102 - "apply_profile"
+Cohesion: 0.42
+Nodes (8): _failed_login_monitor_ok(), main(), _persian_tts_ok(), _psutil_ok(), run_doctor(), _tk_ok(), _video_player_ok(), _warning_video_ok()
 
 ### Community 103 - "Laptop Guard v11.1.0"
 Cohesion: 0.29
@@ -516,20 +536,40 @@ Nodes (3): deny(), main(), protected_patch_target()
 Cohesion: 0.50
 Nodes (3): Find tests with Graphify first, Test instructions, Test rules
 
+### Community 128 - "test_secret_config.py"
+Cohesion: 0.57
+Nodes (6): Path, _redirect_paths(), test_legacy_secret_import_is_optional_without_environment(), test_private_write_normalizes_existing_permissions(), test_private_write_preserves_destination_on_replace_failure(), test_tokens_are_private_and_separate_from_config()
+
+### Community 186 - "Target self-hosted setup"
+Cohesion: 0.43
+Nodes (6): main(), _pid_alive(), Lock when the guard disappears unless it completed owner-authorized exit.      T, watch(), test_current_pid_is_alive(), test_invalid_pid_is_not_alive()
+
+### Community 187 - "check_tracked_secrets.py"
+Cohesion: 0.83
+Nodes (3): is_blocked_path(), main(), tracked_paths()
+
+### Community 188 - "test_repository_secret_safety.py"
+Cohesion: 0.38
+Nodes (5): _load_checker(), Path, test_checker_command_rejects_blocked_tracked_file(), test_current_git_index_contains_no_blocked_secret_paths(), test_secret_filename_policy()
+
+### Community 191 - "bounded_callback_int"
+Cohesion: 0.60
+Nodes (4): bounded_callback_int(), Parse an integer callback suffix without letting malformed input crash polling., test_callback_integer_is_bounded(), test_malformed_callback_integer_uses_default()
+
 ## Knowledge Gaps
 - **544 isolated node(s):** `doctor.sh script`, `install.sh script`, `BotConfig`, `CommunicationConfig`, `ScreenConfig` (+539 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **46 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `LaptopGuard` connect `LaptopGuard` to `cli.py`, `guard.py`, `SecurityChatManager`, `StopPinStore`, `EventStore`, `AudioConfig`, `RuntimeStateStore`, `config.py`, `AppConfig`, `RuntimeApi`, `ScreenCaptureManager`, `launch_warning`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
-- **Why does `AppConfig` connect `AppConfig` to `cli.py`, `guard.py`, `BaleApi`, `config.py`, `RuntimeApi`, `test_v33_features.py`, `runtime_config.py`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
-- **Why does `build_provider()` connect `runtime_config.py` to `cli.py`, `config.py`, `HttpBotProvider`?**
-  _High betweenness centrality (0.021) - this node is a cross-community bridge._
+- **Why does `LaptopGuard` connect `LaptopGuard` to `cli.py`, `guard.py`, `SecurityChatManager`, `StopPinStore`, `EventStore`, `Laptop Guard agent guide`, `RuntimeStateStore`, `config.py`, `AudioConfig`, `RuntimeApi`, `ScreenCaptureManager`, `runtime_config.py`, `launch_warning`, `test_persian_tts.py`, `test_config_robustness.py`?**
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+- **Why does `AppConfig` connect `AppConfig` to `cli.py`, `test_secret_config.py`, `guard.py`, `BaleApi`, `config.py`, `RuntimeApi`, `test_v33_features.py`, `GRAPHIFY_NAVIGATION.md`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Why does `build_provider()` connect `config.py` to `cli.py`, `GRAPHIFY_NAVIGATION.md`, `HttpBotProvider`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **Are the 14 inferred relationships involving `LaptopGuard` (e.g. with `AudioIntercom` and `BaleApiError`) actually correct?**
   _`LaptopGuard` has 14 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 12 inferred relationships involving `AppConfig` (e.g. with `LocalRuntimeApi` and `RuntimeApi`) actually correct?**

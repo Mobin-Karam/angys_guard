@@ -11,8 +11,19 @@ dist/
 .env.*
 !.env.example
 secrets.json
+stop-pin.json
+credentials.json
 *.secret
 *.secrets
+*.key
+*.pem
+*.ppk
+*.p12
+*.pfx
+*.jks
+.netrc
+.npmrc
+.pypirc
 
 # Local runtime/config artifacts
 *.log
