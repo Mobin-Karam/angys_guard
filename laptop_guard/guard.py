@@ -103,6 +103,16 @@ class LaptopGuard:
         self.frame_lock = threading.Lock()
         self.mouse_anchor: tuple[float, float] | None = None
         self.camera_thread: threading.Thread | None = None
+
+        # Runtime camera power/control state.
+        # The camera worker stays alive, but when this event is cleared it
+        # releases VideoCapture so this process no longer owns the webcam.
+        self.camera_enabled_event = threading.Event()
+        self.camera_released_event = threading.Event()
+        self.camera_released_event.set()
+        if bool(getattr(self.config.camera, "enabled", True)):
+            self.camera_enabled_event.set()
+
         self.input_monitor = InputMonitor(
             self.config.security.mouse_move_threshold,
             self.trigger_input_alert,
@@ -334,65 +344,203 @@ class LaptopGuard:
 
     # --------------------------- camera
 
-    def camera_worker(self) -> None:
-        cap = cv2.VideoCapture(self.config.camera.index)
-        if not cap.isOpened():
-            print(f"[camera] cannot open index {self.config.camera.index}")
-            self._send_async(f"⚠️ دوربین {self.config.camera.index} قابل دسترسی نیست.")
-            return
+    @property
+    def camera_enabled(self) -> bool:
+        """True when camera use is enabled at runtime."""
+        return self.camera_enabled_event.is_set()
+
+    def turn_camera_on(self) -> bool:
+        """Allow the camera worker to open/reopen the webcam."""
+        if self.stop_event.is_set():
+            return False
+
+        already_enabled = self.camera_enabled
+        self.camera_enabled_event.set()
+
+        # Keep a config.enabled field in sync when that field exists, but do not
+        # require it because older CameraConfig versions may not define it.
+        if hasattr(self.config.camera, "enabled"):
+            try:
+                self.config.camera.enabled = True
+            except Exception:
+                pass
+
+        if not already_enabled:
+            self.events.add("camera_on", "Owner enabled camera", "info")
+        return True
+
+    def turn_camera_off(self) -> bool:
+        """Disable camera use and wait briefly for VideoCapture to be released."""
+        was_enabled = self.camera_enabled
+        self.camera_enabled_event.clear()
+
+        if hasattr(self.config.camera, "enabled"):
+            try:
+                self.config.camera.enabled = False
+            except Exception:
+                pass
+
+        # Never allow a stale frame to be used while the camera is OFF.
+        with self.frame_lock:
+            self.last_frame = None
+
         with self.state_lock:
-            self.state.camera_ok = True
-        subtractor = cv2.createBackgroundSubtractorMOG2(history=350, varThreshold=35, detectShadows=True)
-        warmup = max(12, self.config.camera.fps * 2)
-        count = 0
-        sleep_for = max(0.03, 1.0 / self.config.camera.fps)
-        try:
-            while not self.stop_event.is_set():
-                ok, frame = cap.read()
-                if not ok:
-                    time.sleep(0.3)
-                    continue
-                with self.frame_lock:
-                    self.last_frame = frame.copy()
-                count += 1
-                if count <= warmup:
-                    subtractor.apply(frame)
-                    time.sleep(sleep_for)
-                    continue
+            self.state.camera_ok = False
+
+        # camera_worker sets this after cap.release(). The timeout prevents a
+        # slow/broken camera driver from blocking Bale polling indefinitely.
+        self.camera_released_event.wait(timeout=2.0)
+
+        if was_enabled:
+            self.events.add("camera_off", "Owner disabled camera", "info")
+        return True
+
+    def toggle_camera(self) -> bool:
+        """Toggle the camera and return the new enabled state."""
+        if self.camera_enabled:
+            self.turn_camera_off()
+            return False
+        return self.turn_camera_on()
+
+    def camera_worker(self) -> None:
+        """Keep one camera worker alive and open the device only while enabled."""
+        unavailable_reported = False
+
+        while not self.stop_event.is_set():
+            # OFF state: do not own /dev/video* and simply wait for ON.
+            if not self.camera_enabled_event.is_set():
                 with self.state_lock:
-                    active = self.state.active()
-                if not active or not self.config.camera.motion_enabled:
-                    subtractor.apply(frame, learningRate=0.01)
-                    time.sleep(sleep_for)
-                    continue
-                h, w = frame.shape[:2]
-                if w > 640:
-                    scale = 640 / w
-                    small = cv2.resize(frame, (640, int(h * scale)), interpolation=cv2.INTER_AREA)
-                else:
-                    small = frame
-                fg = subtractor.apply(small)
-                fg = cv2.GaussianBlur(fg, (5, 5), 0)
-                _, mask = cv2.threshold(fg, 210, 255, cv2.THRESH_BINARY)
-                mask = cv2.dilate(mask, None, iterations=2)
-                contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-                moving = any(cv2.contourArea(c) >= self.config.camera.motion_min_area for c in contours)
-                now = time.time()
-                if moving:
-                    with self.state_lock:
-                        can = now - self.state.last_motion_alert >= self.config.camera.motion_cooldown
-                        if can:
-                            self.state.last_motion_alert = now
-                    if can:
-                        path = self._camera_snapshot_file("motion")
-                        if path:
-                            self.events.add("motion", "Motion detected near laptop", "medium", str(path))
-                            self._send_file_async("photo", path, f"📷 حرکت نزدیک لپ‌تاپ • {datetime.now():%H:%M:%S}")
-                time.sleep(sleep_for)
-        finally:
-            cap.release()
+                    self.state.camera_ok = False
+                with self.frame_lock:
+                    self.last_frame = None
+                self.camera_released_event.set()
+                self.camera_enabled_event.wait(timeout=0.5)
+                continue
+
+            self.camera_released_event.clear()
+            cap = cv2.VideoCapture(self.config.camera.index)
+
+            if not cap.isOpened():
+                try:
+                    cap.release()
+                except Exception:
+                    pass
+
+                with self.state_lock:
+                    self.state.camera_ok = False
+                self.camera_released_event.set()
+
+                if not unavailable_reported:
+                    print(f"[camera] cannot open index {self.config.camera.index}")
+                    self._send_async(f"⚠️ دوربین {self.config.camera.index} قابل دسترسی نیست.")
+                    unavailable_reported = True
+
+                # Retry while enabled, but remain responsive to global stop.
+                self.stop_event.wait(3.0)
+                continue
+
+            unavailable_reported = False
             with self.state_lock:
-                self.state.camera_ok = False
+                self.state.camera_ok = True
+
+            subtractor = cv2.createBackgroundSubtractorMOG2(
+                history=350,
+                varThreshold=35,
+                detectShadows=True,
+            )
+            warmup = max(12, self.config.camera.fps * 2)
+            count = 0
+            sleep_for = max(0.03, 1.0 / self.config.camera.fps)
+
+            try:
+                while (
+                    not self.stop_event.is_set()
+                    and self.camera_enabled_event.is_set()
+                ):
+                    ok, frame = cap.read()
+                    if not ok:
+                        time.sleep(0.3)
+                        continue
+
+                    with self.frame_lock:
+                        self.last_frame = frame.copy()
+
+                    count += 1
+                    if count <= warmup:
+                        subtractor.apply(frame)
+                        time.sleep(sleep_for)
+                        continue
+
+                    with self.state_lock:
+                        active = self.state.active()
+
+                    if not active or not self.config.camera.motion_enabled:
+                        subtractor.apply(frame, learningRate=0.01)
+                        time.sleep(sleep_for)
+                        continue
+
+                    h, w = frame.shape[:2]
+                    if w > 640:
+                        scale = 640 / w
+                        small = cv2.resize(
+                            frame,
+                            (640, int(h * scale)),
+                            interpolation=cv2.INTER_AREA,
+                        )
+                    else:
+                        small = frame
+
+                    fg = subtractor.apply(small)
+                    fg = cv2.GaussianBlur(fg, (5, 5), 0)
+                    _, mask = cv2.threshold(fg, 210, 255, cv2.THRESH_BINARY)
+                    mask = cv2.dilate(mask, None, iterations=2)
+                    contours, _ = cv2.findContours(
+                        mask,
+                        cv2.RETR_EXTERNAL,
+                        cv2.CHAIN_APPROX_SIMPLE,
+                    )
+                    moving = any(
+                        cv2.contourArea(c) >= self.config.camera.motion_min_area
+                        for c in contours
+                    )
+                    now = time.time()
+
+                    if moving:
+                        with self.state_lock:
+                            can = (
+                                now - self.state.last_motion_alert
+                                >= self.config.camera.motion_cooldown
+                            )
+                            if can:
+                                self.state.last_motion_alert = now
+
+                        if can:
+                            path = self._camera_snapshot_file("motion")
+                            if path:
+                                self.events.add(
+                                    "motion",
+                                    "Motion detected near laptop",
+                                    "medium",
+                                    str(path),
+                                )
+                                self._send_file_async(
+                                    "photo",
+                                    path,
+                                    f"📷 حرکت نزدیک لپ‌تاپ • {datetime.now():%H:%M:%S}",
+                                )
+
+                    time.sleep(sleep_for)
+            finally:
+                # This is the real OFF operation for this application:
+                # release ownership of the physical camera device.
+                try:
+                    cap.release()
+                finally:
+                    with self.state_lock:
+                        self.state.camera_ok = False
+                    with self.frame_lock:
+                        self.last_frame = None
+                    self.camera_released_event.set()
 
     # --------------------------- audio / chat
 
@@ -485,7 +633,7 @@ class LaptopGuard:
         return (
             "🩺 وضعیت Laptop Guard\n\n"
             f"🛡 محافظت: {'فعال' if armed else 'غیرفعال'}\n"
-            f"📷 دوربین: {'آماده' if camera_ok else 'غیرفعال/ناموجود'}\n"
+            f"📷 دوربین: {'خاموش' if not self.camera_enabled else ('آماده' if camera_ok else 'در حال اتصال/ناموجود')}\n"
             f"🎙 مکالمه صوتی: {'فعال' if self.intercom.active else 'خاموش'}\n"
             f"🗣 Persian TTS: {'آماده' if self.config.tts.enabled and self.tts.available else 'غیرفعال/ناموجود'} • {self.tts.default_voice}\n"
             f"💬 گفت‌وگوی محلی: {'باز' if self.chat.active else 'بسته'}\n"
@@ -511,9 +659,25 @@ class LaptopGuard:
         )
 
     def camera_menu(self) -> tuple[str, dict]:
+        with self.state_lock:
+            camera_ok = self.state.camera_ok
+
+        if not self.camera_enabled:
+            status = "🔴 خاموش"
+            toggle_label = "🟢 روشن کردن دوربین"
+        elif camera_ok:
+            status = "🟢 روشن و آماده"
+            toggle_label = "🔴 خاموش کردن دوربین"
+        else:
+            status = "🟡 روشن؛ در حال اتصال/ناموجود"
+            toggle_label = "🔴 خاموش کردن دوربین"
+
         return (
-            "📷 دوربین\nعکس لحظه‌ای و رویدادهای Motion از این بخش در دسترس است.",
+            "📷 دوربین\n"
+            f"وضعیت: {status}\n\n"
+            "عکس لحظه‌ای و رویدادهای Motion از این بخش در دسترس است.",
             inline_keyboard([
+                [(toggle_label, "camera:toggle")],
                 [("📸 عکس الآن", "camera:photo"), ("🎥 ویدیوی ۸s", "camera:video:8")],
                 [("⬅️ منوی اصلی", "menu:main")],
             ]),
@@ -736,6 +900,23 @@ class LaptopGuard:
                         ("❌ لغو", "guard:unlock:no"),
                     ]]),
                 )
+        elif command == "/cameraon":
+            ok = self.turn_camera_on()
+            self._reply_to_chat(
+                chat_id,
+                "🟢 دوربین روشن شد." if ok else "⚠️ دوربین در حال حاضر قابل روشن‌شدن نیست.",
+                self.camera_menu()[1],
+            )
+        elif command == "/cameraoff":
+            self.turn_camera_off()
+            self._reply_to_chat(chat_id, "🔴 دوربین خاموش شد.", self.camera_menu()[1])
+        elif command == "/cameratoggle":
+            enabled = self.toggle_camera()
+            self._reply_to_chat(
+                chat_id,
+                "🟢 دوربین روشن شد." if enabled else "🔴 دوربین خاموش شد.",
+                self.camera_menu()[1],
+            )
         elif command == "/photo":
             self._do_camera_photo(chat_id)
         elif command == "/cameravideo":
@@ -996,6 +1177,11 @@ class LaptopGuard:
             ok = self.lock_screen()
             self.events.add("stop_auth_deny", "Owner denied terminal stop after PIN", "critical")
             menu("🔒 توقف رد شد؛ سیستم قفل شد." if ok else "⚠️ توقف رد شد؛ قفل سیستم ناموفق بود.", self.system_menu()[1])
+        elif data == "camera:toggle":
+            enabled = self.toggle_camera()
+            state_text = "🟢 دوربین روشن شد." if enabled else "🔴 دوربین خاموش شد."
+            camera_text, camera_markup = self.camera_menu()
+            menu(state_text + "\n\n" + camera_text, camera_markup)
         elif data == "camera:photo":
             self._do_camera_photo(chat_id)
         elif data.startswith("camera:video:"):
@@ -1096,6 +1282,16 @@ class LaptopGuard:
             menu(self.status_text(), MAIN_MENU)
 
     def _do_camera_photo(self, chat_id: int) -> None:
+        if not self.camera_enabled:
+            self._reply_to_chat(chat_id, "🔴 دوربین خاموش است. ابتدا آن را روشن کنید.", self.camera_menu()[1])
+            return
+
+        with self.state_lock:
+            camera_ok = self.state.camera_ok
+        if not camera_ok:
+            self._reply_to_chat(chat_id, "🟡 دوربین هنوز آماده نیست یا قابل دسترسی نیست.", self.camera_menu()[1])
+            return
+
         path = self._camera_snapshot_file("manual")
         if not path:
             self._reply_to_chat(chat_id, "⚠️ تصویر دوربین آماده نیست.")
@@ -1104,6 +1300,16 @@ class LaptopGuard:
         except Exception as exc: self._reply_to_chat(chat_id, f"⚠️ ارسال عکس ناموفق بود: {exc}")
 
     def _do_camera_video(self, chat_id: int, seconds: int) -> None:
+        if not self.camera_enabled:
+            self._reply_to_chat(chat_id, "🔴 دوربین خاموش است. ابتدا آن را روشن کنید.", self.camera_menu()[1])
+            return
+
+        with self.state_lock:
+            camera_ok = self.state.camera_ok
+        if not camera_ok:
+            self._reply_to_chat(chat_id, "🟡 دوربین هنوز آماده نیست یا قابل دسترسی نیست.", self.camera_menu()[1])
+            return
+
         seconds = max(2, min(seconds, 20))
         self._reply_to_chat(chat_id, f"🎥 ضبط دوربین برای {seconds} ثانیه شروع شد.")
         def worker():
@@ -1502,6 +1708,7 @@ class LaptopGuard:
     def stop(self) -> None:
         if not self._authorized_exit:
             self._request_exit_lock("guard process stopping")
+        self.camera_enabled_event.clear()
         self.stop_event.set()
         self._cancel_pending_lock()
         self.intercom.stop()
