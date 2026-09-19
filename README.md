@@ -263,6 +263,11 @@ chmod +x install.sh run.sh doctor.sh
 ./install.sh
 ```
 
+The Ubuntu-oriented installer detects the active Python version, checks matching
+`venv` support and recommended system packages, diagnoses common APT mirror
+failures, and is safe to rerun. It prints setup/doctor commands only after the
+Python environment passes dependency verification.
+
 ### 3. Configure
 
 ```bash

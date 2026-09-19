@@ -10,6 +10,14 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Setup and installation hardening
+
+- Made `install.sh` detect Python 3.11+ and matching `venv` support before creating the environment, with exact Ubuntu package recovery guidance.
+- Added bounded APT mirror/repository diagnostics and recommended Ubuntu package checks without exposing raw Python tracebacks.
+- Made installer reruns idempotent, staged replacement environments safely, restored a previous working `.venv` after failed replacement installs, and preserved fresh failed environments for retry.
+- Added explicit PASS/FAILED summaries and only show setup/doctor next steps after `pip check` confirms the environment is usable.
+- Added focused offline installer regression tests for fresh install, missing `venv`, reruns, dependency failure, and rollback behavior.
+
 ### Audio security and communication
 
 - Added opt-in, armed-mode sound-level detection that discards idle samples and sends one bounded recording to the authorized owner after a configurable trigger.
