@@ -125,9 +125,9 @@ Runtime secrets belong in protected user configuration storage described in
 |---|---|
 | `laptop_guard/__init__.py` | Package version/public package marker. |
 | `laptop_guard/__main__.py` | Enables `python -m laptop_guard`; delegates to CLI. |
-| `laptop_guard/cli.py` | Guided interactive main menu plus setup/run/doctor/arm/disarm/status/config/profile/events/health/test/service/autostart commands; explicit subcommands remain scriptable. |
+| `laptop_guard/cli.py` | Guided interactive main menu plus setup/reconfigure/run/doctor/arm/disarm/status/config/profile/events/health/test/service/autostart commands; explicit subcommands remain scriptable. |
 | `laptop_guard/models.py` | Dataclass configuration schema and compatibility properties. |
-| `laptop_guard/config.py` | TOML/secrets persistence, user paths, legacy import/migration, safe config handling. |
+| `laptop_guard/config.py` | TOML/secrets/setup-progress persistence, user paths, legacy import/migration, safe config handling. |
 | `laptop_guard/runtime_config.py` | Runtime validation/repair, provider token validation, and owner pairing before startup. |
 | `laptop_guard/state.py` | Atomic shared JSON runtime-state persistence. |
 | `laptop_guard/runtime_state.py` | Live facade over shared persisted CLI/guard state. |
@@ -192,7 +192,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `laptop_guard/usb_monitor.py` | USB event watcher. |
 | `laptop_guard/privacy_light.py` | Best-effort camera indicator discovery/follow behavior; never suppresses active capture indication. |
 | `laptop_guard/service.py` | systemd user-service/autostart management. |
-| `laptop_guard/setup_wizard.py` | Guided/resumable configuration, device discovery, and owner pairing. |
+| `laptop_guard/setup_wizard.py` | Section-checkpointed guided setup/reconfiguration, validation-aware resume, device discovery, and owner pairing. |
 | `laptop_guard/doctor.py` | Required/optional dependency/configuration/backend readiness diagnostics. |
 | `laptop_guard/tests_manual.py` | Hardware/integration checks exposed through `./run.sh test`. |
 

@@ -551,6 +551,100 @@ def collect_checks() -> list[DoctorCheck]:
     return checks
 
 
+def check_bot_connectivity(cfg: AppConfig, token: str) -> tuple[bool, str]:
+    """Reusable token-safe provider validation for setup and doctor."""
+    return _bot_connectivity(cfg, token)
+
+
+def validate_setup_section(cfg: AppConfig, section: str) -> tuple[bool, str]:
+    """Validate one guided-setup section using doctor readiness helpers."""
+    section = str(section or "").strip().lower()
+
+    if section == "identity":
+        if not str(cfg.device_name or "").strip():
+            return False, "Device name is empty."
+        if cfg.profile not in {"away", "home", "night", "testing", "custom"}:
+            return False, "Starting profile is invalid."
+        return True, "Identity and profile are valid."
+
+    if section == "provider":
+        if cfg.bot.provider == "local":
+            return True, "Local provider needs no bot credential."
+        if cfg.bot.provider not in {"bale", "telegram"}:
+            return False, "Notification provider is invalid."
+        if not str(cfg.bot.api_base or "").strip():
+            return False, "Provider API base is empty."
+        return _bot_connectivity(cfg, config_module.get_bot_token())
+
+    if section == "owner":
+        if cfg.bot.provider == "local":
+            return True, "Local provider needs no remote owner pairing."
+        if isinstance(cfg.bot.chat_id, int):
+            return True, "Owner pairing is present."
+        return False, "Remote provider has no paired owner chat."
+
+    if section == "camera":
+        if not cfg.camera.enabled:
+            return True, "Camera is disabled by configuration."
+        return _camera_ok(cfg.camera.index)
+
+    if section == "audio":
+        if cfg.audio.sound_detection_enabled:
+            ok, detail = _microphone_ok(cfg)
+            if not ok:
+                return ok, detail
+        if cfg.audio.tts_enabled:
+            ok, detail = _audio_player_ok()
+            if not ok:
+                return ok, detail
+        return True, "Configured audio features are usable."
+
+    if section == "security":
+        if cfg.security.input_action not in {"warning_lock", "warning", "notify", "lock"}:
+            return False, "Unexpected-input action is invalid."
+        if cfg.security.input_backend not in {"auto", "evdev", "pynput"}:
+            return False, "Input-monitor backend is invalid."
+        return True, "Security behavior values are valid."
+
+    if section == "communication":
+        if cfg.communication.surface not in {"guard_chat", "live_notepad", "both", "fullscreen"}:
+            return False, "Communication surface is invalid."
+        return True, "Communication surface is valid."
+
+    if section == "screen":
+        if cfg.screen.screenshots_enabled:
+            ok, detail = _screenshot_backend_ok()
+            if not ok:
+                return ok, detail
+        if cfg.screen.screen_video_enabled:
+            ok, detail = _screen_video_backend_ok()
+            if not ok:
+                return ok, detail
+        return True, "Configured screen-capture features are usable."
+
+    if section == "apps_api":
+        if cfg.api.enabled:
+            if cfg.api.host != "127.0.0.1":
+                return False, "Local API host must remain 127.0.0.1."
+            if not 1024 <= int(cfg.api.port) <= 65535:
+                return False, "Local API port is outside the supported range."
+            if not config_module.get_api_token():
+                return False, "Local API is enabled but its protected token is missing."
+        return True, "Apps and local API configuration are valid."
+
+    if section == "monitors":
+        if cfg.monitors.failed_login_events:
+            return _failed_login_monitor_ok()
+        return True, "Configured monitoring features are valid."
+
+    if section == "startup":
+        if cfg.startup.enabled:
+            return _autostart_ok()
+        return True, "Autostart is disabled by configuration."
+
+    return False, f"Unknown setup section: {section}"
+
+
 def _print_group(title: str, category: Category, checks: list[DoctorCheck]) -> None:
     group = [item for item in checks if item.category == category]
     if not group:

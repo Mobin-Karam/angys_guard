@@ -19,7 +19,14 @@ console = Console()
 
 def cmd_setup(_):
     from .setup_wizard import run_setup
-    cfg = run_setup(); return 0 if cfg.setup_complete else 2
+    cfg = run_setup()
+    return 0 if cfg.setup_complete else 2
+
+
+def cmd_reconfigure(args):
+    from .setup_wizard import run_reconfigure
+    cfg = run_reconfigure(getattr(args, "section", None))
+    return 0 if cfg.setup_complete else 2
 
 
 def cmd_run(_):
@@ -335,6 +342,13 @@ def build_parser():
     p = argparse.ArgumentParser(prog="laptop-guard", description="Laptop Guard v11.1")
     sub = p.add_subparsers(dest="command")
     sub.add_parser("setup", help="guided/resumable setup").set_defaults(func=cmd_setup)
+    reconfigure = sub.add_parser("reconfigure", help="edit one setup section")
+    reconfigure.add_argument(
+        "section",
+        nargs="?",
+        choices=["identity", "provider", "owner", "camera", "audio", "security", "communication", "screen", "apps_api", "monitors", "startup"],
+    )
+    reconfigure.set_defaults(func=cmd_reconfigure)
     sub.add_parser("run", help="run the guard").set_defaults(func=cmd_run)
     sub.add_parser("doctor", help="check dependencies/configuration").set_defaults(func=cmd_doctor)
     sub.add_parser("arm", help="arm the guard").set_defaults(func=cmd_arm)
