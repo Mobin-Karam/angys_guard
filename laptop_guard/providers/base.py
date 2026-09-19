@@ -22,29 +22,75 @@ class ProviderResponseError(ProviderError):
 
 
 class BotProvider(ABC):
+    """Owner-transport port implemented by Bale/Telegram adapters."""
+
     @abstractmethod
     def get_me(self) -> dict[str, Any]: ...
 
     @abstractmethod
-    def get_updates(self, offset: int | None = None, timeout: int = 25) -> list[dict[str, Any]]: ...
+    def get_updates(
+        self,
+        offset: int | None = None,
+        timeout: int = 25,
+    ) -> list[dict[str, Any]]: ...
 
     @abstractmethod
-    def send_message(self, chat_id: int, text: str, keyboard: list[list[tuple[str, str]]] | None = None) -> dict[str, Any]: ...
+    def send_message(
+        self,
+        chat_id: int,
+        text: str,
+        keyboard: list[list[tuple[str, str]]] | None = None,
+        *,
+        reply_markup: dict[str, Any] | None = None,
+        reply_to_message_id: int | None = None,
+    ) -> dict[str, Any]: ...
 
     @abstractmethod
-    def edit_message(self, chat_id: int, message_id: int, text: str, keyboard: list[list[tuple[str, str]]] | None = None) -> dict[str, Any]: ...
+    def edit_message_text(
+        self,
+        chat_id: int,
+        message_id: int,
+        text: str,
+        *,
+        reply_markup: dict[str, Any] | None = None,
+    ) -> Any: ...
 
     @abstractmethod
-    def send_photo(self, chat_id: int, path: Path, caption: str = "") -> dict[str, Any]: ...
+    def delete_message(self, chat_id: int, message_id: int) -> Any: ...
 
     @abstractmethod
-    def send_voice(self, chat_id: int, path: Path, caption: str = "") -> dict[str, Any]: ...
+    def answer_callback(
+        self,
+        callback_query_id: str,
+        text: str = "",
+        show_alert: bool = False,
+    ) -> Any: ...
 
     @abstractmethod
-    def send_video(self, chat_id: int, path: Path, caption: str = "") -> dict[str, Any]: ...
+    def send_chat_action(self, chat_id: int, action: str) -> Any: ...
 
     @abstractmethod
-    def download_file(self, file_id: str, destination: Path) -> Path: ...
+    def send_photo(self, chat_id: int, path: Path, caption: str = "") -> Any: ...
 
     @abstractmethod
-    def answer_callback(self, callback_id: str, text: str = "") -> None: ...
+    def send_video(self, chat_id: int, path: Path, caption: str = "") -> Any: ...
+
+    @abstractmethod
+    def send_audio(self, chat_id: int, path: Path, caption: str = "") -> Any: ...
+
+    @abstractmethod
+    def send_voice(self, chat_id: int, path: Path, caption: str = "") -> Any: ...
+
+    @abstractmethod
+    def send_document(self, chat_id: int, path: Path, caption: str = "") -> Any: ...
+
+    @abstractmethod
+    def get_file(self, file_id: str) -> dict[str, Any]: ...
+
+    @abstractmethod
+    def download_file(
+        self,
+        file_id: str,
+        destination: Path,
+        max_bytes: int | None = None,
+    ) -> Path: ...

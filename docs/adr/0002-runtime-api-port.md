@@ -20,11 +20,15 @@ Positive:
 - provider behavior is substitutable/testable;
 - proxy/base URL/provider selection has a clear construction boundary.
 
-Current limitation:
+Current state:
 
-- setup/provider and runtime transport implementations are not fully consolidated.
+- setup validation, Doctor and runtime construct Bale/Telegram through the same
+  provider factory and `HttpBotProvider`;
+- provider-specific payload differences are represented by provider profiles;
+- `BaleApi` is compatibility-only.
 
-Future work should converge transport behavior behind this boundary rather than create another client abstraction.
+Future work should extend this boundary rather than create another client
+abstraction.
 
 ## Security/privacy
 

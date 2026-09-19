@@ -155,10 +155,11 @@ Runtime secrets belong in protected user configuration storage described in
 
 | File | Responsibility and status |
 |---|---|
-| `laptop_guard/bale_api.py` | Bale Bot API client used by current guard behavior. |
-| `laptop_guard/providers/base.py` | Generic bot provider contract. |
-| `laptop_guard/providers/http_bot.py` | Httpx Telegram-style provider with explicit proxy policy. |
-| `laptop_guard/providers/__init__.py` | Provider factory. |
+| `laptop_guard/bale_api.py` | Compatibility-only Bale facade over the active consolidated provider adapter; no new features should be added here. |
+| `laptop_guard/providers/base.py` | Runtime/setup owner-transport provider contract and stable provider error types. |
+| `laptop_guard/providers/profiles.py` | Documented Bale/Telegram request differences and provider defaults. |
+| `laptop_guard/providers/http_bot.py` | Single active httpx Bale/Telegram adapter: proxy, timeout, retry, payload, upload, file download, and error policy. |
+| `laptop_guard/providers/__init__.py` | Single active remote-provider factory used by setup, Doctor and RuntimeApi composition. |
 | `laptop_guard/control_api.py` | Optional loopback bearer-authenticated fixed-action HTTP API. |
 | `laptop_guard/app_manager.py` | Safe allowlisted desktop application discovery/launch/termination. |
 

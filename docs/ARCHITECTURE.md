@@ -54,6 +54,7 @@ run.sh
 The project already has several strong architectural seams:
 
 - `RuntimeApi` is the outbound owner-transport port;
+- `providers.build_provider() -> HttpBotProvider` is the single active Bale/Telegram transport construction path used by setup, Doctor, and runtime;
 - `FeatureManager` is the explicit command/callback extension point;
 - `FeatureHost` limits feature access to selected host capabilities;
 - `GuardRuntimeState` / `RuntimeStateStore` provide shared persisted runtime state;
@@ -314,9 +315,12 @@ Compatibility code is acceptable when it enables incremental migration, but it m
 
 New features must use the active path. Compatibility facades should not gain new behavior except fixes required for safe migration/removal.
 
+For owner transport, `laptop_guard/bale_api.py` is compatibility-only.
+`HttpBotProvider` plus provider profiles is the active implementation for both
+Bale and Telegram. See `PROVIDERS.md`.
+
 Current consolidation targets identified by the system audit:
 
-- duplicate provider/HTTP paths;
 - warning compatibility layers;
 - multiple system-action facades;
 - older/secondary audio abstractions.

@@ -44,11 +44,11 @@ ensure_dirs()
 
 def default_api_base(provider: str) -> str:
     provider = str(provider or "").strip().lower()
-    if provider == "telegram":
-        return "https://api.telegram.org"
-    if provider == "bale":
-        return "https://tapi.bale.ai"
-    return ""
+    if provider not in {"telegram", "bale"}:
+        return ""
+    from .providers.profiles import get_provider_profile
+
+    return get_provider_profile(provider).default_api_base
 
 
 def _read_secrets() -> dict[str, str]:
