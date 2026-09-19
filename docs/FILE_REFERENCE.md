@@ -128,8 +128,8 @@ Runtime secrets belong in protected user configuration storage described in
 | `laptop_guard/__main__.py` | Enables `python -m laptop_guard`; delegates to CLI. |
 | `laptop_guard/cli.py` | Guided interactive main menu plus setup/reconfigure/run/doctor/arm/disarm/status/config/profile/events/health/test/service/autostart commands; explicit subcommands remain scriptable. |
 | `laptop_guard/models.py` | Dataclass configuration schema and compatibility properties. |
-| `laptop_guard/config.py` | TOML/secrets/setup-progress persistence, user paths, legacy import/migration, safe config handling. |
-| `laptop_guard/runtime_config.py` | Runtime validation/repair, token-safe provider validation, and owner pairing before startup. |
+| `laptop_guard/config.py` | TOML/secrets/setup-progress persistence, provider-scoped Telegram/Bale credentials, conservative legacy-token migration, user paths, and safe config handling. |
+| `laptop_guard/runtime_config.py` | Runtime validation/repair using the selected provider's scoped credential, token-safe provider validation, and owner pairing before startup. |
 | `laptop_guard/state.py` | Atomic shared JSON runtime-state persistence. |
 | `laptop_guard/runtime_state.py` | Live facade over shared persisted CLI/guard state. |
 | `laptop_guard/storage.py` | Shared SQLite events and durable outbound queue. |

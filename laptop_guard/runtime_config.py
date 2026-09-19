@@ -51,7 +51,7 @@ def _ask_valid_token(cfg: AppConfig, console: Console, *, force_new: bool = Fals
     if provider_name == "local":
         return "", {}
 
-    stored = "" if force_new else get_bot_token()
+    stored = "" if force_new else get_bot_token(provider_name)
     attempted_stored = False
 
     while True:
@@ -114,7 +114,7 @@ def _ask_valid_token(cfg: AppConfig, console: Console, *, force_new: bool = Fals
             attempted_stored = False
             continue
 
-        set_bot_token(token)
+        set_bot_token(token, provider_name)
         save_config(cfg)
         return token, me if isinstance(me, dict) else {}
 

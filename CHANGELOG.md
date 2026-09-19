@@ -10,6 +10,14 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Provider-scoped bot credentials
+
+- Split remote bot credentials into `telegram_bot_token` and `bale_bot_token` so selecting one provider can never automatically validate or overwrite the other provider's saved credential.
+- Added conservative migration for the historical shared `bot_token`: completed setups migrate to their already-known provider, while incomplete/ambiguous setups quarantine it as `legacy_bot_token` instead of guessing.
+- Updated setup, runtime startup, Doctor, manual provider tests, runtime Guard reconnects, and owner pairing to request only the selected provider's credential.
+- Runtime diagnostic sanitization now redacts every saved Telegram/Bale/legacy bot token in addition to the local API token.
+- Added regressions for Bale/Telegram credential coexistence, provider switching, completed legacy migration, pending legacy quarantine, and cross-provider non-reuse.
+
 ### Provider credential validation recovery
 
 - Provider validation now distinguishes actual credential rejection from network/proxy/TLS/API-response failures instead of treating every failure as a bad token.

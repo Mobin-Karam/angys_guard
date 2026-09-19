@@ -17,12 +17,14 @@ from .config import (
     default_api_base,
     get_api_token,
     get_bot_token,
+    get_legacy_bot_token,
     load_config,
     load_setup_progress,
     save_config,
     save_setup_progress,
     set_api_token,
     set_bot_token,
+    migrate_legacy_bot_token,
 )
 from .models import AppConfig
 from .profiles import PROFILE_LABELS, apply_profile
@@ -152,7 +154,8 @@ def _validate_section(cfg: AppConfig, section: str) -> tuple[bool, str]:
 
 
 def _ensure_provider_token(cfg: AppConfig, console: Console) -> str:
-    stored = get_bot_token()
+    provider = cfg.bot.provider
+    stored = get_bot_token(provider)
     if stored:
         console.print("Validating stored bot credential...")
         ok, detail, kind = _provider_check_parts(
@@ -177,9 +180,18 @@ def _ensure_provider_token(cfg: AppConfig, console: Console) -> str:
                 "You do not need to enter another token unless the provider rejects it."
             )
 
+    if not stored and get_legacy_bot_token():
+        console.print(
+            "[yellow]An older shared bot credential exists, but it is not tied to Bale or Telegram.[/yellow]"
+        )
+        console.print(
+            f"For safety it will not be tried automatically against {provider.title()}. "
+            f"Enter the {provider.title()} token once; it will be stored separately."
+        )
+
     while True:
         token = getpass.getpass(
-            f"{cfg.bot.provider.title()} bot token: "
+            f"{provider.title()} bot token: "
         ).strip()
         if not token:
             console.print("[red]A bot token is required.[/red]")
@@ -189,8 +201,10 @@ def _ensure_provider_token(cfg: AppConfig, console: Console) -> str:
             _check_provider_token(cfg, token)
         )
         if ok:
-            set_bot_token(token)
-            console.print("[green]Bot credential validated and stored privately.[/green]")
+            set_bot_token(token, provider)
+            console.print(
+                f"[green]{provider.title()} bot credential validated and stored privately.[/green]"
+            )
             return token
 
         console.print(f"[red]{detail}[/red]")
@@ -265,7 +279,7 @@ def _configure_owner(cfg: AppConfig, console: Console) -> None:
         console.print("[dim]Local mode does not require remote owner pairing.[/dim]")
         return
 
-    token = get_bot_token()
+    token = get_bot_token(cfg.bot.provider)
     if not token:
         raise RuntimeError("Provider credential is missing.")
 
@@ -616,6 +630,12 @@ def _load_completed(cfg: AppConfig) -> set[str]:
     completed = load_setup_progress() & set(SECTION_KEYS)
     if cfg.setup_complete:
         completed.update(SECTION_KEYS)
+
+    # A saved provider checkpoint predating provider-scoped tokens is a
+    # trustworthy association. Migrate before validation reads the token.
+    if "provider" in completed and cfg.bot.provider in {"telegram", "bale"}:
+        migrate_legacy_bot_token(cfg.bot.provider)
+
     return completed
 
 
@@ -698,6 +718,16 @@ def _run_section(
 
     old_profile = cfg.profile
     old_provider = cfg.bot.provider
+
+    # Before editing a previously completed provider section, migrate the old
+    # shared credential while its provider association is still trustworthy,
+    # then mark the section pending so a crash cannot re-associate it later.
+    if key == "provider" and key in completed:
+        if old_provider in {"telegram", "bale"}:
+            migrate_legacy_bot_token(old_provider)
+        completed.discard(key)
+        _checkpoint(cfg, completed)
+
     try:
         SECTION_HANDLERS[key](cfg, console)
     except KeyboardInterrupt:

@@ -7,7 +7,7 @@ Laptop Guard creates these user-scoped paths:
 | Path | Purpose | Expected permissions |
 |---|---|---|
 | `~/.config/laptop-guard/config.toml` | Non-secret settings | `0600` |
-| `~/.config/laptop-guard/secrets.json` | Bot and local API tokens | `0600` |
+| `~/.config/laptop-guard/secrets.json` | Provider-scoped bot tokens and local API token | `0600` |
 | `~/.config/laptop-guard/stop-pin.json` | Salt and scrypt PIN digest | `0600` |
 | `~/.local/share/laptop-guard/state.json` | Runtime state | User-only directory |
 | `~/.local/share/laptop-guard/events.jsonl` | Current guard event log | User-only directory |
@@ -16,6 +16,19 @@ Laptop Guard creates these user-scoped paths:
 
 The token and PIN plaintext are not written to `config.toml`. `config.py` uses
 atomic temporary-file replacement for configuration and secret updates.
+
+Remote provider credentials are stored independently in `secrets.json`:
+
+- `telegram_bot_token` — used only when Telegram is selected;
+- `bale_bot_token` — used only when Bale is selected;
+- `api_token` — the unrelated localhost control-API credential.
+
+Changing or repairing one provider credential does not overwrite the other.
+Older releases used a shared `bot_token`. A completed pre-upgrade setup can
+migrate that token to its already-validated provider. If setup is incomplete or
+the provider association is ambiguous, the old value is quarantined as
+`legacy_bot_token` and is **not** automatically tried against Bale or Telegram;
+enter the selected provider's token once to create its scoped credential.
 
 ## Initial setup
 
@@ -28,11 +41,14 @@ token without echoing it, validates the token with `getMe`, and pairs the owner
 by waiting for a new `/start` update or accepting an explicit numeric chat ID.
 
 Provider validation distinguishes a credential rejection from a network/proxy/TLS
-or API-base failure. A stored credential is replaced only after the provider
-actually rejects it. If the provider cannot be reached, setup keeps the stored
-credential unchanged, pauses the Provider section, and lets you fix the proxy/API
-base/network before resuming. A newly entered token is not stored until it can be
-validated, but a transport failure is not reported as proof that the token is bad.
+or API-base failure. Validation reads only the credential for the selected
+provider; a saved Bale token is never offered to Telegram and a saved Telegram
+token is never offered to Bale. A stored credential is replaced only after that
+provider actually rejects it. If the provider cannot be reached, setup keeps the
+provider-scoped credential unchanged, pauses the Provider section, and lets you
+fix the proxy/API base/network before resuming. A newly entered token is not
+stored until it can be validated, but a transport failure is not reported as
+proof that the token is bad.
 
 Normal interactive startup validates stored credentials again. Missing or
 unauthorized credentials can be repaired interactively. A systemd service

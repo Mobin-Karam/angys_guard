@@ -79,7 +79,10 @@ MAIN_MENU = inline_keyboard(
 class LaptopGuard:
     def __init__(self, config: AppConfig | None = None) -> None:
         self.config = config or load_config()
-        self.api: RuntimeApi = build_runtime_api(self.config, get_bot_token())
+        self.api: RuntimeApi = build_runtime_api(
+            self.config,
+            get_bot_token(self.config.bot.provider),
+        )
         self.features = FeatureManager()
         self.features.install(SystemInfoFeature(self))
         self.features.install(FailedLoginFeature(self, self.config.monitors.failed_login_events))
@@ -1915,7 +1918,7 @@ class LaptopGuard:
                             # an interactive setup run can repair it without .env.
                             if self.stop_event.wait(30):
                                 break
-                            fresh = get_bot_token()
+                            fresh = get_bot_token(self.config.bot.provider)
                             if fresh and fresh != getattr(self.api, "token", ""):
                                 self.api = build_runtime_api(self.config, fresh)
                             continue
