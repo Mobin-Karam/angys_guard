@@ -10,6 +10,15 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Production-readiness regression coverage
+
+- Added an offline first-run regression that executes the complete guided setup in local mode with temporary private config/state paths and mocked hardware/systemd boundaries.
+- Added mocked provider validation and owner-pairing regressions that require no real Bale/Telegram credential or live network service.
+- Expanded service/autostart coverage for safe user-unit generation, incomplete-setup refusal, persisted enable/disable state, and uninstall/reload behavior.
+- Added a CLI registration smoke test for every supported subcommand.
+- Made CI run on every push plus pull requests to `main` across Python 3.11, 3.12, and 3.13, with a stable `Release gate` job that fails unless the full supported-Python matrix passes.
+- Documented `Release gate` and `repository-safety` as the status checks to require in GitHub branch protection/rulesets.
+
 ### Guided runtime recovery
 
 - Added a shared runtime-recovery layer that maps expected provider, hardware/backend, and permission failures to short explanations plus concrete test/reconfigure/doctor actions.

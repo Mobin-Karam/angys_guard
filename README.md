@@ -477,6 +477,11 @@ bash -n install.sh run.sh doctor.sh repair-opencv.sh
 git diff --check
 ```
 
+GitHub Actions runs the regression suite on Python **3.11, 3.12, and 3.13**.
+The final **Release gate** status only passes when the complete supported-Python
+matrix succeeds; maintainers should require that status plus Repository Safety
+before merging to `main`.
+
 Unit CI does not prove physical camera, microphone, desktop lock, X11/Wayland, provider or future Windows/Android behavior. See [docs/TESTING.md](docs/TESTING.md).
 
 ## Documentation

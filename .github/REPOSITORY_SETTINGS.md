@@ -35,7 +35,8 @@ For `main`, enable a branch ruleset or branch protection rule with:
 
 - Require a pull request before merging.
 - Require status checks to pass before merging.
-- Require the `CI` and `Repository Safety` checks once they are stable.
+- Require the `Release gate` check from CI and the `repository-safety` check.
+  `Release gate` succeeds only when the complete Python 3.11/3.12/3.13 matrix succeeds.
 - Require conversation resolution before merging.
 - Block force pushes.
 - Block branch deletion.
