@@ -58,7 +58,9 @@ def test_root_readme_retains_core_repository_sections() -> None:
 
 def test_readme_keeps_current_and_future_support_separate() -> None:
     text = README.read_text(encoding="utf-8")
-    assert "Linux — Ubuntu-oriented desktop" in text
+    assert "Ubuntu Desktop 24.04 LTS (amd64)" in text
+    assert "v12.0 primary qualification target" in text
+    assert "Ubuntu 22.04 / 26.04 LTS" in text
     assert "Windows" in text and "Planned" in text
     assert "Android companion" in text
     assert "These are roadmap targets, **not current support claims**" in text

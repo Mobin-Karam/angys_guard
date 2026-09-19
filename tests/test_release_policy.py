@@ -59,7 +59,8 @@ def test_bug_report_instructions_protect_secrets_and_private_evidence() -> None:
     text = CHECKLIST.read_text(encoding="utf-8")
 
     assert "runtime-diagnostics.jsonl" in text
-    assert "not guaranteed to be free of personal metadata" in text
+    normalized = " ".join(text.split())
+    assert "not guaranteed to be free of personal metadata" in normalized
     assert "Never attach or paste" in text
     assert "secrets.json" in text
     assert "stop-pin.json" in text
