@@ -10,8 +10,12 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
-### Setup and installation hardening
+### Setup, installation, and diagnostics hardening
 
+- Expanded `./run.sh doctor` into grouped required/recommended/optional readiness checks with a concise final READY/NOT READY summary.
+- Added actionable recovery steps for required Python/venv, configuration, secret-permission, bot/pairing, camera, microphone, lock, screen-capture, journal, and autostart failures.
+- Doctor now makes the exit code depend only on required checks for the configured feature set and deliberately suppresses provider exception text that could contain bot tokens.
+- Added focused doctor regressions for blocking vs non-blocking failures, secret permissions, token-safe connectivity errors, and configured-feature recovery actions.
 - Made `install.sh` detect Python 3.11+ and matching `venv` support before creating the environment, with exact Ubuntu package recovery guidance.
 - Added bounded APT mirror/repository diagnostics and recommended Ubuntu package checks without exposing raw Python tracebacks.
 - Made installer reruns idempotent, staged replacement environments safely, restored a previous working `.venv` after failed replacement installs, and preserved fresh failed environments for retry.

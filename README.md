@@ -282,6 +282,12 @@ Choose local/Bale/Telegram-style provider options as available to your setup. Re
 ./run.sh doctor
 ```
 
+Doctor groups checks into **required**, **recommended**, and **optional/disabled**
+items. Required failures include a concrete recovery step and make the command
+exit non-zero; recommended/optional findings do not block startup. Connectivity
+errors are summarized without printing stored tokens or provider URLs that could
+contain credentials.
+
 ### 5. Run
 
 ```bash
