@@ -162,6 +162,35 @@ Group/sort by requested platform and community demand when useful. A request rem
 
 Filter `Status = Backlog`, group by Track, sort by Priority.
 
+## Umbrella tracker lifecycle
+
+Issue #9 is intentionally a long-lived project tracker, not a single delivery
+ticket. Changes to the Project blueprint/bootstrap/docs should reference #9, but
+must **not** use `Closes #9` while tracked architecture/product/platform work
+remains open.
+
+The tracker is eligible to close only when its completion principles are actually
+satisfied, including the repository rename/project setup and the tracked
+architecture, self-hosted UX, managed-control, and platform-expansion outcomes.
+Closing a milestone issue does not by itself complete #9.
+
+The machine blueprint stores membership/metadata, not a frozen copy of live issue
+state. The Project bootstrap safely synchronizes:
+
+- closed issue -> `Status = Done` when that Status option exists;
+- `status:needs-validation` -> `Status = Validation` when that option exists;
+- `status:blocked` -> `Blocked = Yes`;
+- priority/track/area/target from labels and milestone groups.
+
+GitHub creates the built-in Project `Status` field, but its option set can differ
+from the canonical Backlog/Ready/In progress/Review/Validation/Done workflow.
+Configure those Status options in the Project UI. If `Done` or `Validation` is
+missing, the bootstrap warns and preserves the current Status rather than failing
+the entire synchronization.
+
+For other open issues, the bootstrap preserves the existing Project `Status` so
+it does not overwrite human-selected Backlog/Ready/In progress/Review states.
+
 ## Workflow rules
 
 Recommended automation:
@@ -171,9 +200,9 @@ Recommended automation:
 - assigned/selected work -> Ready;
 - linked PR -> In progress or Review;
 - merged PR with required manual checks -> Validation;
-- issue closed after acceptance criteria -> Done;
+- issue closed after acceptance criteria -> Done (bootstrap-synchronized);
 - `status:blocked` -> Blocked true;
-- `status:needs-validation` -> Validation.
+- `status:needs-validation` -> Validation (bootstrap-synchronized).
 
 Do not auto-close an issue merely because a PR merged.
 

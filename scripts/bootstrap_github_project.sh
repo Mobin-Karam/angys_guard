@@ -117,12 +117,35 @@ set_field() {
     --value "$value" >/dev/null
 }
 
+status_option_available() {
+  local value="$1"
+  local fields
+  fields="$(gh project field-list "$project_number" --owner "$OWNER" --limit 100 --format json)"
+  jq -e --arg value "$value" '
+    .fields[]?
+    | select(.name == "Status")
+    | .options[]?
+    | select(.name == $value)
+  ' <<<"$fields" >/dev/null
+}
+
+set_status_if_available() {
+  local url="$1"
+  local value="$2"
+  if status_option_available "$value"; then
+    set_field "$url" "Status" "$value"
+  else
+    echo "Project Status option '$value' is unavailable; preserving the current Status for $url." >&2
+  fi
+}
+
 while IFS=$'\t' read -r target issue; do
   [[ -z "$issue" ]] && continue
 
-  issue_json="$(gh issue view "$issue" --repo "$REPO" --json url,labels)"
+  issue_json="$(gh issue view "$issue" --repo "$REPO" --json url,labels,state)"
   url="$(jq -r '.url' <<<"$issue_json")"
   labels="$(jq -r '.labels[].name' <<<"$issue_json")"
+  state="$(jq -r '.state' <<<"$issue_json")"
 
   gh project item-add "$project_number" --owner "$OWNER" --url "$url" >/dev/null 2>&1 || true
 
@@ -133,12 +156,21 @@ while IFS=$'\t' read -r target issue; do
   grep -qx 'status:blocked' <<<"$labels" && blocked="Yes"
 
   [[ "$target" == "project" ]] && target=""
+
+  # Only synchronize stable lifecycle states. Open work may intentionally be in
+  # Backlog, Ready, In progress, or Review, so rerunning the bootstrap must not
+  # overwrite a maintainer's active workflow state.
+  if [[ "$state" == "CLOSED" || "$state" == "closed" ]]; then
+    set_status_if_available "$url" "Done"
+  elif grep -qx 'status:needs-validation' <<<"$labels"; then
+    set_status_if_available "$url" "Validation"
+  fi
+
   set_field "$url" "Priority" "$priority"
   set_field "$url" "Track" "$track"
   set_field "$url" "Area" "$area"
   set_field "$url" "Target" "$target"
   set_field "$url" "Blocked" "$blocked"
-
 done < <(jq -r '.milestone_issue_groups | to_entries[] | .key as $target | .value[] | [$target, tostring] | @tsv' "$BLUEPRINT")
 
 echo "AngysGuard Project v2 is synchronized: owner=$OWNER project=$project_number repository=$REPO"

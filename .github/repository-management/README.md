@@ -21,8 +21,8 @@ The current baseline version is declared by `pyproject.toml` as `11.1.0`, theref
 
 ## GitHub Project v2
 
-Projects v2 is user/organization scoped rather than repository scoped. The normal repository `GITHUB_TOKEN` has no Projects v2 write permission, so the repository bootstrap intentionally does not attempt to create a Project board with elevated credentials.
+Projects v2 is user/organization scoped rather than repository scoped. The normal repository `GITHUB_TOKEN` has no Projects v2 write permission, so the standard repository bootstrap intentionally does not use elevated Project credentials.
 
-The canonical Project design is documented in `docs/PROJECT_MANAGEMENT.md`.
+The canonical Project design is documented in `docs/PROJECT_MANAGEMENT.md` and the machine blueprint is `project-v2.json`.
 
-To create/manage that board automatically in the future, use a dedicated fine-grained user token or GitHub App with Projects write permission, store it as a repository/organization secret, and add a narrowly scoped manual workflow. Do not grant that permission to the normal runtime/CI workflows.
+A narrowly scoped manual workflow already exists at `../workflows/project-v2-bootstrap.yml`. It requires the repository secret `ANGYSGUARD_PROJECT_TOKEN` with GitHub Projects access and runs `scripts/bootstrap_github_project.sh`. Do not grant Projects write permission to normal runtime/CI workflows, and never print or commit that token.

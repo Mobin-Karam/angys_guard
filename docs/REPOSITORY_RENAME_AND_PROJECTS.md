@@ -8,7 +8,7 @@ The selected repository slug is:
 Mobin-Karam/angysguard
 ```
 
-The current repository remains `Mobin-Karam/laptop_guard_v3` until the GitHub repository Settings rename is executed. GitHub should then redirect old repository URLs, but documentation and clone commands should still be migrated to the canonical AngysGuard URL.
+The current repository is `Mobin-Karam/angys_guard` until the GitHub repository Settings rename is executed. GitHub should then redirect old repository URLs, but documentation and clone commands should still be migrated to the canonical AngysGuard URL.
 
 The repository rename does **not** automatically rename the installed Python package/module/CLI. `laptop-guard` and `laptop_guard` remain compatibility identifiers until a separately validated migration is released.
 
@@ -80,6 +80,10 @@ The workflow runs `scripts/bootstrap_github_project.sh`, which:
 - adds the roadmap issues defined in `project-v2.json`;
 - sets Target from milestone groups;
 - maps Priority/Track/Area/Blocked from issue labels;
+- synchronizes closed issues to Project Status `Done` when that option exists;
+- synchronizes `status:needs-validation` issues to Project Status `Validation` when that option exists;
+- warns and preserves the current Status when a canonical Status option has not yet been configured in the Project UI;
+- preserves other open Project Status values so active Backlog/Ready/In progress/Review work is not reset;
 - can be rerun to synchronize later changes.
 
 The current GitHub CLI/API surface does not expose project-view creation in the same way as project/field/item operations. Configure the views described in `docs/PROJECT_MANAGEMENT.md` in the GitHub Projects UI after the project is created.

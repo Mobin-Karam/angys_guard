@@ -1,7 +1,7 @@
 {
   "title": "AngysGuard — Product, Platform & Architecture Delivery",
   "owner": "Mobin-Karam",
-  "repository_current": "Mobin-Karam/laptop_guard_v3",
+  "repository_current": "Mobin-Karam/angys_guard",
   "repository_target": "Mobin-Karam/angysguard",
   "description": "Single delivery board for current hardening, product UX, architecture evolution, AngysGuard managed control, security, and Windows/Android expansion.",
   "visibility": "PRIVATE",
@@ -35,5 +35,10 @@
     {"name": "Release readiness", "purpose": "Release/support/validation items grouped by Target."},
     {"name": "Platform requests", "purpose": "type:platform-request demand signals without implying committed support."},
     {"name": "Backlog", "purpose": "Backlog grouped by Track and sorted by Priority."}
-  ]
+  ],
+  "status_policy": {
+    "closed": "Done",
+    "needs_validation": "Validation",
+    "other_open": "preserve existing project Status; new items are triaged manually"
+  }
 }
