@@ -10,6 +10,16 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Release qualification and support policy
+
+- Defined Ubuntu Desktop 24.04 LTS amd64 as the v12.0 primary release-qualification target, with Ubuntu 22.04 and 26.04 remaining best-effort/candidate until separately qualified.
+- Limited the v12.0 release-supported Python matrix to the CI-tested Python 3.11, 3.12 and 3.13 range; newer Python versions remain best effort until added to release validation.
+- Documented separate GNOME X11 and GNOME Wayland capability limits for input monitoring, screenshots and screen recording instead of treating all Linux desktop sessions as equivalent.
+- Added a canonical clean-machine release checklist covering install, resumable setup, Doctor, provider pairing, camera, microphone/audio, input, screen capture, lock/protected stop, service/autostart, offline queue/reconnect, update and rollback.
+- Added measurable v12.0 exit criteria plus semantic versioning/changelog/tag rules.
+- Added safe bug-report guidance for the token-sanitized runtime diagnostic log while warning that filesystem paths, hostnames, IP addresses and other personal metadata still require manual review/redaction.
+- Added regression tests that keep the support matrix, release gates, diagnostics rules and checklist links from silently drifting.
+
 ### Production-readiness regression coverage
 
 - Added an offline first-run regression that executes the complete guided setup in local mode with temporary private config/state paths and mocked hardware/systemd boundaries.

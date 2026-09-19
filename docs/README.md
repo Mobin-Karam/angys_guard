@@ -25,6 +25,7 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | Configuration/secrets/setup | [Configuration](CONFIGURATION.md) |
 | Security/trust/privacy rules | [Product security](SECURITY.md) |
 | Testing/manual platform validation | [Testing](TESTING.md) |
+| Qualify a production release | [Release checklist](RELEASE_CHECKLIST.md) |
 | Use AI agents/skills/prompts | [AI agent workflow](AI_AGENT_WORKFLOW.md) |
 | See file ownership | [File reference](FILE_REFERENCE.md) |
 | See current + future roadmap | [Roadmap](ROADMAP.md) |
@@ -83,7 +84,8 @@ The managed-service design must never require the protected computer's OS passwo
 
 | Platform | Status |
 |---|---|
-| Linux / Ubuntu-oriented desktop | Current primary target |
+| Ubuntu Desktop 24.04 LTS amd64 | v12.0 primary qualification target |
+| Ubuntu 22.04 / 26.04 LTS | Best effort / candidate until separately qualified |
 | Other Linux distros | Best effort until validated |
 | Windows | Planned |
 | Android companion | Planned |

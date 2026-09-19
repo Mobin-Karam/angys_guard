@@ -62,10 +62,25 @@ Recommended order: **#5 -> #6 -> #4**.
 
 Issues:
 
-- [ ] #7 — automated first-run/regression coverage + CI — P1
-- [ ] #8 — supported-platform matrix + release checklist — P2
+- [x] #7 — automated first-run/regression coverage + CI — P1
+- [x] #8 — supported-platform matrix + release checklist — P2
 
-Release criteria include clean-machine install, supported Python/OS/session documentation, target-device validation and no unresolved P0 release blockers.
+### Measurable exit criteria
+
+The canonical procedure is [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md). v12.0 is
+blocked until:
+
+- the `Release gate` and `repository-safety` checks pass on the release commit;
+- no unresolved P0 release blocker exists;
+- Ubuntu Desktop 24.04 LTS amd64 has a recorded clean-machine qualification;
+- GNOME X11 and GNOME Wayland each have a recorded result with session-specific
+  limitations;
+- local-only operation and every provider claimed by the release are validated;
+- install, setup, Doctor, camera, microphone, input, lock, service/autostart,
+  offline queue/reconnect, update and rollback/restore checks have recorded results;
+- README, platform support, changelog, package version and release notes are
+  mutually consistent;
+- sanitized diagnostic/bug-report instructions are published and verified.
 
 ---
 

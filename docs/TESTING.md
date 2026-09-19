@@ -10,6 +10,7 @@ For the workflow before testing:
 - feature add/change/remove/fix: `docs/FEATURE_LIFECYCLE.md`;
 - bug/issue investigation and repair: `docs/BUG_TRIAGE_AND_FIXING.md`;
 - README/About/version/repository presentation: `docs/README_MAINTENANCE.md`;
+- production release qualification: `docs/RELEASE_CHECKLIST.md`;
 - AI-assisted verification: `$test-and-verify` in `docs/AI_AGENT_WORKFLOW.md`.
 
 ## Graphify-guided test selection
@@ -189,6 +190,11 @@ desktop/hardware/provider, add the strongest unit coverage possible and record
 the remaining manual validation explicitly.
 
 ## Target-device checks
+
+For a production release, these checks must be recorded through
+[RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md), including separate GNOME X11 and
+GNOME Wayland results for the v12.0 primary Ubuntu target.
+
 
 ```bash
 ./run.sh doctor

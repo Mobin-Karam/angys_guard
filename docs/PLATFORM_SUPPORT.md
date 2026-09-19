@@ -16,28 +16,47 @@ AngysGuard is the future-facing product name for the project currently packaged 
 
 ## Current operating-system support
 
-| Platform | State | What is available now | Important limits |
+The v12.0 Linux support promise is **configured-feature based**: an environment is
+release-ready only when `./run.sh doctor` reports `READY` for the features
+enabled on that machine and the relevant target-device checks pass.
+
+| Platform | Project state | v12.0 release position | Important limits |
 |---|---|---|---|
-| **Linux — Ubuntu-oriented desktop** | **Supported / primary target** | Current Python agent, guided setup, doctor, CLI, systemd user service, Bale/Telegram-style provider integration, input/camera/screen/audio/security features | Exact capabilities depend on distro, desktop environment, X11/Wayland compositor, permissions and hardware. |
-| **Other Linux distributions** | **Best effort** | Core Python/runtime concepts may work | Installer packages, service behavior, desktop commands and capture backends may need distro-specific work. Do not assume official support from Ubuntu success alone. |
-| **Windows** | **Planned** | No supported Windows agent/app today | Requires platform adapters and Windows-native service/security/capture implementation. Tracked by #33 and #34. |
-| **Android companion app** | **Planned** | No Android app today | Planned first as a secure companion/controller for enrolled AngysGuard Linux/Windows devices. Tracked by #35. |
+| **Ubuntu Desktop 24.04 LTS — amd64** | **Primary qualification target** | Intended Supported environment for v12.0 after the [release checklist](RELEASE_CHECKLIST.md) is recorded | GNOME X11 and GNOME Wayland are both qualified separately; not every screen/input backend is available in both sessions. |
+| **Ubuntu Desktop 26.04 LTS — amd64** | **Best effort / candidate** | Not v12.0 release-qualified yet | Ubuntu 26.04 uses Python 3.14 by default, while the current release CI/support matrix is Python 3.11–3.13. Qualification requires an explicitly supported Python/toolchain and the full target-device checklist. |
+| **Ubuntu Desktop 22.04 LTS — amd64** | **Best effort** | Not v12.0 release-qualified | Its default Python 3.10 is below AngysGuard's Python 3.11 minimum; a separately installed supported Python does not by itself make the OS release-qualified. |
+| **Other Linux distributions / Ubuntu flavors** | **Best effort** | Not automatically supported | Installer packages, service behavior, desktop commands and capture backends may differ. Ubuntu success does not transfer automatically to another distro/flavor. |
+| **Windows** | **Planned** | No supported release today | Requires platform adapters and Windows-native service/security/capture implementation. Tracked by #33 and #34. |
+| **Android companion app** | **Planned** | No app today | Planned first as a secure companion/controller for enrolled AngysGuard Linux/Windows devices. Tracked by #35. |
 | **Android protected-device agent** | **Research** | Not available | Android security/privacy/API/store restrictions make this a separate feasibility question. Tracked by #36. |
-| **macOS** | **Not targeted yet** | Not supported | Users may request it; a future target requires native capability/security analysis. |
-| **iOS/iPadOS** | **Not targeted yet** | Not supported | Mobile OS restrictions make full-device protection different from desktop protection. Users may request a companion use case. |
-| **BSD / ChromeOS / other OSes** | **Not targeted yet** | Not supported | Requests are welcome with a concrete use case/device/version. |
+| **macOS / iOS / iPadOS / BSD / ChromeOS / other OSes** | **Not targeted yet** | Not supported | Users may request support with a concrete use case/device/version. |
+
+Ubuntu 24.04, 26.04 and 22.04 are maintained LTS releases according to Canonical's
+[Ubuntu release cycle](https://ubuntu.com/about/release-cycle). AngysGuard's own
+support state is narrower: Canonical support for Ubuntu does not imply AngysGuard
+release qualification.
 
 ## Current Linux requirements
 
-The current release baseline is Linux-first and requires:
+The current release baseline is Linux-first. For v12.0 release qualification:
 
-- Python 3.11 or newer;
-- a normal desktop/user session for desktop-oriented features;
-- permissions/capabilities for the selected camera, microphone, input and screen backends;
-- systemd user services for the documented service/autostart flow;
-- a supported Bale/Telegram-style provider or local-only runtime mode when those features are selected.
+- **Python 3.11, 3.12 and 3.13** are the supported Python versions because all
+  three run in the required CI matrix. The installer/package metadata may accept a
+  newer Python, but newer versions are best effort until added to CI and target
+  validation.
+- **amd64 / x86_64** is the v12.0 target-device architecture. Other architectures
+  are not release-qualified merely because upstream dependencies publish wheels.
+- a normal graphical desktop/user session is required for desktop-oriented features;
+- permissions/capabilities are required for each enabled camera, microphone, input
+  and screen backend;
+- systemd user services are required for the documented service/autostart path;
+- Bale/Telegram-style provider access requires network connectivity, while
+  local-only mode must remain usable without a provider.
 
-The installer and docs are currently **Ubuntu-oriented**. A Linux distribution is not automatically considered officially supported just because the Python package installs there.
+The installer and docs are currently **Ubuntu-oriented**. A Linux distribution is
+not automatically considered officially supported just because the Python package
+installs there. The complete clean-machine qualification procedure is
+[RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md).
 
 Run:
 
@@ -48,16 +67,35 @@ Run:
 
 and the target-device checks from `docs/TESTING.md` before relying on a hardware/session-dependent capability.
 
-## X11 and Wayland
+## GNOME X11 and Wayland support
 
-Both X11 and Wayland are part of the Linux target, but they do not expose identical capabilities.
+Both **GNOME X11** and **GNOME Wayland** are v12.0 session qualification targets,
+but capability support is not identical.
 
-- screen capture can depend on compositor-specific tools/portals and permission prompts;
-- input monitoring backends differ and may require device permissions;
-- desktop lock/session actions depend on the desktop/session stack;
-- camera/microphone access depends on normal OS privacy/device permissions.
+| Capability | GNOME X11 | GNOME Wayland |
+|---|---|---|
+| Guard runtime / setup / doctor | Targeted | Targeted |
+| Camera / microphone | Normal Linux device/privacy permissions | Normal Linux device/privacy permissions |
+| Global input activity | evdev preferred; pynput may also work | **evdev preferred/expected**; pynput/global compositor hooks must not be assumed |
+| Screenshot | `gnome-screenshot` or ImageMagick backend when available | `gnome-screenshot` when the session permits it; other compositor-specific tools may differ |
+| Screen recording | Current supported path is `ffmpeg` + `x11grab` | Only supported when the compositor works with current `wf-recorder` path; this is **not a generic GNOME Wayland guarantee** |
+| Desktop lock | Requires a working supported session lock backend | Requires a working supported session lock backend |
+| systemd user service | Starts after graphical login | Starts after graphical login |
 
-AngysGuard must not try to bypass compositor or OS privacy boundaries simply to make two sessions behave identically.
+Input monitoring intentionally records activity classes rather than key identities.
+The runtime prefers readable **evdev** devices because that path is more reliable
+under Wayland; evdev requires appropriate device permissions. If evdev is
+unavailable, **pynput** is only a fallback where the actual session supports it.
+
+For screen capture, a successful `wf-recorder` test on a compatible Wayland
+compositor must not be generalized to GNOME or every Wayland compositor. If the
+configured screen-video feature has no supported backend, disable it through
+reconfiguration and require Doctor to return `READY` for the remaining claimed
+feature set.
+
+AngysGuard must not bypass compositor or OS privacy boundaries simply to make X11
+and Wayland appear identical. Record both session results separately using the
+[release checklist](RELEASE_CHECKLIST.md).
 
 ## Future desktop/mobile targets
 
@@ -150,7 +188,9 @@ Issue #31 tracks the support/request process itself.
 
 ## Release rule
 
-Every release that changes platform behavior must review this file and the root `README.md`.
+Every release must follow [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md). Every
+release that changes platform behavior must also review this file and the root
+`README.md`.
 
 A platform should not move from **Planned/Best effort** to **Supported** until:
 

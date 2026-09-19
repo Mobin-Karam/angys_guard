@@ -217,8 +217,8 @@ microphone, provider account, desktop session, or personal device.
 
 Read `docs/TESTING.md`. Use `$test-and-verify` for AI-assisted verification.
 
-For release/version/repository-presentation work, also run
-`tests/test_repository_presentation.py`.
+For release/version/repository-presentation work, also read
+`docs/RELEASE_CHECKLIST.md` and run `tests/test_repository_presentation.py`.
 
 ## Documentation
 

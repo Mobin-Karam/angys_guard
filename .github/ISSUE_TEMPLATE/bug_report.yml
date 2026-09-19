@@ -125,7 +125,7 @@ body:
     id: diagnostics
     attributes:
       label: Sanitized diagnostics
-      description: Include only relevant `./run.sh doctor`, status, event, or traceback output after removing secrets and private data.
+      description: Run `./run.sh doctor` first. For an unexpected software defect, you may copy only the smallest relevant record from `~/.local/share/laptop-guard/logs/runtime-diagnostics.jsonl` after manually removing usernames/home paths, hostnames, IP addresses, device names, chat IDs, and other identifying data. Never paste `secrets.json`, `stop-pin.json`, raw event databases, Authorization headers, tokens, passwords, private keys, or captured camera/screen/audio evidence. See `docs/RELEASE_CHECKLIST.md` section "Sanitized diagnostics for bug reports".
       render: shell
 
   - type: textarea
@@ -141,7 +141,7 @@ body:
       options:
         - label: I searched existing issues for the same problem.
           required: true
-        - label: I removed credentials, tokens, chat IDs, OS passwords, private media/evidence, and other sensitive data.
+        - label: I reviewed diagnostics manually and removed credentials, tokens, Authorization headers, chat IDs, usernames/paths, hostnames/IPs, OS passwords, private media/evidence, and other sensitive or identifying data.
           required: true
         - label: This is a normal bug report, not a vulnerability requiring private disclosure.
           required: true

@@ -70,8 +70,8 @@ Before a production release:
 - Confirm `pyproject.toml` version matches the root README/version status.
 - Run `$repository-presentation` / `repository_curator` and the presentation policy test.
 - Confirm `.github/repository-profile.json` still describes the product and apply the About values where admin access is available.
-- Follow `docs/ROADMAP.md` and the release checklist tracked for v12.0.
-- Test installation/setup/doctor on a clean supported machine.
+- Follow `docs/ROADMAP.md` and `docs/RELEASE_CHECKLIST.md`.
+- Record clean-machine/session/provider qualification for every environment the release claims as Supported.
 
 ## Secrets already committed
 

@@ -6,6 +6,7 @@ Use this as the short operational checklist. Detailed procedures live in:
 - `FEATURE_LIFECYCLE.md` — feature lifecycle;
 - `BUG_TRIAGE_AND_FIXING.md` — bug/issue repair;
 - `TESTING.md` — automated/manual validation;
+- `RELEASE_CHECKLIST.md` — clean-machine production-release qualification;
 - `ANGYSGUARD_PRODUCT_VISION.md` — product identity/direction;
 - `PLATFORM_SUPPORT.md` — current/planned/research OS support;
 - `CONTROL_MODES.md` — local/Bale/Telegram/self-hosted/managed modes;
@@ -48,6 +49,7 @@ Use this as the short operational checklist. Detailed procedures live in:
 
 ## Before a release
 
+- [ ] `RELEASE_CHECKLIST.md` has a complete qualification record for every Supported environment/session/provider claimed by the release.
 - [ ] Release milestone/checklist is complete.
 - [ ] `$release-readiness` / `release_manager` has no unresolved blocker.
 - [ ] `product_planner` / `$product-roadmap-maintenance` reviewed platform/control/support claims when relevant.
