@@ -170,7 +170,8 @@ def test_cli_unexpected_defect_is_logged_not_dumped(monkeypatch, capsys, tmp_pat
     assert cli.cmd_run(None) == 1
     output = capsys.readouterr().out
     assert "unexpected software error" in output.lower()
-    assert "runtime-diagnostics.jsonl" in output
+    normalized_output = "".join(output.split())
+    assert str(diagnostic) in normalized_output
     assert "internal-defect-detail" not in output
     assert "Traceback" not in output
 
