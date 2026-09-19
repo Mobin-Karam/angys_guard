@@ -6,9 +6,13 @@ The core rule is the same in every mode: **remote identity is not the same thing
 
 ## Current owner interfaces
 
-### 1. Local CLI and guided setup — available now
+### 1. Guided local menu, CLI and setup — available now
 
-The current Linux release can be installed/configured and operated locally with:
+Running `./run.sh` in an interactive terminal opens a simple local menu for Setup,
+Start Guard, Arm, Disarm, Status, hardware tests, Doctor, Autostart and Events. It
+shows setup, protection and provider state before each choice.
+
+The existing direct CLI remains available for advanced use and scripting:
 
 ```bash
 ./run.sh setup

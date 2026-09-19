@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import time
+from types import SimpleNamespace
 
 from rich.console import Console
 from rich.table import Table
@@ -112,6 +114,223 @@ def cmd_autostart(args):
     return 0 if ok else 2
 
 
+
+def _interactive_terminal() -> bool:
+    return bool(
+        getattr(sys.stdin, "isatty", lambda: False)()
+        and getattr(sys.stdout, "isatty", lambda: False)()
+    )
+
+
+def _menu_status() -> tuple[str, str, str]:
+    try:
+        configured = setup_is_complete()
+    except Exception:
+        configured = False
+
+    try:
+        cfg = load_config()
+    except Exception:
+        cfg = None
+
+    try:
+        state = RuntimeStateStore().refresh()
+    except Exception:
+        state = None
+
+    setup_label = "configured" if configured else "not configured"
+    if state is None:
+        protection_label = "unknown"
+    else:
+        protection_label = "armed" if state.armed else "disarmed"
+
+    if not configured:
+        provider_label = "not configured"
+    elif cfg is None:
+        provider_label = "unknown"
+    elif cfg.bot.provider == "local":
+        provider_label = "Local — local only"
+    else:
+        connected = bool(state and state.bot_online)
+        provider_label = f"{cfg.bot.provider.title()} — {'connected' if connected else 'offline'}"
+
+    return setup_label, protection_label, provider_label
+
+
+def _render_main_menu() -> None:
+    setup_label, protection_label, provider_label = _menu_status()
+    console.print()
+    console.rule("[bold cyan]Laptop Guard[/bold cyan]")
+    console.print(
+        f"Setup: [bold]{setup_label}[/bold]  |  "
+        f"Protection: [bold]{protection_label}[/bold]  |  "
+        f"Provider: [bold]{provider_label}[/bold]"
+    )
+    console.print()
+    console.print("  1. Setup / reconfigure")
+    console.print("  2. Start Guard")
+    console.print("  3. Arm protection")
+    console.print("  4. Disarm protection")
+    console.print("  5. Status")
+    console.print("  6. Test hardware")
+    console.print("  7. Doctor")
+    console.print("  8. Autostart")
+    console.print("  9. View events")
+    console.print("  0. Exit")
+
+
+def _read_menu_choice(prompt: str, valid: set[str]) -> str | None:
+    while True:
+        try:
+            value = input(prompt).strip()
+        except (EOFError, KeyboardInterrupt):
+            console.print()
+            return None
+        if value in valid:
+            return value
+        console.print(
+            "[yellow]Invalid choice. Enter one of: "
+            + ", ".join(sorted(valid))
+            + ".[/yellow]"
+        )
+
+
+def _confirm_menu(prompt: str, *, default: bool = False) -> bool:
+    suffix = " [Y/n]: " if default else " [y/N]: "
+    while True:
+        try:
+            value = input(prompt + suffix).strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            console.print()
+            return False
+        if not value:
+            return default
+        if value in {"y", "yes"}:
+            return True
+        if value in {"n", "no"}:
+            return False
+        console.print("[yellow]Please answer yes or no.[/yellow]")
+
+
+def _run_menu_action(label: str, action) -> int:
+    try:
+        result = action()
+    except Exception:
+        console.print(f"[red]{label} could not complete safely.[/red]")
+        console.print("Use Doctor from the menu for recovery guidance.")
+        return 2
+
+    code = result if isinstance(result, int) else 0
+    if code != 0:
+        console.print(
+            f"[yellow]{label} finished with a problem. "
+            "Use Doctor for the recommended next step.[/yellow]"
+        )
+    return code
+
+
+def _hardware_menu() -> None:
+    targets = {
+        "1": ("Camera", "camera"),
+        "2": ("Microphone", "microphone"),
+        "3": ("Bot / provider", "bot"),
+        "4": ("Screen lock", "lock"),
+        "5": ("Screen capture", "screen"),
+        "6": ("Keyboard / mouse input", "input"),
+    }
+    console.print("\n[bold]Hardware tests[/bold]")
+    for key, (label, _target) in targets.items():
+        console.print(f"  {key}. {label}")
+    console.print("  0. Back")
+
+    choice = _read_menu_choice("Choose a hardware test: ", set(targets) | {"0"})
+    if choice in {None, "0"}:
+        return
+
+    label, target = targets[choice]
+    if target == "lock" and not _confirm_menu(
+        "The lock test may lock your desktop session. Continue?"
+    ):
+        console.print("Lock test cancelled.")
+        return
+
+    _run_menu_action(
+        f"{label} test",
+        lambda: cmd_test(SimpleNamespace(target=target)),
+    )
+
+
+def _autostart_menu() -> None:
+    console.print("\n[bold]Autostart[/bold]")
+    console.print("  1. Show status")
+    console.print("  2. Turn on")
+    console.print("  3. Turn off")
+    console.print("  0. Back")
+
+    choice = _read_menu_choice("Choose an autostart action: ", {"0", "1", "2", "3"})
+    if choice in {None, "0"}:
+        return
+    if choice == "1":
+        _run_menu_action(
+            "Autostart status",
+            lambda: cmd_autostart(SimpleNamespace(action="status")),
+        )
+        return
+    if choice == "2":
+        _run_menu_action(
+            "Enable autostart",
+            lambda: cmd_autostart(SimpleNamespace(action="on")),
+        )
+        return
+
+    if not _confirm_menu(
+        "Turning autostart off means Laptop Guard will not start automatically. Continue?"
+    ):
+        console.print("Autostart change cancelled.")
+        return
+    _run_menu_action(
+        "Disable autostart",
+        lambda: cmd_autostart(SimpleNamespace(action="off")),
+    )
+
+
+def run_main_menu() -> int:
+    while True:
+        _render_main_menu()
+        choice = _read_menu_choice(
+            "Choose an action: ",
+            {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"},
+        )
+        if choice in {None, "0"}:
+            console.print("Goodbye.")
+            return 0
+
+        if choice == "1":
+            _run_menu_action("Setup", lambda: cmd_setup(None))
+        elif choice == "2":
+            _run_menu_action("Guard", lambda: cmd_run(None))
+        elif choice == "3":
+            _run_menu_action("Arm", lambda: cmd_arm(None))
+        elif choice == "4":
+            if _confirm_menu("Disarm protection?"):
+                _run_menu_action("Disarm", lambda: cmd_disarm(None))
+            else:
+                console.print("Disarm cancelled.")
+        elif choice == "5":
+            _run_menu_action("Status", lambda: cmd_status(None))
+        elif choice == "6":
+            _hardware_menu()
+        elif choice == "7":
+            _run_menu_action("Doctor", lambda: cmd_doctor(None))
+        elif choice == "8":
+            _autostart_menu()
+        elif choice == "9":
+            _run_menu_action(
+                "Events",
+                lambda: cmd_events(SimpleNamespace(limit=20)),
+            )
+
+
 def build_parser():
     p = argparse.ArgumentParser(prog="laptop-guard", description="Laptop Guard v11.1")
     sub = p.add_subparsers(dest="command")
@@ -133,9 +352,15 @@ def build_parser():
 
 
 def main():
-    parser = build_parser(); args = parser.parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
     try:
-        if not getattr(args, "command", None): return cmd_run(args)
-        result = args.func(args); return result if isinstance(result, int) else 0
+        if not getattr(args, "command", None):
+            if _interactive_terminal():
+                return run_main_menu()
+            return cmd_run(args)
+        result = args.func(args)
+        return result if isinstance(result, int) else 0
     except KeyboardInterrupt:
-        console.print("\n[yellow]Cancelled.[/yellow]"); return 130
+        console.print("\n[yellow]Cancelled.[/yellow]")
+        return 130

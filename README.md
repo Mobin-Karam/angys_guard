@@ -97,7 +97,7 @@ X11 and Wayland are both part of the target, but compositor/privacy differences 
 
 | UI / control surface | Status | Best for |
 | --- | --- | --- |
-| **Local CLI + guided setup** | Available | Installation, setup, doctor, recovery, advanced users |
+| **Guided local menu + CLI/setup** | Available | Daily local operation without memorizing commands, plus advanced scripting |
 | **Bale bot** | Available in current product/provider paths | Iranian users who want a Telegram-style bot UI |
 | **Telegram-style bot provider** | Available in current provider architecture; exact live parity should be release-validated | Telegram/bot-style owner control |
 | **Visible local chat/UI surfaces** | Available for current supported flows | Local interaction/communication |
@@ -292,6 +292,19 @@ contain credentials.
 
 ```bash
 ./run.sh
+```
+
+When launched from an interactive terminal with no subcommand, `./run.sh` opens a
+guided menu showing setup, armed/disarmed, and provider status before each choice.
+From there you can set up the device, start the Guard, arm/disarm, run Doctor,
+test hardware, manage autostart, inspect status/events, or exit without memorizing
+commands.
+
+Advanced users and scripts keep the existing direct CLI. To start protection
+without the menu, run:
+
+```bash
+./run.sh run
 ```
 
 ### Common operations
