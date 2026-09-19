@@ -19,6 +19,7 @@ from .config import (
 )
 from .models import AppConfig
 from .providers import build_provider
+from .runtime_recovery import is_provider_auth_error, write_runtime_diagnostic
 
 
 class RuntimeConfigurationError(RuntimeError):
@@ -30,8 +31,7 @@ def _interactive() -> bool:
 
 
 def _auth_error(exc: BaseException) -> bool:
-    text = str(exc).lower()
-    return "401" in text or "unauthorized" in text or "invalid token" in text or "token is invalid" in text
+    return is_provider_auth_error(exc)
 
 
 def _provider_name(cfg: AppConfig) -> str:
@@ -79,17 +79,37 @@ def _ask_valid_token(cfg: AppConfig, console: Console, *, force_new: bool = Fals
             console.print(f"Testing {provider_name.title()} bot credentials...")
             me = bot.get_me()
         except Exception as exc:
+            diagnostic = write_runtime_diagnostic("provider-credential-validation", exc)
             if not _interactive():
-                raise RuntimeConfigurationError(f"Bot authentication/connection failed: {exc}") from exc
+                if _auth_error(exc):
+                    raise RuntimeConfigurationError(
+                        f"{provider_name.title()} bot credential was rejected. "
+                        "Run './run.sh reconfigure provider', then './run.sh test bot'."
+                    ) from exc
+                raise RuntimeConfigurationError(
+                    f"Could not reach the {provider_name.title()} bot service. "
+                    "Check network/proxy settings, then run './run.sh test bot'."
+                ) from exc
             if _auth_error(exc):
-                console.print("[red]The saved bot token was rejected (401 Unauthorized).[/red]")
-                console.print("Enter the current token from the bot management service. The old token will be replaced.")
+                console.print("[red]The saved bot credential was rejected.[/red]")
+                console.print(
+                    "Run the Provider section with the current token. "
+                    "The old credential is replaced only after validation."
+                )
             else:
-                console.print(f"[red]Could not verify the bot:[/red] {exc}")
-                if attempted_stored and Confirm.ask("Keep the stored token and retry it?", default=False):
+                console.print(
+                    f"[red]Could not reach the {provider_name.title()} bot service.[/red]"
+                )
+                console.print("Check network/proxy settings or run ./run.sh test bot.")
+                if attempted_stored and Confirm.ask(
+                    "Keep the stored credential and retry it?",
+                    default=False,
+                ):
                     stored = token
                     attempted_stored = False
                     continue
+            if diagnostic is not None:
+                console.print(f"[dim]Diagnostic details: {diagnostic}[/dim]")
             stored = ""
             attempted_stored = False
             continue
@@ -116,12 +136,18 @@ def _pair_owner_chat(cfg: AppConfig, token: str, console: Console) -> None:
         raise RuntimeConfigurationError(f"Unsupported provider: {cfg.bot.provider}")
 
     console.print("\n[yellow]No owner chat is configured.[/yellow]")
-    if Confirm.ask("Pair it automatically by waiting for a new /start message?", default=True):
-        from .setup_wizard import pair_chat
+    try:
+        if Confirm.ask("Pair it automatically by waiting for a new /start message?", default=True):
+            from .setup_wizard import pair_chat
 
-        cfg.bot.chat_id = pair_chat(bot, console)
-    else:
-        cfg.bot.chat_id = IntPrompt.ask("Owner chat ID")
+            cfg.bot.chat_id = pair_chat(bot, console)
+        else:
+            cfg.bot.chat_id = IntPrompt.ask("Owner chat ID")
+    except Exception as exc:
+        write_runtime_diagnostic("owner-pairing", exc)
+        raise RuntimeConfigurationError(
+            "Owner pairing did not complete. Run './run.sh reconfigure owner' and try again."
+        ) from exc
 
     save_config(cfg)
     console.print(f"[green]Owner chat saved:[/green] {cfg.bot.chat_id}")

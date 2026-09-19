@@ -31,6 +31,12 @@ from .features import FailedLoginFeature, FeatureManager, SystemInfoFeature
 from .input_monitor import InputMonitor
 from .sound_detection import SoundDetectionMonitor
 from .warning_sequence import dismiss_warning, launch_warning
+from .runtime_recovery import (
+    guidance_for_exception,
+    is_provider_auth_error,
+    sanitize_diagnostic,
+    write_runtime_diagnostic,
+)
 from .system_actions import (
     lock_screen as native_lock_screen,
     poweroff_system,
@@ -152,7 +158,10 @@ class LaptopGuard:
             with self._send_lock:
                 self.api.send_message(chat_id, text, reply_markup=markup)
         except Exception as exc:
-            print(f"[bale] send failed: {exc}")
+            diagnostic = write_runtime_diagnostic("provider-send-message", exc)
+            print("[bot] message send failed; provider recovery may be needed.")
+            if diagnostic is not None:
+                print(f"[bot] diagnostic details: {diagnostic}")
 
     def _send_async(self, text: str, markup: dict | None = None) -> None:
         threading.Thread(target=self._send, args=(text, markup), daemon=True).start()
@@ -175,7 +184,10 @@ class LaptopGuard:
                 else:
                     self.api.send_document(chat_id, path, caption)
             except Exception as exc:
-                print(f"[bale] media send failed: {exc}")
+                diagnostic = write_runtime_diagnostic(f"provider-send-{kind}", exc)
+                print(f"[bot] {kind} send failed; provider recovery may be needed.")
+                if diagnostic is not None:
+                    print(f"[bot] diagnostic details: {diagnostic}")
 
         threading.Thread(target=worker, daemon=True, name=f"send-{kind}").start()
 
@@ -571,8 +583,15 @@ class LaptopGuard:
                 self.chat.send_system("✓ پیام برای مالک در Bale ارسال شد. / Sent to the owner in Bale.")
                 self.events.add("visitor_chat", "visitor message delivered to owner", "info")
             except Exception as exc:
-                self.chat.send_system("⚠️ ارسال پیام به Bale ناموفق بود. دوباره تلاش کنید. / Delivery failed; please retry.")
-                self.events.add("visitor_chat_failed", str(exc), "warning")
+                diagnostic = write_runtime_diagnostic("visitor-chat-send", exc)
+                self.chat.send_system(
+                    "⚠️ ارسال پیام به مالک ناموفق بود. دوباره تلاش کنید یا ./run.sh test bot را اجرا کنید."
+                    " / Delivery failed; retry or run ./run.sh test bot."
+                )
+                detail = "provider delivery failed"
+                if diagnostic is not None:
+                    detail += f"; diagnostics={diagnostic}"
+                self.events.add("visitor_chat_failed", detail, "warning")
 
         threading.Thread(target=worker, daemon=True, name="visitor-chat-send").start()
 
@@ -587,7 +606,11 @@ class LaptopGuard:
                 ok = play_audio(path)
                 self.events.add("owner_voice", f"played={ok}", "info", str(path))
             except Exception as exc:
-                self._send_async(f"⚠️ پخش Voice ناموفق بود: {exc}")
+                diagnostic = write_runtime_diagnostic("owner-voice-playback", exc)
+                message = "⚠️ پخش Voice ناموفق بود. ./run.sh test microphone و سپس ./run.sh doctor را اجرا کنید."
+                if diagnostic is not None:
+                    message += f"\nDiagnostic: {diagnostic}"
+                self._send_async(message)
             finally:
                 self.sound_detection.resume()
 
@@ -598,8 +621,18 @@ class LaptopGuard:
             self.events.add("tts", f"voice={result.voice}; chars={len(result.text)}", "info", str(result.path or ""))
             self._reply_to_chat(chat_id, f"✅ متن با صدای {VOICE_NAMES.get(result.voice, result.voice)} روی لپ‌تاپ پخش شد.")
         else:
-            self.events.add("tts_error", result.error, "medium")
-            self._reply_to_chat(chat_id, f"⚠️ تبدیل متن به صدا ناموفق بود: {result.error}")
+            diagnostic = write_runtime_diagnostic(
+                "tts-playback",
+                RuntimeError(result.error or "TTS failed"),
+            )
+            detail = "TTS playback failed"
+            if diagnostic is not None:
+                detail += f"; diagnostics={diagnostic}"
+            self.events.add("tts_error", detail, "medium")
+            self._reply_to_chat(
+                chat_id,
+                "⚠️ تبدیل متن به صدا ناموفق بود. ./run.sh doctor یا ./run.sh reconfigure audio را اجرا کنید.",
+            )
 
     def _speak_text(self, chat_id: int, text: str, voice: str | None = None) -> None:
         if not self.config.tts.enabled:
@@ -787,7 +820,10 @@ class LaptopGuard:
         try:
             self.api.send_message(chat_id, text, reply_markup=markup)
         except Exception as exc:
-            print(f"[bale] reply failed: {exc}")
+            diagnostic = write_runtime_diagnostic("provider-reply", exc)
+            print("[bot] reply failed; run ./run.sh test bot if the provider remains unavailable.")
+            if diagnostic is not None:
+                print(f"[bot] diagnostic details: {diagnostic}")
 
     # Stable, deliberately small surface exposed to feature modules.
     def feature_reply(self, chat_id: int, text: str, markup: dict | None = None) -> None:
@@ -1296,8 +1332,14 @@ class LaptopGuard:
         if not path:
             self._reply_to_chat(chat_id, "⚠️ تصویر دوربین آماده نیست.")
             return
-        try: self.api.send_photo(chat_id, path, f"📷 {datetime.now():%Y-%m-%d %H:%M:%S}")
-        except Exception as exc: self._reply_to_chat(chat_id, f"⚠️ ارسال عکس ناموفق بود: {exc}")
+        try:
+            self.api.send_photo(chat_id, path, f"📷 {datetime.now():%Y-%m-%d %H:%M:%S}")
+        except Exception as exc:
+            write_runtime_diagnostic("camera-photo-send", exc)
+            self._reply_to_chat(
+                chat_id,
+                "⚠️ ارسال عکس ناموفق بود. اتصال Provider را با ./run.sh test bot بررسی کنید.",
+            )
 
     def _do_camera_video(self, chat_id: int, seconds: int) -> None:
         if not self.camera_enabled:
@@ -1334,8 +1376,14 @@ class LaptopGuard:
                     writer.release()
             if not path.exists() or not path.stat().st_size:
                 self._reply_to_chat(chat_id, "⚠️ ویدیوی دوربین ایجاد نشد."); return
-            try: self.api.send_video(chat_id, path, "🎥 ویدیوی دوربین")
-            except Exception as exc: self._reply_to_chat(chat_id, f"⚠️ ارسال ویدیوی دوربین ناموفق بود: {exc}")
+            try:
+                self.api.send_video(chat_id, path, "🎥 ویدیوی دوربین")
+            except Exception as exc:
+                write_runtime_diagnostic("camera-video-send", exc)
+                self._reply_to_chat(
+                    chat_id,
+                    "⚠️ ارسال ویدیوی دوربین ناموفق بود. ./run.sh test bot را اجرا کنید.",
+                )
         threading.Thread(target=worker, daemon=True).start()
 
     def _do_screen_shot(self, chat_id: int) -> None:
@@ -1345,8 +1393,14 @@ class LaptopGuard:
         def worker():
             path, backend = self.screen.screenshot()
             if not path: self._reply_to_chat(chat_id, "⚠️ Screenshot در این نشست Linux در دسترس نیست."); return
-            try: self.api.send_photo(chat_id, path, f"🖥 Screenshot • {backend}")
-            except Exception as exc: self._reply_to_chat(chat_id, f"⚠️ ارسال Screenshot ناموفق بود: {exc}")
+            try:
+                self.api.send_photo(chat_id, path, f"🖥 Screenshot • {backend}")
+            except Exception as exc:
+                write_runtime_diagnostic("screen-shot-send", exc)
+                self._reply_to_chat(
+                    chat_id,
+                    "⚠️ ارسال Screenshot ناموفق بود. ./run.sh test bot را اجرا کنید.",
+                )
         threading.Thread(target=worker, daemon=True).start()
 
     def _do_screen_video(self, chat_id: int, seconds: int) -> None:
@@ -1355,8 +1409,14 @@ class LaptopGuard:
         def worker():
             path, backend = self.screen.record(seconds)
             if not path: self._reply_to_chat(chat_id, "⚠️ Screen recording در این نشست در دسترس نیست."); return
-            try: self.api.send_video(chat_id, path, f"🎥 Screen recording • {backend}")
-            except Exception as exc: self._reply_to_chat(chat_id, f"⚠️ ارسال ویدیو ناموفق بود: {exc}")
+            try:
+                self.api.send_video(chat_id, path, f"🎥 Screen recording • {backend}")
+            except Exception as exc:
+                write_runtime_diagnostic("screen-video-send", exc)
+                self._reply_to_chat(
+                    chat_id,
+                    "⚠️ ارسال ویدیو ناموفق بود. ./run.sh test bot را اجرا کنید.",
+                )
         threading.Thread(target=worker, daemon=True).start()
 
     def _do_listen(self, chat_id: int, seconds: int) -> None:
@@ -1375,7 +1435,12 @@ class LaptopGuard:
                 if kind == "voice": self.api.send_voice(chat_id, path, "🎙 صدای محیط")
                 elif kind == "audio": self.api.send_audio(chat_id, path, "🎙 صدای محیط")
                 else: self.api.send_document(chat_id, path, "🎙 فایل صدای محیط")
-            except Exception as exc: self._reply_to_chat(chat_id, f"⚠️ ارسال صدا ناموفق بود: {exc}")
+            except Exception as exc:
+                write_runtime_diagnostic("audio-send", exc)
+                self._reply_to_chat(
+                    chat_id,
+                    "⚠️ ارسال صدا ناموفق بود. ./run.sh test bot و ./run.sh test microphone را اجرا کنید.",
+                )
             finally:
                 self.sound_detection.resume()
         threading.Thread(target=worker, daemon=True).start()
@@ -1493,7 +1558,10 @@ class LaptopGuard:
         except OSError as exc:
             # If we cannot tell the watchdog this is a safe stop, fail closed.
             self._authorized_exit = False
-            raise RuntimeError(f"could not authorize safe watchdog exit: {exc}") from exc
+            write_runtime_diagnostic("safe-exit-authorization", exc)
+            raise RuntimeError(
+                "Could not authorize the safe watchdog exit; diagnostic details were recorded."
+            ) from exc
 
     def _begin_stop_authorization(self, reason: str = "Ctrl+C") -> None:
         if not self.config.security.stop_auth_enabled:
@@ -1599,7 +1667,13 @@ class LaptopGuard:
             try:
                 self._mark_safe_exit()
             except RuntimeError as exc:
-                print(f"[security] {exc}", flush=True)
+                diagnostic = write_runtime_diagnostic("safe-exit-stop", exc)
+                print(
+                    "[security] Safe exit could not be authorized. The system will lock and Guard will continue.",
+                    flush=True,
+                )
+                if diagnostic is not None:
+                    print(f"[security] diagnostic details: {diagnostic}", flush=True)
                 self._lock_stop_failure("watchdog safe-exit authorization failed")
                 return
 
@@ -1683,10 +1757,50 @@ class LaptopGuard:
             print(f"[security] exit-lock watchdog pid={self._watchdog_proc.pid}")
         except OSError as exc:
             self._watchdog_proc = None
-            print(f"[security] could not start exit-lock watchdog: {exc}")
+            diagnostic = write_runtime_diagnostic("exit-watchdog-startup", exc)
+            print(
+                "[security] Exit-lock watchdog could not start. Run ./run.sh doctor before relying on protected exit.",
+            )
+            if diagnostic is not None:
+                print(f"[security] diagnostic details: {diagnostic}")
+
+    def _run_background_component(self, name: str, worker) -> None:
+        try:
+            worker()
+        except Exception as exc:
+            diagnostic = write_runtime_diagnostic(f"{name}-background", exc)
+            guidance = guidance_for_exception(name, exc)
+            if guidance is not None:
+                message = guidance.summary
+                action = guidance.actions[0] if guidance.actions else "./run.sh doctor"
+            else:
+                message = f"{name.title()} stopped because of an unexpected software error."
+                action = "Run ./run.sh doctor and inspect the diagnostic log."
+            print(f"[{name}] {sanitize_diagnostic(message)}")
+            print(f"[{name}] next action: {action}")
+            if diagnostic is not None:
+                print(f"[{name}] diagnostic details: {diagnostic}")
+            try:
+                self.events.add(
+                    "runtime_component_failed",
+                    f"{name}: {message}",
+                    "error",
+                )
+            except Exception:
+                pass
+            self._send_async(
+                f"⚠️ {name.title()} unavailable. {message}\nNext: {action}"
+            )
 
     def start_monitors(self) -> None:
-        self.camera_thread = threading.Thread(target=self.camera_worker, daemon=True, name="camera-monitor")
+        self.camera_thread = threading.Thread(
+            target=lambda: self._run_background_component(
+                "camera",
+                self.camera_worker,
+            ),
+            daemon=True,
+            name="camera-monitor",
+        )
         self.camera_thread.start()
         try:
             self.input_monitor.start()
@@ -1694,8 +1808,26 @@ class LaptopGuard:
             print(f"[input] {self.input_monitor.backend_name} listener started")
         except Exception as exc:
             self.state.input_ok = False
-            print(f"[input] listener startup failed: {exc}")
-            self._send_async(f"⚠️ Input monitoring شروع نشد: {exc}")
+            diagnostic = write_runtime_diagnostic("input-monitor-startup", exc)
+            guidance = guidance_for_exception("input", exc)
+            message = (
+                guidance.summary
+                if guidance is not None
+                else "Input monitoring could not start."
+            )
+            action = (
+                guidance.actions[0]
+                if guidance is not None and guidance.actions
+                else "Run: ./run.sh test input"
+            )
+            print(f"[input] {message}")
+            print(f"[input] next action: {action}")
+            if diagnostic is not None:
+                print(f"[input] diagnostic details: {diagnostic}")
+            self.events.add("input_monitor_failed", message, "error")
+            self._send_async(
+                f"⚠️ Input monitoring unavailable. {message}\nNext: {action}"
+            )
         self.sound_detection.start()
         if self.config.security.auto_arm:
             self.arm()
@@ -1746,9 +1878,17 @@ class LaptopGuard:
                             self._offset = uid + 1
                         self.handle_update(update)
                 except BaleApiError as exc:
-                    print(f"[bot] polling error: {exc}")
-                    error_text = str(exc).lower()
-                    auth_failed = "401" in error_text or "unauthorized" in error_text
+                    auth_failed = is_provider_auth_error(exc)
+                    guidance = guidance_for_exception("provider-polling", exc)
+                    if guidance is not None:
+                        print(f"[bot] {guidance.summary}")
+                        if guidance.actions:
+                            print(f"[bot] next action: {guidance.actions[0]}")
+                    else:
+                        diagnostic = write_runtime_diagnostic("provider-polling", exc)
+                        print("[bot] provider polling failed unexpectedly.")
+                        if diagnostic is not None:
+                            print(f"[bot] diagnostic details: {diagnostic}")
                     if auth_failed:
                         try:
                             from rich.console import Console
@@ -1760,7 +1900,16 @@ class LaptopGuard:
                             print(f"[bot] credentials replaced: {me.get('username') or me.get('first_name') or me.get('id')}")
                             continue
                         except RuntimeConfigurationError as cfg_exc:
-                            print(f"[bot] {cfg_exc}")
+                            diagnostic = write_runtime_diagnostic(
+                                "provider-runtime-credential-repair",
+                                cfg_exc,
+                            )
+                            print(
+                                "[bot] Provider credentials need repair. "
+                                "Run ./run.sh reconfigure provider and ./run.sh test bot."
+                            )
+                            if diagnostic is not None:
+                                print(f"[bot] diagnostic details: {diagnostic}")
                             # A systemd/background process cannot ask for secrets.
                             # Re-check the protected secret store periodically so
                             # an interactive setup run can repair it without .env.
@@ -1779,17 +1928,10 @@ class LaptopGuard:
 
 
 def main() -> int:
-    from rich.console import Console
-    from .runtime_config import RuntimeConfigurationError, ensure_runtime_configuration
+    # Keep direct module execution on the same guided recovery boundary as the CLI.
+    from .cli import cmd_run
 
-    try:
-        config = ensure_runtime_configuration(Console())
-        LaptopGuard(config).run()
-        return 0
-    except RuntimeConfigurationError as exc:
-        raise SystemExit(str(exc))
-    except ValueError as exc:
-        raise SystemExit(str(exc))
+    return cmd_run(None)
 
 
 if __name__ == "__main__":

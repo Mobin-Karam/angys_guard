@@ -128,7 +128,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `laptop_guard/cli.py` | Guided interactive main menu plus setup/reconfigure/run/doctor/arm/disarm/status/config/profile/events/health/test/service/autostart commands; explicit subcommands remain scriptable. |
 | `laptop_guard/models.py` | Dataclass configuration schema and compatibility properties. |
 | `laptop_guard/config.py` | TOML/secrets/setup-progress persistence, user paths, legacy import/migration, safe config handling. |
-| `laptop_guard/runtime_config.py` | Runtime validation/repair, provider token validation, and owner pairing before startup. |
+| `laptop_guard/runtime_config.py` | Runtime validation/repair, token-safe provider validation, and owner pairing before startup. |
 | `laptop_guard/state.py` | Atomic shared JSON runtime-state persistence. |
 | `laptop_guard/runtime_state.py` | Live facade over shared persisted CLI/guard state. |
 | `laptop_guard/storage.py` | Shared SQLite events and durable outbound queue. |
@@ -139,7 +139,8 @@ Runtime secrets belong in protected user configuration storage described in
 
 | File | Responsibility and status |
 |---|---|
-| `laptop_guard/guard.py` | Main orchestration: polling, authorization, features/menus, monitors, evidence, warning/lock, media, chat, TTS, lifecycle. Current architecture hotspot; target evolution is documented in `docs/ARCHITECTURE.md`. |
+| `laptop_guard/guard.py` | Main orchestration: polling, authorization, features/menus, monitors, evidence, warning/lock, media, chat, TTS, lifecycle, with guided monitor/provider failure boundaries. Current architecture hotspot; target evolution is documented in `docs/ARCHITECTURE.md`. |
+| `laptop_guard/runtime_recovery.py` | Shared guided-recovery classification, configured-capability startup preflight, secret sanitization, and private runtime diagnostic logging. |
 | `laptop_guard/runtime_api.py` | Runtime owner-communication protocol/factory and local no-token adapter. Accepted transport port. |
 | `laptop_guard/features/base.py` | Narrow feature/host protocols. |
 | `laptop_guard/features/manager.py` | Conflict-safe command/callback registry plus deterministic feature lifecycle. Accepted extension mechanism. |
@@ -194,7 +195,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `laptop_guard/service.py` | systemd user-service/autostart management. |
 | `laptop_guard/setup_wizard.py` | Section-checkpointed guided setup/reconfiguration, validation-aware resume, device discovery, and owner pairing. |
 | `laptop_guard/doctor.py` | Required/optional dependency/configuration/backend readiness diagnostics. |
-| `laptop_guard/tests_manual.py` | Hardware/integration checks exposed through `./run.sh test`. |
+| `laptop_guard/tests_manual.py` | Hardware/integration checks exposed through `./run.sh test`, with guided failure recovery and sanitized diagnostics. |
 
 ## Tests
 

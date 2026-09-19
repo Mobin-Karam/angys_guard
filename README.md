@@ -288,6 +288,13 @@ exit non-zero; recommended/optional findings do not block startup. Connectivity
 errors are summarized without printing stored tokens or provider URLs that could
 contain credentials.
 
+Normal startup/runtime failures use the same recovery model: provider credentials,
+camera/audio/input/screen backends, and permission problems are explained with
+specific test/reconfigure/doctor actions instead of raw tracebacks. Unexpected
+software defects are written to the private, token-sanitized
+`~/.local/share/laptop-guard/logs/runtime-diagnostics.jsonl` diagnostic log (or
+the equivalent `XDG_DATA_HOME` location).
+
 ### 5. Run
 
 ```bash

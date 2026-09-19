@@ -11,6 +11,7 @@ from typing import Callable
 
 from .audio import AudioRecorder
 from .models import AudioConfig
+from .runtime_recovery import write_runtime_diagnostic
 
 
 def pcm_rms(data: bytes) -> float:
@@ -159,7 +160,20 @@ class SoundDetectionMonitor:
                         cooldown_until = time.monotonic() + max(5, int(self.config.sound_cooldown))
                         break
             except (OSError, subprocess.SubprocessError) as exc:
-                self.on_event("sound_monitor_failed", str(exc), "warning")
+                write_runtime_diagnostic("sound-detection-backend", exc)
+                self.on_event(
+                    "sound_monitor_failed",
+                    "Audio backend unavailable; run ./run.sh test microphone",
+                    "warning",
+                )
+                self._stop.wait(2.0)
+            except Exception as exc:
+                write_runtime_diagnostic("sound-detection-defect", exc)
+                self.on_event(
+                    "sound_monitor_failed",
+                    "Unexpected sound-monitor error; inspect runtime diagnostics",
+                    "error",
+                )
                 self._stop.wait(2.0)
             finally:
                 self._terminate_probe()

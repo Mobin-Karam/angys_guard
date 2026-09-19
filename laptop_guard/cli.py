@@ -31,14 +31,63 @@ def cmd_reconfigure(args):
 
 def cmd_run(_):
     from .runtime_config import RuntimeConfigurationError, ensure_runtime_configuration
+    from .runtime_recovery import (
+        configuration_recovery,
+        guidance_for_exception,
+        print_recovery,
+        startup_recovery_issues,
+        write_runtime_diagnostic,
+    )
+
     try:
         cfg = ensure_runtime_configuration(console)
     except RuntimeConfigurationError as exc:
-        console.print(f"[red]{exc}[/red]")
+        diagnostic = write_runtime_diagnostic("runtime-configuration", exc)
+        print_recovery(
+            console,
+            configuration_recovery(exc),
+            diagnostic_path=diagnostic,
+        )
         return 2
-    from .guard import LaptopGuard
-    LaptopGuard(cfg).run()
-    return 0
+
+    try:
+        issues = startup_recovery_issues(cfg)
+    except Exception as exc:
+        diagnostic = write_runtime_diagnostic("startup-preflight", exc)
+        console.print("[red]Startup readiness check failed unexpectedly.[/red]")
+        console.print("Run: ./run.sh doctor")
+        if diagnostic is not None:
+            console.print(f"[dim]Diagnostic details: {diagnostic}[/dim]")
+        return 1
+
+    if issues:
+        console.print("[red]Laptop Guard is not ready to start yet.[/red]")
+        for guidance in issues:
+            print_recovery(console, guidance)
+            console.print()
+        console.print("After fixing the items above, run: ./run.sh doctor")
+        return 2
+
+    try:
+        from .guard import LaptopGuard
+
+        LaptopGuard(cfg).run()
+        return 0
+    except Exception as exc:
+        diagnostic = write_runtime_diagnostic("guard-runtime", exc)
+        guidance = guidance_for_exception("guard-runtime", exc)
+        if guidance is not None:
+            print_recovery(console, guidance, diagnostic_path=diagnostic)
+            return 2
+
+        console.print("[red]Laptop Guard stopped because of an unexpected software error.[/red]")
+        console.print(
+            "This is different from a normal setup/hardware problem. "
+            "Run ./run.sh doctor, then inspect the diagnostic log."
+        )
+        if diagnostic is not None:
+            console.print(f"[dim]Diagnostic details: {diagnostic}[/dim]")
+        return 1
 
 
 def cmd_doctor(_):
@@ -222,9 +271,14 @@ def _confirm_menu(prompt: str, *, default: bool = False) -> bool:
 def _run_menu_action(label: str, action) -> int:
     try:
         result = action()
-    except Exception:
+    except Exception as exc:
+        from .runtime_recovery import write_runtime_diagnostic
+
+        diagnostic = write_runtime_diagnostic(f"menu:{label}", exc)
         console.print(f"[red]{label} could not complete safely.[/red]")
         console.print("Use Doctor from the menu for recovery guidance.")
+        if diagnostic is not None:
+            console.print(f"[dim]Diagnostic details: {diagnostic}[/dim]")
         return 2
 
     code = result if isinstance(result, int) else 0

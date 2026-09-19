@@ -10,6 +10,15 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Guided runtime recovery
+
+- Added a shared runtime-recovery layer that maps expected provider, hardware/backend, and permission failures to short explanations plus concrete test/reconfigure/doctor actions.
+- Added configured-capability startup preflight for camera, audio, input monitoring, screen capture, failed-login journal access, and screen-lock backends before Guard startup.
+- Provider credential/network failures no longer echo raw HTTP/provider exception text at the CLI or manual bot-test boundary.
+- Unexpected runtime/background defects are retained in an owner-only JSONL diagnostic log with stored bot/API credentials and token-bearing bot URLs redacted.
+- Camera/input/audio background failures now emit safe recovery guidance while preserving sanitized diagnostics for advanced troubleshooting.
+- Added regressions for credential redaction, provider recovery, camera readiness, permission guidance, unexpected-defect logging, and manual provider testing.
+
 ### Resumable setup and reconfiguration
 
 - Split guided setup into independently checkpointed identity/profile, provider, owner pairing, camera, audio, security, communication, screen capture, apps/API, monitors, and startup sections.
