@@ -163,6 +163,20 @@ def configuration_recovery(exc: BaseException) -> RecoveryGuidance:
             ),
         )
 
+    if any(
+        marker in text
+        for marker in ("could not reach", "bot service", "network", "proxy", "timed out")
+    ):
+        return RecoveryGuidance(
+            "Notification provider",
+            "Laptop Guard could not reach the configured bot provider.",
+            (
+                "Check the network/proxy settings.",
+                "Run: ./run.sh test bot",
+                "If provider settings changed, run: ./run.sh reconfigure provider",
+            ),
+        )
+
     if "unsupported provider" in text or "provider" in text:
         return RecoveryGuidance(
             "Notification provider",
@@ -266,10 +280,26 @@ def startup_recovery_issues(cfg: AppConfig) -> list[RecoveryGuidance]:
         if not ok:
             issues.append(_capability_guidance("camera"))
 
-    if cfg.audio.sound_detection_enabled or cfg.audio.tts_enabled:
-        ok, _detail = doctor.validate_setup_section(cfg, "audio")
-        if not ok:
-            issues.append(_capability_guidance("audio"))
+    audio_problem = False
+    if cfg.audio.sound_detection_enabled:
+        ok, _detail = doctor._microphone_ok(cfg)
+        audio_problem = not ok
+
+    playback_required = bool(
+        cfg.audio.tts_enabled
+        or cfg.tts.enabled
+        or cfg.audio.play_remote_voice
+    )
+    if playback_required and not audio_problem:
+        ok, _detail = doctor._audio_player_ok()
+        audio_problem = not ok
+
+    if cfg.tts.enabled and not audio_problem:
+        ok, _detail = doctor._persian_tts_ok()
+        audio_problem = not ok
+
+    if audio_problem:
+        issues.append(_capability_guidance("audio"))
 
     try:
         monitor = InputMonitor(
@@ -283,16 +313,23 @@ def startup_recovery_issues(cfg: AppConfig) -> list[RecoveryGuidance]:
     if not input_ok:
         issues.append(_capability_guidance("input"))
 
-    screen_required = bool(
+    screenshot_required = bool(
         cfg.screen.screenshots_enabled
-        or cfg.screen.screen_video_enabled
         or cfg.security.input_screen_snapshot
+    )
+    video_required = bool(
+        cfg.screen.screen_video_enabled
         or cfg.security.input_screen_video_seconds > 0
     )
-    if screen_required:
-        ok, _detail = doctor.validate_setup_section(cfg, "screen")
-        if not ok:
-            issues.append(_capability_guidance("screen"))
+    screen_problem = False
+    if screenshot_required:
+        ok, _detail = doctor._screenshot_backend_ok()
+        screen_problem = not ok
+    if video_required and not screen_problem:
+        ok, _detail = doctor._screen_video_backend_ok()
+        screen_problem = not ok
+    if screen_problem:
+        issues.append(_capability_guidance("screen"))
 
     if cfg.monitors.failed_login_events:
         ok, _detail = doctor.validate_setup_section(cfg, "monitors")
