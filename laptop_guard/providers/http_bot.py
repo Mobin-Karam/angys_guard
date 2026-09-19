@@ -6,7 +6,13 @@ from typing import Any
 
 import httpx
 
-from .base import BotProvider, ProviderError
+from .base import (
+    BotProvider,
+    ProviderAuthError,
+    ProviderConnectionError,
+    ProviderError,
+    ProviderResponseError,
+)
 
 
 class HttpBotProvider(BotProvider):
@@ -24,21 +30,74 @@ class HttpBotProvider(BotProvider):
             if p.startswith("socks://"):
                 p = "socks5://" + p[len("socks://"):]
             kwargs["proxy"] = p
-        self.client = httpx.Client(**kwargs)
+        try:
+            self.client = httpx.Client(**kwargs)
+        except (httpx.HTTPError, ValueError) as exc:
+            raise ProviderConnectionError(
+                f"{self.provider_name} client configuration could not be initialized."
+            ) from exc
 
     @property
     def root(self) -> str:
         return f"{self.api_base}/bot{self.token}"
 
+    def _credential_rejected(self, method: str, status_code: int | None) -> bool:
+        if status_code in {401, 403}:
+            return True
+        default_bases = {
+            "telegram": "https://api.telegram.org",
+            "bale": "https://tapi.bale.ai",
+        }
+        return bool(
+            method == "getMe"
+            and status_code == 404
+            and self.api_base == default_bases.get(self.provider_name)
+        )
+
     def _call(self, method: str, data: dict | None = None, files: dict | None = None) -> dict[str, Any]:
         try:
-            response = self.client.post(f"{self.root}/{method}", data=data or {}, files=files)
+            response = self.client.post(
+                f"{self.root}/{method}",
+                data=data or {},
+                files=files,
+            )
+        except httpx.RequestError as exc:
+            raise ProviderConnectionError(
+                f"{self.provider_name} {method} could not reach the provider service."
+            ) from exc
+
+        try:
             response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            status_code = exc.response.status_code
+            if self._credential_rejected(method, status_code):
+                raise ProviderAuthError(
+                    f"{self.provider_name} rejected the bot credential."
+                ) from exc
+            raise ProviderResponseError(
+                f"{self.provider_name} {method} returned HTTP {status_code}."
+            ) from exc
+
+        try:
             payload = response.json()
-        except (httpx.HTTPError, ValueError) as exc:
-            raise ProviderError(f"{self.provider_name} {method} failed: {exc}") from exc
+        except ValueError as exc:
+            raise ProviderResponseError(
+                f"{self.provider_name} {method} returned an invalid API response."
+            ) from exc
+
         if not payload.get("ok", False):
-            raise ProviderError(str(payload.get("description") or payload))
+            raw_code = payload.get("error_code")
+            try:
+                status_code = int(raw_code) if raw_code is not None else None
+            except (TypeError, ValueError):
+                status_code = None
+            if self._credential_rejected(method, status_code):
+                raise ProviderAuthError(
+                    f"{self.provider_name} rejected the bot credential."
+                )
+            raise ProviderResponseError(
+                f"{self.provider_name} {method} returned an unsuccessful API response."
+            )
         return payload.get("result") or {}
 
     def get_me(self) -> dict[str, Any]:
@@ -115,8 +174,14 @@ class HttpBotProvider(BotProvider):
                 with destination.open("wb") as fh:
                     for chunk in response.iter_bytes():
                         fh.write(chunk)
-        except httpx.HTTPError as exc:
-            raise ProviderError(f"{self.provider_name} file download failed: {exc}") from exc
+        except httpx.RequestError as exc:
+            raise ProviderConnectionError(
+                f"{self.provider_name} file download could not reach the provider service."
+            ) from exc
+        except httpx.HTTPStatusError as exc:
+            raise ProviderResponseError(
+                f"{self.provider_name} file download returned HTTP {exc.response.status_code}."
+            ) from exc
         return destination
 
     def answer_callback(self, callback_id: str, text: str = "") -> None:

@@ -10,6 +10,14 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Provider credential validation recovery
+
+- Provider validation now distinguishes actual credential rejection from network/proxy/TLS/API-response failures instead of treating every failure as a bad token.
+- Guided setup preserves an existing stored bot token when connectivity cannot verify it and pauses the provider section with network/proxy/API-base recovery guidance instead of looping for replacement secrets.
+- Newly entered credentials are saved only after successful provider validation; transient connectivity failures do not save the candidate token and do not repeatedly prompt for another one.
+- HTTP provider failures use token-safe typed errors so Doctor and manual provider tests can give credential-vs-connectivity guidance without exposing token-bearing request URLs.
+- Added offline regressions for Telegram authentication rejection, transport failure, custom API-base 404 behavior, setup non-looping behavior, and secret preservation.
+
 ### Release qualification and support policy
 
 - Defined Ubuntu Desktop 24.04 LTS amd64 as the v12.0 primary release-qualification target, with Ubuntu 22.04 and 26.04 remaining best-effort/candidate until separately qualified.

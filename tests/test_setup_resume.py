@@ -185,3 +185,104 @@ def test_cli_accepts_targeted_reconfigure_section():
     assert args.command == "reconfigure"
     assert args.section == "camera"
     assert args.func is cli.cmd_reconfigure
+
+
+
+def test_stored_provider_token_is_preserved_on_network_failure(monkeypatch):
+    cfg = AppConfig()
+    cfg.bot.provider = "telegram"
+    token = "test-only-existing-token"
+    saved = []
+
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: token)
+    monkeypatch.setattr(
+        setup_wizard,
+        "_check_provider_token",
+        lambda _cfg, candidate: (
+            False,
+            "Could not reach Telegram. The credential was not proven invalid.",
+            "network",
+        ),
+    )
+    monkeypatch.setattr(setup_wizard, "set_bot_token", saved.append)
+    monkeypatch.setattr(
+        setup_wizard.getpass,
+        "getpass",
+        lambda _prompt: (_ for _ in ()).throw(
+            AssertionError("network failure must not request a replacement token")
+        ),
+    )
+
+    console = setup_wizard.Console()
+    try:
+        setup_wizard._ensure_provider_token(cfg, console)
+    except setup_wizard.SetupSectionDeferred:
+        pass
+    else:
+        raise AssertionError("network failure should defer the provider section")
+
+    assert saved == []
+
+
+def test_new_provider_token_network_failure_does_not_loop(monkeypatch):
+    cfg = AppConfig()
+    cfg.bot.provider = "telegram"
+    token = "test-only-candidate-token"
+    prompts = []
+    saved = []
+
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: "")
+    monkeypatch.setattr(
+        setup_wizard.getpass,
+        "getpass",
+        lambda _prompt: prompts.append(_prompt) or token,
+    )
+    monkeypatch.setattr(
+        setup_wizard,
+        "_check_provider_token",
+        lambda _cfg, candidate: (
+            False,
+            "Could not reach Telegram. The credential was not proven invalid.",
+            "network",
+        ),
+    )
+    monkeypatch.setattr(setup_wizard, "set_bot_token", saved.append)
+
+    try:
+        setup_wizard._ensure_provider_token(cfg, setup_wizard.Console())
+    except setup_wizard.SetupSectionDeferred:
+        pass
+    else:
+        raise AssertionError("network failure should pause instead of reprompting")
+
+    assert len(prompts) == 1
+    assert saved == []
+
+
+def test_rejected_provider_token_prompts_again_and_saves_only_valid_token(monkeypatch):
+    cfg = AppConfig()
+    cfg.bot.provider = "telegram"
+    rejected = "test-only-rejected-token"
+    accepted = "test-only-accepted-token"
+    entered = iter([rejected, accepted])
+    saved = []
+
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: "")
+    monkeypatch.setattr(
+        setup_wizard.getpass,
+        "getpass",
+        lambda _prompt: next(entered),
+    )
+
+    def check(_cfg, candidate):
+        if candidate == rejected:
+            return False, "Telegram rejected the bot credential.", "auth"
+        return True, "Telegram bot connection is working.", "ok"
+
+    monkeypatch.setattr(setup_wizard, "_check_provider_token", check)
+    monkeypatch.setattr(setup_wizard, "set_bot_token", saved.append)
+
+    result = setup_wizard._ensure_provider_token(cfg, setup_wizard.Console())
+
+    assert result == accepted
+    assert saved == [accepted]

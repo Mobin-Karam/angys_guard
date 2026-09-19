@@ -97,24 +97,69 @@ def _secret_permissions_ok() -> tuple[bool, str]:
     return True, "Secrets file is private to the current user (0600)."
 
 
-def _bot_connectivity(cfg: AppConfig, token: str) -> tuple[bool, str]:
+def check_bot_connectivity_detailed(
+    cfg: AppConfig,
+    token: str,
+) -> tuple[bool, str, str]:
+    """Return token-safe connectivity status plus a stable failure category."""
     if cfg.bot.provider == "local":
-        return True, "Local mode does not require a bot connection."
+        return True, "Local mode does not require a bot connection.", "ok"
     if not token:
-        return False, "No bot token is stored."
+        return False, "No bot token is stored.", "missing"
+
     bot = None
+    provider_label = cfg.bot.provider.title()
     try:
         from . import providers
+        from .providers.base import (
+            ProviderAuthError,
+            ProviderConnectionError,
+            ProviderError,
+            ProviderResponseError,
+        )
 
-        bot = providers.build_provider(cfg.bot.provider, token, cfg.bot.api_base, cfg.bot.proxy)
+        bot = providers.build_provider(
+            cfg.bot.provider,
+            token,
+            cfg.bot.api_base,
+            cfg.bot.proxy,
+        )
         if bot is None:
-            return False, "Configured bot provider is not supported."
+            return False, "Configured bot provider is not supported.", "unsupported"
         bot.get_me()
-        return True, f"{cfg.bot.provider.title()} bot connection is working."
+        return True, f"{provider_label} bot connection is working.", "ok"
+    except ProviderAuthError:
+        return False, f"{provider_label} rejected the bot credential.", "auth"
+    except ProviderConnectionError:
+        return (
+            False,
+            f"Could not reach the {provider_label} bot service. "
+            "The credential was not proven invalid. Check internet/proxy settings and the API base.",
+            "network",
+        )
+    except ProviderResponseError:
+        return (
+            False,
+            f"{provider_label} returned an unexpected API response. "
+            "The credential was not proven invalid. Check the API base and provider availability.",
+            "response",
+        )
+    except ProviderError:
+        return (
+            False,
+            f"{provider_label} could not validate the bot credential safely. "
+            "The credential was not proven invalid.",
+            "response",
+        )
     except Exception:
-        # Never include provider exception text here. HTTP errors may contain
-        # request URLs that embed the bot token.
-        return False, f"Could not authenticate or reach the {cfg.bot.provider.title()} bot service."
+        # Unknown failures must never be treated as proof that a secret is bad.
+        # Exception text may contain request URLs that embed the bot token.
+        return (
+            False,
+            f"{provider_label} validation could not complete safely. "
+            "The credential was not proven invalid.",
+            "response",
+        )
     finally:
         client = getattr(bot, "client", None)
         close = getattr(client, "close", None)
@@ -123,6 +168,11 @@ def _bot_connectivity(cfg: AppConfig, token: str) -> tuple[bool, str]:
                 close()
             except Exception:
                 pass
+
+
+def _bot_connectivity(cfg: AppConfig, token: str) -> tuple[bool, str]:
+    ok, detail, _kind = check_bot_connectivity_detailed(cfg, token)
+    return ok, detail
 
 
 def _camera_ok(index: int) -> tuple[bool, str]:
@@ -552,7 +602,7 @@ def collect_checks() -> list[DoctorCheck]:
 
 
 def check_bot_connectivity(cfg: AppConfig, token: str) -> tuple[bool, str]:
-    """Reusable token-safe provider validation for setup and doctor."""
+    """Backward-compatible token-safe provider validation for setup and doctor."""
     return _bot_connectivity(cfg, token)
 
 
