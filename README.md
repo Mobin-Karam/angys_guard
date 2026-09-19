@@ -274,7 +274,7 @@ Python environment passes dependency verification.
 ./run.sh setup
 ```
 
-Choose local/Bale/Telegram-style provider options as available to your setup. Required tokens and owner identity are entered through guided configuration rather than a tracked `.env`.
+Setup is checkpointed by section. If it is interrupted, rerunning `./run.sh setup` shows completed sections and resumes at the first incomplete or invalid section. Existing valid provider credentials and owner pairing are reused without printing stored tokens. Use `./run.sh reconfigure` (or `./run.sh reconfigure <section>`) to change one area later.
 
 ### 4. Validate
 
@@ -311,6 +311,7 @@ without the menu, run:
 
 ```bash
 ./run.sh status
+./run.sh reconfigure camera
 ./run.sh arm
 ./run.sh disarm
 ./run.sh profile away

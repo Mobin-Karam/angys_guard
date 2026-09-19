@@ -10,6 +10,14 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Resumable setup and reconfiguration
+
+- Split guided setup into independently checkpointed identity/profile, provider, owner pairing, camera, audio, security, communication, screen capture, apps/API, monitors, and startup sections.
+- Interrupted setup now validates saved checkpoints and resumes at the first incomplete or invalid section instead of replaying the whole wizard.
+- Added `./run.sh reconfigure [section]` so one setup area can be changed later without redoing unrelated sections.
+- Existing valid bot credentials are validated and reused without printing stored tokens; changing provider invalidates owner pairing, while profile changes invalidate only affected camera/security/monitor sections.
+- Reused doctor readiness helpers for section validation and keep setup checkpoint metadata in an owner-only local progress file separate from secrets.
+
 ### Guided local operation
 
 - Added a simple interactive main menu for TTY launches with Setup, Start Guard, Arm, Disarm, Status, Test Hardware, Doctor, Autostart, Events and Exit actions.

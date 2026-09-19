@@ -20,6 +20,7 @@ STATE_PATH = DATA_DIR / "state.json"
 EVENT_DB_PATH = DATA_DIR / "events.sqlite3"
 CONFIG_PATH = APP_DIR / "config.toml"
 SECRETS_PATH = APP_DIR / "secrets.json"
+SETUP_PROGRESS_PATH = APP_DIR / "setup-progress.json"
 
 
 def ensure_dirs() -> None:
@@ -112,6 +113,51 @@ def set_api_token(token: str) -> None:
     else:
         data.pop("api_token", None)
     _write_secrets(data)
+
+
+def load_setup_progress() -> set[str]:
+    """Return completed setup section ids without exposing configuration secrets."""
+    if not SETUP_PROGRESS_PATH.exists():
+        return set()
+    try:
+        data = json.loads(SETUP_PROGRESS_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    if not isinstance(data, dict):
+        return set()
+    sections = data.get("completed_sections", [])
+    if not isinstance(sections, list):
+        return set()
+    return {
+        str(section).strip()
+        for section in sections
+        if str(section).strip()
+    }
+
+
+def save_setup_progress(completed_sections: set[str] | list[str] | tuple[str, ...]) -> None:
+    """Persist setup checkpoints separately from secrets and runtime state."""
+    ensure_dirs()
+    sections = sorted({
+        str(section).strip()
+        for section in completed_sections
+        if str(section).strip()
+    })
+    _atomic_write_private(
+        SETUP_PROGRESS_PATH,
+        json.dumps(
+            {"version": 1, "completed_sections": sections},
+            ensure_ascii=False,
+            indent=2,
+        ) + "\n",
+    )
+
+
+def clear_setup_progress() -> None:
+    try:
+        SETUP_PROGRESS_PATH.unlink()
+    except FileNotFoundError:
+        pass
 
 
 def _toml_value(value: Any) -> str:
@@ -380,8 +426,9 @@ def setup_is_complete() -> bool:
 
 __all__ = [
     "APP_NAME", "APP_DIR", "CONFIG_DIR", "DATA_DIR", "MEDIA_DIR", "LOG_DIR",
-    "STATE_PATH", "EVENT_DB_PATH", "CONFIG_PATH", "SECRETS_PATH", "AppConfig",
+    "STATE_PATH", "EVENT_DB_PATH", "CONFIG_PATH", "SECRETS_PATH", "SETUP_PROGRESS_PATH", "AppConfig",
     "ensure_dirs", "default_api_base", "load_config", "save_config",
     "setup_is_complete", "get_bot_token", "set_bot_token", "get_api_token",
-    "set_api_token", "import_legacy_env_secrets",
+    "set_api_token", "load_setup_progress", "save_setup_progress", "clear_setup_progress",
+    "import_legacy_env_secrets",
 ]
