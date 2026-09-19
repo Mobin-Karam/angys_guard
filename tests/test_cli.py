@@ -86,3 +86,30 @@ def test_menu_returns_after_status_action(monkeypatch):
 
     assert cli.run_main_menu() == 0
     assert called == ["status"]
+
+
+
+def test_all_cli_subcommands_parse_to_callable_handlers():
+    parser = cli.build_parser()
+    commands = [
+        ["setup"],
+        ["reconfigure", "camera"],
+        ["run"],
+        ["doctor"],
+        ["arm"],
+        ["disarm"],
+        ["status"],
+        ["config"],
+        ["lock"],
+        ["profile", "away"],
+        ["events", "--limit", "5"],
+        ["health"],
+        ["test", "camera"],
+        ["service", "status"],
+        ["autostart", "status"],
+    ]
+
+    for argv in commands:
+        args = parser.parse_args(argv)
+        assert args.command == argv[0]
+        assert callable(args.func)

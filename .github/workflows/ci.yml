@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -47,3 +46,22 @@ jobs:
           PYTHONUNBUFFERED: "1"
           DISPLAY: ""
         run: python -m pytest -q
+
+  release-gate:
+    name: Release gate
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Require supported-Python test matrix
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$TEST_RESULT" = "success" || {
+            echo "Release gate blocked because one or more supported-Python test jobs failed."
+            exit 1
+          }

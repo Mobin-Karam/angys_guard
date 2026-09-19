@@ -67,6 +67,36 @@ construction, AI workspace configuration, Codex hook policy, Graphify-first
 navigation policy, repository-presentation consistency, and documentation
 link/index integrity.
 
+### First-run and release regression coverage
+
+`tests/test_first_run_regression.py` exercises a complete first-run wizard in
+local-only mode using temporary configuration paths and mocked hardware/systemd
+boundaries. It also exercises provider validation and owner-pairing behavior with
+fake provider responses only. No live Bale/Telegram token, real chat ID, camera,
+microphone, desktop session, journal, or systemd instance is required.
+
+The first-run regression verifies that:
+
+- setup reaches a complete checkpoint and can be loaded back from disk;
+- config and setup-progress files are owner-only (`0600`) and the config
+  directory is owner-only (`0700`);
+- local mode creates no secrets file;
+- mocked camera/audio selections survive persistence;
+- provider credentials used in tests are explicit test-only strings and are not
+  printed by the setup flow.
+
+`tests/test_service.py` protects systemd user-unit generation, incomplete-setup
+refusal, autostart persistence, and uninstall/reload behavior using mocked
+subprocess calls. `tests/test_cli.py` smoke-parses every supported CLI
+subcommand so command registration regressions fail in CI.
+
+GitHub Actions runs the full suite on Python 3.11, 3.12, and 3.13 for every push
+and for pull requests targeting `main`. The final **Release gate** job depends
+on the entire supported-Python matrix and fails unless all matrix jobs succeed.
+Configure branch protection/rulesets to require **Release gate** plus
+**repository-safety** before merging to `main`; repository-admin settings cannot
+be guaranteed by workflow files alone.
+
 ### Documentation and AI-navigation regression checks
 
 `tests/test_documentation_links.py` verifies local Markdown links/index routing.
