@@ -93,7 +93,7 @@ def test_bot_connectivity_never_exposes_token(monkeypatch):
 
     assert ok is False
     assert token not in detail
-    assert "authenticate or reach" in detail
+    assert "not proven invalid" in detail
 
 
 def test_configured_required_feature_failure_has_recovery_action(monkeypatch):
