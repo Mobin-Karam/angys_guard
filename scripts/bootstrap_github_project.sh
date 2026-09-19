@@ -127,7 +127,8 @@ while IFS=$'\t' read -r target issue; do
 
   gh project item-add "$project_number" --owner "$OWNER" --url "$url" >/dev/null 2>&1 || true
 
-  priority="$(grep -E '^priority:P[0-3]  track="$(map_track "$labels")"
+  priority="$(grep -E '^priority:P[0-3]$' <<<"$labels" | head -n1 | cut -d: -f2 || true)"
+  track="$(map_track "$labels")"
   area="$(map_area "$labels")"
   blocked="No"
   grep -qx 'status:blocked' <<<"$labels" && blocked="Yes"
@@ -148,23 +149,6 @@ while IFS=$'\t' read -r target issue; do
   set_field "$url" "Area" "$area"
   set_field "$url" "Target" "$target"
   set_field "$url" "Blocked" "$blocked"
-
-done < <(jq -r '.milestone_issue_groups | to_entries[] | .key as $target | .value[] | [$target, tostring] | @tsv' "$BLUEPRINT")
-
-echo "AngysGuard Project v2 is synchronized: owner=$OWNER project=$project_number repository=$REPO"
- <<<"$labels" | head -n1 | cut -d: -f2 || true)"
-  track="$(map_track "$labels")"
-  area="$(map_area "$labels")"
-  blocked="No"
-  grep -qx 'status:blocked' <<<"$labels" && blocked="Yes"
-
-  [[ "$target" == "project" ]] && target=""
-  set_field "$url" "Priority" "$priority"
-  set_field "$url" "Track" "$track"
-  set_field "$url" "Area" "$area"
-  set_field "$url" "Target" "$target"
-  set_field "$url" "Blocked" "$blocked"
-
 done < <(jq -r '.milestone_issue_groups | to_entries[] | .key as $target | .value[] | [$target, tostring] | @tsv' "$BLUEPRINT")
 
 echo "AngysGuard Project v2 is synchronized: owner=$OWNER project=$project_number repository=$REPO"
