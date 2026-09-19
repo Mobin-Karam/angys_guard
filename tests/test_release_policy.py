@@ -9,6 +9,7 @@ CHECKLIST = ROOT / "docs" / "RELEASE_CHECKLIST.md"
 DOCS_INDEX = ROOT / "docs" / "README.md"
 TESTING = ROOT / "docs" / "TESTING.md"
 ROADMAP = ROOT / "docs" / "ROADMAP.md"
+BUG_FORM = ROOT / ".github" / "ISSUE_TEMPLATE" / "bug_report.yml"
 
 
 def test_v12_support_matrix_is_explicit_and_bounded() -> None:
@@ -85,3 +86,16 @@ def test_release_policy_is_linked_from_canonical_docs() -> None:
     assert "RELEASE_CHECKLIST.md" in TESTING.read_text(encoding="utf-8")
     assert "RELEASE_CHECKLIST.md" in PLATFORM.read_text(encoding="utf-8")
     assert "RELEASE_CHECKLIST.md" in ROADMAP.read_text(encoding="utf-8")
+
+
+
+def test_bug_report_form_points_to_safe_diagnostic_collection() -> None:
+    text = BUG_FORM.read_text(encoding="utf-8")
+
+    assert "./run.sh doctor" in text
+    assert "runtime-diagnostics.jsonl" in text
+    assert "RELEASE_CHECKLIST.md" in text
+    assert "secrets.json" in text
+    assert "stop-pin.json" in text
+    assert "Authorization headers" in text
+    assert "captured camera/screen/audio evidence" in text
