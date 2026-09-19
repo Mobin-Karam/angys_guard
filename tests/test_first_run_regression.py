@@ -127,14 +127,19 @@ def test_provider_setup_uses_fake_validation_without_network_or_token_output(
         return kwargs.get("default", "")
 
     monkeypatch.setattr(setup_wizard.Prompt, "ask", prompt_ask)
-    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: "")
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda _provider: "")
+    monkeypatch.setattr(setup_wizard, "get_legacy_bot_token", lambda: "")
     monkeypatch.setattr(setup_wizard.getpass, "getpass", lambda _prompt: FAKE_BOT_TOKEN)
     monkeypatch.setattr(
         setup_wizard,
         "_check_provider_token",
         lambda _cfg, token: validated_tokens.append(token) or (True, "mock provider ok"),
     )
-    monkeypatch.setattr(setup_wizard, "set_bot_token", saved_tokens.append)
+    monkeypatch.setattr(
+        setup_wizard,
+        "set_bot_token",
+        lambda token, _provider: saved_tokens.append(token),
+    )
     monkeypatch.setattr(setup_wizard, "save_config", lambda _cfg: None)
 
     setup_wizard._configure_provider(cfg, console)

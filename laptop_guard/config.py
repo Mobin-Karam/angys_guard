@@ -22,6 +22,13 @@ CONFIG_PATH = APP_DIR / "config.toml"
 SECRETS_PATH = APP_DIR / "secrets.json"
 SETUP_PROGRESS_PATH = APP_DIR / "setup-progress.json"
 
+BOT_TOKEN_KEYS = {
+    "telegram": "telegram_bot_token",
+    "bale": "bale_bot_token",
+}
+LEGACY_BOT_TOKEN_KEY = "legacy_bot_token"
+OLD_SHARED_BOT_TOKEN_KEY = "bot_token"
+
 
 def ensure_dirs() -> None:
     for path in (APP_DIR, DATA_DIR, MEDIA_DIR, LOG_DIR):
@@ -87,18 +94,104 @@ def _write_secrets(data: dict[str, str]) -> None:
     )
 
 
-def get_bot_token() -> str:
-    return _read_secrets().get("bot_token", "").strip()
+def _bot_token_key(provider: str) -> str:
+    normalized = str(provider or "").strip().lower()
+    return BOT_TOKEN_KEYS.get(normalized, "")
 
 
-def set_bot_token(token: str) -> None:
+def _legacy_bot_tokens_from(data: dict[str, str]) -> tuple[str, ...]:
+    values: list[str] = []
+    for key in (LEGACY_BOT_TOKEN_KEY, OLD_SHARED_BOT_TOKEN_KEY):
+        value = str(data.get(key, "") or "").strip()
+        if value and value not in values:
+            values.append(value)
+    return tuple(values)
+
+
+def _normalize_legacy_bot_token_key() -> None:
+    """Rename one old shared bot_token into an explicitly ambiguous legacy slot."""
+    data = _read_secrets()
+    old = str(data.get(OLD_SHARED_BOT_TOKEN_KEY, "") or "").strip()
+    legacy = str(data.get(LEGACY_BOT_TOKEN_KEY, "") or "").strip()
+    changed = False
+
+    if old and not legacy:
+        data[LEGACY_BOT_TOKEN_KEY] = old
+        data.pop(OLD_SHARED_BOT_TOKEN_KEY, None)
+        changed = True
+    elif old and legacy and old == legacy:
+        data.pop(OLD_SHARED_BOT_TOKEN_KEY, None)
+        changed = True
+
+    if changed:
+        _write_secrets(data)
+
+
+def get_bot_token(provider: str) -> str:
+    """Return only the credential scoped to the selected remote provider."""
+    _normalize_legacy_bot_token_key()
+    key = _bot_token_key(provider)
+    if not key:
+        return ""
+    return _read_secrets().get(key, "").strip()
+
+
+def set_bot_token(token: str, provider: str) -> None:
+    """Store one provider credential without touching another provider's token."""
+    key = _bot_token_key(provider)
+    if not key:
+        raise ValueError("Bot token provider must be 'telegram' or 'bale'.")
+    _normalize_legacy_bot_token_key()
     data = _read_secrets()
     clean = str(token or "").strip()
     if clean:
-        data["bot_token"] = clean
+        data[key] = clean
     else:
-        data.pop("bot_token", None)
+        data.pop(key, None)
     _write_secrets(data)
+
+
+def get_legacy_bot_token() -> str:
+    """Return one unambiguous pre-provider-scoping token without assigning it."""
+    _normalize_legacy_bot_token_key()
+    values = _legacy_bot_tokens_from(_read_secrets())
+    return values[0] if len(values) == 1 else ""
+
+
+def migrate_legacy_bot_token(provider: str) -> bool:
+    """Assign one unambiguous old token only when the caller trusts the provider."""
+    key = _bot_token_key(provider)
+    if not key:
+        return False
+
+    _normalize_legacy_bot_token_key()
+    data = _read_secrets()
+    legacy_values = _legacy_bot_tokens_from(data)
+    existing = str(data.get(key, "") or "").strip()
+    if len(legacy_values) != 1 or existing:
+        return False
+
+    data[key] = legacy_values[0]
+    data.pop(LEGACY_BOT_TOKEN_KEY, None)
+    data.pop(OLD_SHARED_BOT_TOKEN_KEY, None)
+    _write_secrets(data)
+    return True
+
+
+def get_bot_tokens() -> tuple[str, ...]:
+    """Return all provider/legacy bot secrets for redaction only."""
+    _normalize_legacy_bot_token_key()
+    data = _read_secrets()
+    values: list[str] = []
+    for key in (
+        *BOT_TOKEN_KEYS.values(),
+        LEGACY_BOT_TOKEN_KEY,
+        OLD_SHARED_BOT_TOKEN_KEY,
+    ):
+        value = str(data.get(key, "") or "").strip()
+        if value and value not in values:
+            values.append(value)
+    return tuple(values)
 
 
 def get_api_token() -> str:
@@ -346,13 +439,13 @@ def _apply_legacy_env(cfg: AppConfig) -> None:
 
 
 def import_legacy_env_secrets() -> bool:
-    """Import an already-exported legacy bot token into secrets.json once."""
-    if get_bot_token():
+    """Import the historical BALE_BOT_TOKEN into Bale's scoped secret slot."""
+    if get_bot_token("bale"):
         return False
     token = os.environ.get("BALE_BOT_TOKEN", "").strip()
     if not token:
         return False
-    set_bot_token(token)
+    set_bot_token(token, "bale")
     return True
 
 
@@ -417,7 +510,14 @@ def load_config() -> AppConfig:
         section_data = raw.get(name, {}) if isinstance(raw, dict) else {}
         _apply_section(getattr(cfg, name), section_data)
 
-    return _migrate(cfg, raw)
+    cfg = _migrate(cfg, raw)
+
+    # A fully completed pre-upgrade setup has a trustworthy provider association.
+    # Move its old shared credential into that provider's scoped secret slot.
+    if cfg.setup_complete and cfg.bot.provider in BOT_TOKEN_KEYS:
+        migrate_legacy_bot_token(cfg.bot.provider)
+
+    return cfg
 
 
 def setup_is_complete() -> bool:
@@ -428,7 +528,8 @@ __all__ = [
     "APP_NAME", "APP_DIR", "CONFIG_DIR", "DATA_DIR", "MEDIA_DIR", "LOG_DIR",
     "STATE_PATH", "EVENT_DB_PATH", "CONFIG_PATH", "SECRETS_PATH", "SETUP_PROGRESS_PATH", "AppConfig",
     "ensure_dirs", "default_api_base", "load_config", "save_config",
-    "setup_is_complete", "get_bot_token", "set_bot_token", "get_api_token",
+    "setup_is_complete", "get_bot_token", "set_bot_token", "get_bot_tokens",
+    "get_legacy_bot_token", "migrate_legacy_bot_token", "get_api_token",
     "set_api_token", "load_setup_progress", "save_setup_progress", "clear_setup_progress",
     "import_legacy_env_secrets",
 ]

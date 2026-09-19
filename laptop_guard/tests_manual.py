@@ -87,7 +87,7 @@ def test_bot() -> int:
     if cfg.bot.provider == "local":
         console.print("Bot provider is local-only.")
         return 0
-    token = get_bot_token()
+    token = get_bot_token(cfg.bot.provider)
     if not token:
         console.print("[red]No stored bot token. Run setup.[/red]")
         return 1

@@ -109,7 +109,7 @@ def test_valid_stored_provider_token_is_reused_without_printing_it(monkeypatch, 
     cfg.bot.provider = "bale"
     token = "test-only-secret-token"
 
-    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: token)
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda _provider: token)
     monkeypatch.setattr(
         setup_wizard,
         "_check_provider_token",
@@ -194,7 +194,7 @@ def test_stored_provider_token_is_preserved_on_network_failure(monkeypatch):
     token = "test-only-existing-token"
     saved = []
 
-    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: token)
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda _provider: token)
     monkeypatch.setattr(
         setup_wizard,
         "_check_provider_token",
@@ -204,7 +204,11 @@ def test_stored_provider_token_is_preserved_on_network_failure(monkeypatch):
             "network",
         ),
     )
-    monkeypatch.setattr(setup_wizard, "set_bot_token", saved.append)
+    monkeypatch.setattr(
+        setup_wizard,
+        "set_bot_token",
+        lambda token, _provider: saved.append(token),
+    )
     monkeypatch.setattr(
         setup_wizard.getpass,
         "getpass",
@@ -231,7 +235,8 @@ def test_new_provider_token_network_failure_does_not_loop(monkeypatch):
     prompts = []
     saved = []
 
-    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: "")
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda _provider: "")
+    monkeypatch.setattr(setup_wizard, "get_legacy_bot_token", lambda: "")
     monkeypatch.setattr(
         setup_wizard.getpass,
         "getpass",
@@ -246,7 +251,11 @@ def test_new_provider_token_network_failure_does_not_loop(monkeypatch):
             "network",
         ),
     )
-    monkeypatch.setattr(setup_wizard, "set_bot_token", saved.append)
+    monkeypatch.setattr(
+        setup_wizard,
+        "set_bot_token",
+        lambda token, _provider: saved.append(token),
+    )
 
     try:
         setup_wizard._ensure_provider_token(cfg, setup_wizard.Console())
@@ -267,7 +276,8 @@ def test_rejected_provider_token_prompts_again_and_saves_only_valid_token(monkey
     entered = iter([rejected, accepted])
     saved = []
 
-    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda: "")
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda _provider: "")
+    monkeypatch.setattr(setup_wizard, "get_legacy_bot_token", lambda: "")
     monkeypatch.setattr(
         setup_wizard.getpass,
         "getpass",
@@ -280,9 +290,96 @@ def test_rejected_provider_token_prompts_again_and_saves_only_valid_token(monkey
         return True, "Telegram bot connection is working.", "ok"
 
     monkeypatch.setattr(setup_wizard, "_check_provider_token", check)
-    monkeypatch.setattr(setup_wizard, "set_bot_token", saved.append)
+    monkeypatch.setattr(
+        setup_wizard,
+        "set_bot_token",
+        lambda token, _provider: saved.append(token),
+    )
 
     result = setup_wizard._ensure_provider_token(cfg, setup_wizard.Console())
 
     assert result == accepted
     assert saved == [accepted]
+
+
+
+def test_telegram_setup_never_reuses_saved_bale_token(monkeypatch):
+    cfg = AppConfig()
+    cfg.bot.provider = "telegram"
+    bale_token = "test-only-bale-token"
+    telegram_token = "test-only-telegram-token"
+    requested = []
+    saved = []
+
+    def get_scoped(provider):
+        requested.append(provider)
+        return bale_token if provider == "bale" else ""
+
+    monkeypatch.setattr(setup_wizard, "get_bot_token", get_scoped)
+    monkeypatch.setattr(setup_wizard, "get_legacy_bot_token", lambda: "")
+    monkeypatch.setattr(
+        setup_wizard.getpass,
+        "getpass",
+        lambda _prompt: telegram_token,
+    )
+    monkeypatch.setattr(
+        setup_wizard,
+        "_check_provider_token",
+        lambda _cfg, candidate: (
+            candidate == telegram_token,
+            "ok" if candidate == telegram_token else "wrong provider token",
+            "ok" if candidate == telegram_token else "auth",
+        ),
+    )
+    monkeypatch.setattr(
+        setup_wizard,
+        "set_bot_token",
+        lambda token, provider: saved.append((provider, token)),
+    )
+
+    result = setup_wizard._ensure_provider_token(
+        cfg,
+        setup_wizard.Console(),
+    )
+
+    assert result == telegram_token
+    assert requested == ["telegram"]
+    assert saved == [("telegram", telegram_token)]
+
+
+def test_ambiguous_legacy_token_is_not_auto_tried_against_telegram(monkeypatch):
+    cfg = AppConfig()
+    cfg.bot.provider = "telegram"
+    legacy = "test-only-legacy-bale-token"
+    telegram = "test-only-new-telegram-token"
+    validated = []
+    saved = []
+
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda _provider: "")
+    monkeypatch.setattr(setup_wizard, "get_legacy_bot_token", lambda: legacy)
+    monkeypatch.setattr(
+        setup_wizard.getpass,
+        "getpass",
+        lambda _prompt: telegram,
+    )
+    monkeypatch.setattr(
+        setup_wizard,
+        "_check_provider_token",
+        lambda _cfg, candidate: validated.append(candidate)
+        or (True, "ok", "ok"),
+    )
+    monkeypatch.setattr(
+        setup_wizard,
+        "set_bot_token",
+        lambda token, provider: saved.append((provider, token)),
+    )
+
+    result = setup_wizard._ensure_provider_token(
+        cfg,
+        setup_wizard.Console(),
+    )
+
+    assert result == telegram
+    assert validated == [telegram]
+    assert legacy not in validated
+    assert saved == [("telegram", telegram)]

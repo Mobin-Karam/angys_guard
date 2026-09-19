@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from .config import LOG_DIR, get_api_token, get_bot_token
+from .config import LOG_DIR, get_api_token, get_bot_tokens
 
 if TYPE_CHECKING:
     from rich.console import Console
@@ -57,13 +57,21 @@ def is_provider_auth_error(exc: BaseException) -> bool:
 
 def _known_secrets() -> tuple[str, ...]:
     values: list[str] = []
-    for getter in (get_bot_token, get_api_token):
-        try:
-            value = getter().strip()
-        except Exception:
-            value = ""
-        if len(value) >= 4:
-            values.append(value)
+    try:
+        bot_tokens = get_bot_tokens()
+    except Exception:
+        bot_tokens = ()
+    for value in bot_tokens:
+        clean = str(value or "").strip()
+        if len(clean) >= 4 and clean not in values:
+            values.append(clean)
+
+    try:
+        api_token = get_api_token().strip()
+    except Exception:
+        api_token = ""
+    if len(api_token) >= 4 and api_token not in values:
+        values.append(api_token)
     return tuple(values)
 
 

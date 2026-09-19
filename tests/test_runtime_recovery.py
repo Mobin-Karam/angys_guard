@@ -48,16 +48,22 @@ def test_provider_auth_recovery_is_guided_and_secret_free():
 
 
 def test_diagnostic_log_redacts_known_tokens_and_bot_urls(tmp_path, monkeypatch):
-    bot_token = "123456:test-only-secret-token"
+    telegram_token = "123456:test-only-telegram-token"
+    bale_token = "987654:test-only-bale-token"
     api_token = "api-test-only-secret"
     path = tmp_path / "runtime-diagnostics.jsonl"
 
-    monkeypatch.setattr(runtime_recovery, "get_bot_token", lambda: bot_token)
+    monkeypatch.setattr(
+        runtime_recovery,
+        "get_bot_tokens",
+        lambda: (telegram_token, bale_token),
+    )
     monkeypatch.setattr(runtime_recovery, "get_api_token", lambda: api_token)
 
     try:
         raise RuntimeError(
-            f"https://example.invalid/bot{bot_token}/getMe token={api_token}"
+            f"https://example.invalid/bot{telegram_token}/getMe "
+            f"backup={bale_token} token={api_token}"
         )
     except RuntimeError as exc:
         written = runtime_recovery.write_runtime_diagnostic(
@@ -68,7 +74,8 @@ def test_diagnostic_log_redacts_known_tokens_and_bot_urls(tmp_path, monkeypatch)
 
     assert written == path
     data = path.read_text(encoding="utf-8")
-    assert bot_token not in data
+    assert telegram_token not in data
+    assert bale_token not in data
     assert api_token not in data
     assert "<redacted>" in data
     assert stat.S_IMODE(path.stat().st_mode) == 0o600
@@ -189,7 +196,7 @@ def test_runtime_config_noninteractive_provider_error_does_not_echo_exception(
             raise RuntimeError(f"401 Unauthorized /bot{token}/getMe")
 
     monkeypatch.setattr(runtime_config, "_interactive", lambda: False)
-    monkeypatch.setattr(runtime_config, "get_bot_token", lambda: token)
+    monkeypatch.setattr(runtime_config, "get_bot_token", lambda _provider: token)
     monkeypatch.setattr(runtime_config, "_provider", lambda *_args: FailingBot())
     monkeypatch.setattr(
         runtime_config,
@@ -226,7 +233,7 @@ def test_manual_bot_failure_is_guided_without_token(monkeypatch, capsys):
     )
     monkeypatch.setattr(tests_manual, "setup_is_complete", lambda: True)
     monkeypatch.setattr(tests_manual, "load_config", lambda: cfg)
-    monkeypatch.setattr(tests_manual, "get_bot_token", lambda: token)
+    monkeypatch.setattr(tests_manual, "get_bot_token", lambda _provider: token)
     monkeypatch.setattr(
         tests_manual,
         "build_provider",

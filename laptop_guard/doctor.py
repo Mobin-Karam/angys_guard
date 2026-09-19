@@ -420,7 +420,7 @@ def collect_checks() -> list[DoctorCheck]:
         return checks
 
     remote_provider = cfg.bot.provider != "local"
-    token = config_module.get_bot_token() if remote_provider else ""
+    token = config_module.get_bot_token(cfg.bot.provider) if remote_provider else ""
     checks.append(_check(
         "Bot token",
         "required" if remote_provider else "optional",
@@ -624,7 +624,10 @@ def validate_setup_section(cfg: AppConfig, section: str) -> tuple[bool, str]:
             return False, "Notification provider is invalid."
         if not str(cfg.bot.api_base or "").strip():
             return False, "Provider API base is empty."
-        return _bot_connectivity(cfg, config_module.get_bot_token())
+        return _bot_connectivity(
+            cfg,
+            config_module.get_bot_token(cfg.bot.provider),
+        )
 
     if section == "owner":
         if cfg.bot.provider == "local":
