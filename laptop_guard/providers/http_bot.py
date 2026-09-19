@@ -214,13 +214,14 @@ class HttpBotProvider(BotProvider):
 
     @staticmethod
     def _keyboard(keyboard):
+        """Encode the legacy tuple keyboard surface as Bot API JSON."""
         if not keyboard:
             return None
         rows = [
             [{"text": text, "callback_data": data} for text, data in row]
             for row in keyboard
         ]
-        return {"inline_keyboard": rows}
+        return json.dumps({"inline_keyboard": rows}, ensure_ascii=False)
 
     def _reply_data(self, reply_to_message_id: int | None) -> dict[str, Any]:
         if reply_to_message_id is None:
