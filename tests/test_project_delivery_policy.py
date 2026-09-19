@@ -73,8 +73,10 @@ def test_project_bootstrap_syncs_only_stable_status_states() -> None:
     blueprint = _json(BLUEPRINT)
 
     assert "--json url,labels,state" in script
-    assert 'set_field "$url" "Status" "Done"' in script
-    assert 'set_field "$url" "Status" "Validation"' in script
+    assert 'set_status_if_available "$url" "Done"' in script
+    assert 'set_status_if_available "$url" "Validation"' in script
+    assert 'select(.name == "Status")' in script
+    assert 'select(.name == $value)' in script
     assert 'set_field "$url" "Blocked" "$blocked"' in script
     assert blueprint["status_policy"]["closed"] == "Done"
     assert blueprint["status_policy"]["needs_validation"] == "Validation"
@@ -104,6 +106,7 @@ def test_umbrella_tracker_is_documented_as_long_lived() -> None:
     assert "Issue #9 is intentionally a long-lived project tracker" in project
     assert "Closes #9" in project
     assert "closed issue" in project and "Status = Done" in project
+    assert "warns and preserves the current Status" in project
     assert "status:needs-validation" in project
     assert "Status = Validation" in project
 

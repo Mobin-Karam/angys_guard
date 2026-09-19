@@ -117,6 +117,28 @@ set_field() {
     --value "$value" >/dev/null
 }
 
+status_option_available() {
+  local value="$1"
+  local fields
+  fields="$(gh project field-list "$project_number" --owner "$OWNER" --limit 100 --format json)"
+  jq -e --arg value "$value" '
+    .fields[]?
+    | select(.name == "Status")
+    | .options[]?
+    | select(.name == $value)
+  ' <<<"$fields" >/dev/null
+}
+
+set_status_if_available() {
+  local url="$1"
+  local value="$2"
+  if status_option_available "$value"; then
+    set_field "$url" "Status" "$value"
+  else
+    echo "Project Status option '$value' is unavailable; preserving the current Status for $url." >&2
+  fi
+}
+
 while IFS=$'\t' read -r target issue; do
   [[ -z "$issue" ]] && continue
 
@@ -139,9 +161,9 @@ while IFS=$'\t' read -r target issue; do
   # Backlog, Ready, In progress, or Review, so rerunning the bootstrap must not
   # overwrite a maintainer's active workflow state.
   if [[ "$state" == "CLOSED" || "$state" == "closed" ]]; then
-    set_field "$url" "Status" "Done"
+    set_status_if_available "$url" "Done"
   elif grep -qx 'status:needs-validation' <<<"$labels"; then
-    set_field "$url" "Status" "Validation"
+    set_status_if_available "$url" "Validation"
   fi
 
   set_field "$url" "Priority" "$priority"

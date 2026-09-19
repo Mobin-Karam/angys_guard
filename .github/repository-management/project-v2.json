@@ -6,150 +6,35 @@
   "description": "Single delivery board for current hardening, product UX, architecture evolution, AngysGuard managed control, security, and Windows/Android expansion.",
   "visibility": "PRIVATE",
   "fields": {
-    "Priority": [
-      "P0",
-      "P1",
-      "P2",
-      "P3"
-    ],
-    "Track": [
-      "Product",
-      "Architecture",
-      "Security",
-      "Release",
-      "Repository",
-      "Platform",
-      "Desktop App",
-      "Mobile",
-      "Managed Service"
-    ],
-    "Area": [
-      "Setup",
-      "Runtime",
-      "Provider",
-      "Storage",
-      "UX",
-      "CI",
-      "Release",
-      "Docs",
-      "Platform",
-      "Desktop App",
-      "Mobile",
-      "Managed Service"
-    ],
-    "Effort": [
-      "XS",
-      "S",
-      "M",
-      "L",
-      "XL"
-    ],
-    "Target": [
-      "v11.2",
-      "v11.3",
-      "v12.0",
-      "v13.0",
-      "v14.0",
-      "Future Platform Expansion",
-      "Architecture Evolution"
-    ],
-    "Blocked": [
-      "No",
-      "Yes"
-    ]
+    "Priority": ["P0", "P1", "P2", "P3"],
+    "Track": ["Product", "Architecture", "Security", "Release", "Repository", "Platform", "Desktop App", "Mobile", "Managed Service"],
+    "Area": ["Setup", "Runtime", "Provider", "Storage", "UX", "CI", "Release", "Docs", "Platform", "Desktop App", "Mobile", "Managed Service"],
+    "Effort": ["XS", "S", "M", "L", "XL"],
+    "Target": ["v11.2", "v11.3", "v12.0", "v13.0", "v14.0", "Future Platform Expansion", "Architecture Evolution"],
+    "Blocked": ["No", "Yes"]
   },
   "milestone_issue_groups": {
-    "v11.2": [
-      1,
-      2,
-      3
-    ],
-    "v11.3": [
-      4,
-      5,
-      6
-    ],
-    "v12.0": [
-      7,
-      8
-    ],
-    "project": [
-      9
-    ],
-    "Architecture Evolution": [
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      27
-    ],
-    "v13.0": [
-      30,
-      31,
-      32,
-      37,
-      41
-    ],
-    "v14.0": [
-      38,
-      39,
-      40,
-      42
-    ],
-    "Future Platform Expansion": [
-      33,
-      34,
-      35,
-      36
-    ]
+    "v11.2": [1, 2, 3],
+    "v11.3": [4, 5, 6],
+    "v12.0": [7, 8],
+    "project": [9],
+    "Architecture Evolution": [19, 20, 21, 22, 23, 24, 27],
+    "v13.0": [30, 31, 32, 37, 41],
+    "v14.0": [38, 39, 40, 42],
+    "Future Platform Expansion": [33, 34, 35, 36]
   },
   "views": [
-    {
-      "name": "Now",
-      "purpose": "Ready, in-progress, review, and validation work grouped by Status and sorted by Priority."
-    },
-    {
-      "name": "Current product roadmap",
-      "purpose": "v11.2 -> v11.3 -> v12.0."
-    },
-    {
-      "name": "AngysGuard product future",
-      "purpose": "v13.0 -> v14.0."
-    },
-    {
-      "name": "Platform expansion",
-      "purpose": "Platform, Desktop App, and Mobile tracks including Windows and Android."
-    },
-    {
-      "name": "Managed service",
-      "purpose": "Issues #38, #39, #40 and #42 plus managed-service follow-ups."
-    },
-    {
-      "name": "Self-hosted bot & providers",
-      "purpose": "Issues #37 and #41 plus Bale/Telegram provider work."
-    },
-    {
-      "name": "Architecture evolution",
-      "purpose": "Issues #19-#24 and cross-platform architecture dependencies."
-    },
-    {
-      "name": "Security & hardening",
-      "purpose": "Security-labeled work and privileged-action/pairing constraints."
-    },
-    {
-      "name": "Release readiness",
-      "purpose": "Release/support/validation items grouped by Target."
-    },
-    {
-      "name": "Platform requests",
-      "purpose": "type:platform-request demand signals without implying committed support."
-    },
-    {
-      "name": "Backlog",
-      "purpose": "Backlog grouped by Track and sorted by Priority."
-    }
+    {"name": "Now", "purpose": "Ready, in-progress, review, and validation work grouped by Status and sorted by Priority."},
+    {"name": "Current product roadmap", "purpose": "v11.2 -> v11.3 -> v12.0."},
+    {"name": "AngysGuard product future", "purpose": "v13.0 -> v14.0."},
+    {"name": "Platform expansion", "purpose": "Platform, Desktop App, and Mobile tracks including Windows and Android."},
+    {"name": "Managed service", "purpose": "Issues #38, #39, #40 and #42 plus managed-service follow-ups."},
+    {"name": "Self-hosted bot & providers", "purpose": "Issues #37 and #41 plus Bale/Telegram provider work."},
+    {"name": "Architecture evolution", "purpose": "Issues #19-#24 and cross-platform architecture dependencies."},
+    {"name": "Security & hardening", "purpose": "Security-labeled work and privileged-action/pairing constraints."},
+    {"name": "Release readiness", "purpose": "Release/support/validation items grouped by Target."},
+    {"name": "Platform requests", "purpose": "type:platform-request demand signals without implying committed support."},
+    {"name": "Backlog", "purpose": "Backlog grouped by Track and sorted by Priority."}
   ],
   "status_policy": {
     "closed": "Done",

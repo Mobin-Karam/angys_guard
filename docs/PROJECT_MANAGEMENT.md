@@ -177,10 +177,16 @@ Closing a milestone issue does not by itself complete #9.
 The machine blueprint stores membership/metadata, not a frozen copy of live issue
 state. The Project bootstrap safely synchronizes:
 
-- closed issue -> `Status = Done`;
-- `status:needs-validation` -> `Status = Validation`;
+- closed issue -> `Status = Done` when that Status option exists;
+- `status:needs-validation` -> `Status = Validation` when that option exists;
 - `status:blocked` -> `Blocked = Yes`;
 - priority/track/area/target from labels and milestone groups.
+
+GitHub creates the built-in Project `Status` field, but its option set can differ
+from the canonical Backlog/Ready/In progress/Review/Validation/Done workflow.
+Configure those Status options in the Project UI. If `Done` or `Validation` is
+missing, the bootstrap warns and preserves the current Status rather than failing
+the entire synchronization.
 
 For other open issues, the bootstrap preserves the existing Project `Status` so
 it does not overwrite human-selected Backlog/Ready/In progress/Review states.

@@ -80,8 +80,9 @@ The workflow runs `scripts/bootstrap_github_project.sh`, which:
 - adds the roadmap issues defined in `project-v2.json`;
 - sets Target from milestone groups;
 - maps Priority/Track/Area/Blocked from issue labels;
-- synchronizes closed issues to Project Status `Done`;
-- synchronizes `status:needs-validation` issues to Project Status `Validation`;
+- synchronizes closed issues to Project Status `Done` when that option exists;
+- synchronizes `status:needs-validation` issues to Project Status `Validation` when that option exists;
+- warns and preserves the current Status when a canonical Status option has not yet been configured in the Project UI;
 - preserves other open Project Status values so active Backlog/Ready/In progress/Review work is not reset;
 - can be rerun to synchronize later changes.
 
