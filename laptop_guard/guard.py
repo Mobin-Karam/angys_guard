@@ -31,6 +31,12 @@ from .features import FailedLoginFeature, FeatureManager, SystemInfoFeature
 from .input_monitor import InputMonitor
 from .sound_detection import SoundDetectionMonitor
 from .warning_sequence import dismiss_warning, launch_warning
+from .runtime_recovery import (
+    guidance_for_exception,
+    is_provider_auth_error,
+    sanitize_diagnostic,
+    write_runtime_diagnostic,
+)
 from .system_actions import (
     lock_screen as native_lock_screen,
     poweroff_system,
@@ -152,7 +158,10 @@ class LaptopGuard:
             with self._send_lock:
                 self.api.send_message(chat_id, text, reply_markup=markup)
         except Exception as exc:
-            print(f"[bale] send failed: {exc}")
+            diagnostic = write_runtime_diagnostic("provider-send-message", exc)
+            print("[bot] message send failed; provider recovery may be needed.")
+            if diagnostic is not None:
+                print(f"[bot] diagnostic details: {diagnostic}")
 
     def _send_async(self, text: str, markup: dict | None = None) -> None:
         threading.Thread(target=self._send, args=(text, markup), daemon=True).start()
@@ -175,7 +184,10 @@ class LaptopGuard:
                 else:
                     self.api.send_document(chat_id, path, caption)
             except Exception as exc:
-                print(f"[bale] media send failed: {exc}")
+                diagnostic = write_runtime_diagnostic(f"provider-send-{kind}", exc)
+                print(f"[bot] {kind} send failed; provider recovery may be needed.")
+                if diagnostic is not None:
+                    print(f"[bot] diagnostic details: {diagnostic}")
 
         threading.Thread(target=worker, daemon=True, name=f"send-{kind}").start()
 
@@ -1685,8 +1697,43 @@ class LaptopGuard:
             self._watchdog_proc = None
             print(f"[security] could not start exit-lock watchdog: {exc}")
 
+    def _run_background_component(self, name: str, worker) -> None:
+        try:
+            worker()
+        except Exception as exc:
+            diagnostic = write_runtime_diagnostic(f"{name}-background", exc)
+            guidance = guidance_for_exception(name, exc)
+            if guidance is not None:
+                message = guidance.summary
+                action = guidance.actions[0] if guidance.actions else "./run.sh doctor"
+            else:
+                message = f"{name.title()} stopped because of an unexpected software error."
+                action = "Run ./run.sh doctor and inspect the diagnostic log."
+            print(f"[{name}] {sanitize_diagnostic(message)}")
+            print(f"[{name}] next action: {action}")
+            if diagnostic is not None:
+                print(f"[{name}] diagnostic details: {diagnostic}")
+            try:
+                self.events.add(
+                    "runtime_component_failed",
+                    f"{name}: {message}",
+                    "error",
+                )
+            except Exception:
+                pass
+            self._send_async(
+                f"⚠️ {name.title()} unavailable. {message}\nNext: {action}"
+            )
+
     def start_monitors(self) -> None:
-        self.camera_thread = threading.Thread(target=self.camera_worker, daemon=True, name="camera-monitor")
+        self.camera_thread = threading.Thread(
+            target=lambda: self._run_background_component(
+                "camera",
+                self.camera_worker,
+            ),
+            daemon=True,
+            name="camera-monitor",
+        )
         self.camera_thread.start()
         try:
             self.input_monitor.start()
@@ -1694,8 +1741,26 @@ class LaptopGuard:
             print(f"[input] {self.input_monitor.backend_name} listener started")
         except Exception as exc:
             self.state.input_ok = False
-            print(f"[input] listener startup failed: {exc}")
-            self._send_async(f"⚠️ Input monitoring شروع نشد: {exc}")
+            diagnostic = write_runtime_diagnostic("input-monitor-startup", exc)
+            guidance = guidance_for_exception("input", exc)
+            message = (
+                guidance.summary
+                if guidance is not None
+                else "Input monitoring could not start."
+            )
+            action = (
+                guidance.actions[0]
+                if guidance is not None and guidance.actions
+                else "Run: ./run.sh test input"
+            )
+            print(f"[input] {message}")
+            print(f"[input] next action: {action}")
+            if diagnostic is not None:
+                print(f"[input] diagnostic details: {diagnostic}")
+            self.events.add("input_monitor_failed", message, "error")
+            self._send_async(
+                f"⚠️ Input monitoring unavailable. {message}\nNext: {action}"
+            )
         self.sound_detection.start()
         if self.config.security.auto_arm:
             self.arm()
@@ -1746,9 +1811,17 @@ class LaptopGuard:
                             self._offset = uid + 1
                         self.handle_update(update)
                 except BaleApiError as exc:
-                    print(f"[bot] polling error: {exc}")
-                    error_text = str(exc).lower()
-                    auth_failed = "401" in error_text or "unauthorized" in error_text
+                    auth_failed = is_provider_auth_error(exc)
+                    guidance = guidance_for_exception("provider-polling", exc)
+                    if guidance is not None:
+                        print(f"[bot] {guidance.summary}")
+                        if guidance.actions:
+                            print(f"[bot] next action: {guidance.actions[0]}")
+                    else:
+                        diagnostic = write_runtime_diagnostic("provider-polling", exc)
+                        print("[bot] provider polling failed unexpectedly.")
+                        if diagnostic is not None:
+                            print(f"[bot] diagnostic details: {diagnostic}")
                     if auth_failed:
                         try:
                             from rich.console import Console
@@ -1779,17 +1852,10 @@ class LaptopGuard:
 
 
 def main() -> int:
-    from rich.console import Console
-    from .runtime_config import RuntimeConfigurationError, ensure_runtime_configuration
+    # Keep direct module execution on the same guided recovery boundary as the CLI.
+    from .cli import cmd_run
 
-    try:
-        config = ensure_runtime_configuration(Console())
-        LaptopGuard(config).run()
-        return 0
-    except RuntimeConfigurationError as exc:
-        raise SystemExit(str(exc))
-    except ValueError as exc:
-        raise SystemExit(str(exc))
+    return cmd_run(None)
 
 
 if __name__ == "__main__":

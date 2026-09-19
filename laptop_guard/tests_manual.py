@@ -11,6 +11,12 @@ from .camera_devices import camera_label, probe_camera
 from .config import CONFIG_PATH, get_bot_token, load_config, setup_is_complete
 from .providers import build_provider
 from .system import lock_screen
+from .runtime_recovery import (
+    RecoveryGuidance,
+    guidance_for_exception,
+    print_recovery,
+    write_runtime_diagnostic,
+)
 
 console = Console()
 
@@ -46,10 +52,26 @@ def test_microphone() -> int:
         if result.returncode == 0 and out.exists() and out.stat().st_size > 0:
             console.print("[green]Microphone OK[/green] — recorded a 2-second test")
             return 0
-        console.print("[red]Microphone test failed.[/red]")
         err = result.stderr.decode(errors="ignore").strip()
+        diagnostic = None
         if err:
-            console.print(err[-800:])
+            diagnostic = write_runtime_diagnostic(
+                "microphone-test",
+                RuntimeError(err[-4000:]),
+            )
+        print_recovery(
+            console,
+            RecoveryGuidance(
+                "Microphone",
+                "The microphone test could not record audio with the configured backend.",
+                (
+                    "Run: ./run.sh reconfigure audio",
+                    "On Ubuntu, install audio tools with: sudo apt install ffmpeg pulseaudio-utils alsa-utils",
+                    "Then run: ./run.sh doctor",
+                ),
+            ),
+            diagnostic_path=diagnostic,
+        )
         return 1
 
 
@@ -83,7 +105,19 @@ def test_bot() -> int:
         console.print(f"Test message sent to owner chat {cfg.bot.chat_id}.")
         return 0
     except Exception as exc:
-        console.print(f"[red]{cfg.bot.provider.title()} bot test failed:[/red] {exc}")
+        diagnostic = write_runtime_diagnostic("provider-test", exc)
+        guidance = guidance_for_exception("provider-test", exc)
+        if guidance is None:
+            guidance = RecoveryGuidance(
+                "Notification provider",
+                f"The configured {cfg.bot.provider.title()} provider test failed.",
+                (
+                    "Run: ./run.sh reconfigure provider",
+                    "If needed, run: ./run.sh reconfigure owner",
+                    "Then run: ./run.sh doctor",
+                ),
+            )
+        print_recovery(console, guidance, diagnostic_path=diagnostic)
         return 1
 
 
