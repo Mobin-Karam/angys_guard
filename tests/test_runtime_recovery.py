@@ -20,6 +20,8 @@ def _minimal_runtime_config() -> AppConfig:
     cfg.camera.enabled = False
     cfg.audio.sound_detection_enabled = False
     cfg.audio.tts_enabled = False
+    cfg.audio.play_remote_voice = False
+    cfg.tts.enabled = False
     cfg.screen.screenshots_enabled = False
     cfg.screen.screen_video_enabled = False
     cfg.security.input_screen_snapshot = False
@@ -168,7 +170,7 @@ def test_cli_unexpected_defect_is_logged_not_dumped(monkeypatch, capsys, tmp_pat
     assert cli.cmd_run(None) == 1
     output = capsys.readouterr().out
     assert "unexpected software error" in output.lower()
-    assert str(diagnostic) in output
+    assert "runtime-diagnostics.jsonl" in output
     assert "internal-defect-detail" not in output
     assert "Traceback" not in output
 
