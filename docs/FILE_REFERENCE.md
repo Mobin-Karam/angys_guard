@@ -109,6 +109,7 @@ Runtime secrets belong in protected user configuration storage described in
 | `docs/CONFIGURATION.md` | Setup, persisted paths, defaults, secret handling, migration, and service preparation. |
 | `docs/SECURITY.md` | Product trust model, authorization, protected exit, privacy, and residual risks. |
 | `docs/TESTING.md` | Graphify-guided test selection, automated checks, Graphify/presentation/documentation policy regressions, and target-device/manual validation requirements. |
+| `docs/RELEASE_CHECKLIST.md` | Canonical production-release qualification matrix/checklist, versioning rules, update/rollback validation, and sanitized bug-report procedure. |
 | `docs/ROADMAP.md` | Planned milestones/issues and execution order. |
 | `docs/PROJECT_MANAGEMENT.md` | GitHub Project v2 field/view/workflow specification and repository-management conventions. |
 | `docs/MAINTAINER_CHECKLIST.md` | Repository/release checklist including Graphify freshness and README/About/profile maintenance. |

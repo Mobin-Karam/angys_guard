@@ -70,8 +70,9 @@ See [CHANGELOG.md](CHANGELOG.md) for shipped changes. Future plans are in [docs/
 
 | OS / platform | Status | Use today? | Notes |
 | --- | --- | --- | --- |
-| **Linux — Ubuntu-oriented desktop** | **Primary supported target** | **Yes** | Current install/setup/doctor/runtime/service flow. |
-| Other Linux distributions | Best effort | Maybe | Core Python code may work, but package/service/desktop/capture behavior is not yet release-validated everywhere. |
+| **Ubuntu Desktop 24.04 LTS (amd64)** | **v12.0 primary qualification target** | **Yes, with validated feature set** | Clean-machine X11/Wayland qualification is defined in the release checklist; `doctor` must be READY for enabled features. |
+| Ubuntu 22.04 / 26.04 LTS | Best effort / candidate | Maybe | 22.04 defaults below the Python minimum; 26.04 defaults beyond the current Python 3.11–3.13 release matrix. |
+| Other Linux distributions / Ubuntu flavors | Best effort | Maybe | Core Python code may work, but packages/service/desktop/capture behavior need separate validation. |
 | Windows | Planned | **No supported release yet** | Native Windows agent/app tracked by #33 and #34. |
 | Android companion | Planned | **No app yet** | Planned controller for enrolled AngysGuard Linux/Windows devices (#35). |
 | Android protected-device agent | Research | No | Separate feasibility work because Android restrictions differ from desktop OSes (#36). |
@@ -497,6 +498,7 @@ Unit CI does not prove physical camera, microphone, desktop lock, X11/Wayland, p
 | Security model | [docs/SECURITY.md](docs/SECURITY.md) |
 | Configuration | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
 | Testing | [docs/TESTING.md](docs/TESTING.md) |
+| Release qualification checklist | [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) |
 | Feature lifecycle | [docs/FEATURE_LIFECYCLE.md](docs/FEATURE_LIFECYCLE.md) |
 | Bug fixing | [docs/BUG_TRIAGE_AND_FIXING.md](docs/BUG_TRIAGE_AND_FIXING.md) |
 | AI-agent workflow | [docs/AI_AGENT_WORKFLOW.md](docs/AI_AGENT_WORKFLOW.md) |
