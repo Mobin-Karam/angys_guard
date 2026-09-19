@@ -10,6 +10,17 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Bale / Telegram transport parity
+
+- Consolidated setup, Doctor and running Guard provider construction behind the same `providers.build_provider() -> HttpBotProvider` adapter path.
+- Added explicit Bale/Telegram provider profiles instead of treating the services as perfectly interchangeable.
+- Telegram reply requests now use current `reply_parameters`; Bale keeps its documented `reply_to_message_id` field.
+- Telegram video uploads include the documented `supports_streaming` hint; Bale uploads omit that Telegram-only optional field.
+- Centralized bounded long-poll/read retry, timeout, proxy, upload and file-download policy; side-effecting sends are not blindly retried after uncertain transport failures.
+- Enforced the documented 20 MiB provider file-download ceiling while honoring stricter application limits and removing partial files on failure.
+- Replaced the runtime's direct `BaleApi` construction with the shared provider factory; `BaleApi` is now compatibility-only.
+- Added `docs/PROVIDERS.md` with official Telegram/Bale source links, capability differences, CI-vs-live validation status, and release guidance.
+
 ### Provider-scoped bot credentials
 
 - Split remote bot credentials into `telegram_bot_token` and `bale_bot_token` so selecting one provider can never automatically validate or overwrite the other provider's saved credential.

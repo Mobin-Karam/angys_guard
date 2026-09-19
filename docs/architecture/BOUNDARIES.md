@@ -39,7 +39,6 @@ New work should strengthen these seams instead of bypassing them.
 The current codebase still contains intentional transitional coupling:
 
 - `LaptopGuard` owns many application and infrastructure responsibilities;
-- setup/provider and runtime transport paths are not fully consolidated;
 - warning and system-action compatibility layers coexist;
 - some direct media/system helpers are constructed inside the guard;
 - event persistence exists beside delivery logic rather than as a unified event/outbox workflow.
@@ -103,7 +102,9 @@ Application/domain logic decides **whether** capture is permitted/requested. Inf
 
 Application/features should depend on a stable messaging interface. Provider-specific update/file formats are parsed at adapter/delivery edges.
 
-Retries, backoff, provider errors, upload behavior, and proxy handling should converge behind the transport/delivery boundary instead of being repeated in features.
+Retries, backoff, provider errors, upload behavior, and proxy handling converge
+behind `HttpBotProvider`. Bale/Telegram request differences live in
+`ProviderProfile`; application/features continue to depend only on `RuntimeApi`.
 
 ## Persistence boundary
 

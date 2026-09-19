@@ -495,6 +495,7 @@ Unit CI does not prove physical camera, microphone, desktop lock, X11/Wayland, p
 | Bale/Telegram/self-hosted/managed modes | [docs/CONTROL_MODES.md](docs/CONTROL_MODES.md) |
 | Repository navigation | [docs/GRAPHIFY_NAVIGATION.md](docs/GRAPHIFY_NAVIGATION.md) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Bale / Telegram provider behavior | [docs/PROVIDERS.md](docs/PROVIDERS.md) |
 | Security model | [docs/SECURITY.md](docs/SECURITY.md) |
 | Configuration | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
 | Testing | [docs/TESTING.md](docs/TESTING.md) |

@@ -57,9 +57,14 @@ Exit criteria:
 
 ## Phase 2 — Consolidate communication/provider adapters
 
+Status: **completed for the active Bale/Telegram/local transport path**.
+
 Goal: one runtime messaging abstraction with provider-specific adapters.
 
-Current concern: runtime and setup/provider paths still duplicate some transport behavior.
+The active setup/Doctor/runtime paths now share `providers.build_provider()` and
+`HttpBotProvider`, with provider differences represented by `ProviderProfile`.
+The older `BaleApi` module remains a compatibility-only facade and must not gain
+new behavior.
 
 Target:
 
