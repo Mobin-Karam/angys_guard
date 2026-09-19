@@ -10,6 +10,14 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Guided local operation
+
+- Added a simple interactive main menu for TTY launches with Setup, Start Guard, Arm, Disarm, Status, Test Hardware, Doctor, Autostart, Events and Exit actions.
+- The menu shows configured/not-configured, armed/disarmed and provider connected/offline state before each choice, retries invalid input, and returns after normal actions.
+- Kept all existing CLI subcommands unchanged for advanced users and scripts; non-interactive no-argument launches continue to start the Guard directly.
+- Limited confirmations to security-sensitive choices such as disarming protection, disabling autostart, and the desktop-lock hardware test.
+- Added CLI regressions for interactive/non-interactive dispatch, backward-compatible subcommands, status indicators, invalid input, confirmations and return-to-menu behavior.
+
 ### Setup, installation, and diagnostics hardening
 
 - Expanded `./run.sh doctor` into grouped required/recommended/optional readiness checks with a concise final READY/NOT READY summary.

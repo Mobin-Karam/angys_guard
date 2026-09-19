@@ -125,7 +125,7 @@ Runtime secrets belong in protected user configuration storage described in
 |---|---|
 | `laptop_guard/__init__.py` | Package version/public package marker. |
 | `laptop_guard/__main__.py` | Enables `python -m laptop_guard`; delegates to CLI. |
-| `laptop_guard/cli.py` | Setup/run/doctor/arm/disarm/status/config/profile/events/health/test/service/autostart commands. |
+| `laptop_guard/cli.py` | Guided interactive main menu plus setup/run/doctor/arm/disarm/status/config/profile/events/health/test/service/autostart commands; explicit subcommands remain scriptable. |
 | `laptop_guard/models.py` | Dataclass configuration schema and compatibility properties. |
 | `laptop_guard/config.py` | TOML/secrets persistence, user paths, legacy import/migration, safe config handling. |
 | `laptop_guard/runtime_config.py` | Runtime validation/repair, provider token validation, and owner pairing before startup. |
