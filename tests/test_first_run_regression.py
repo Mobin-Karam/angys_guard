@@ -51,6 +51,8 @@ def test_first_run_local_setup_completes_with_private_persistence(
     def prompt_ask(prompt: str, **kwargs):
         if prompt == "Notification provider":
             return "local"
+        if prompt == "Starting profile":
+            return "testing"
         return kwargs.get("default", "")
 
     monkeypatch.setattr(setup_wizard.Prompt, "ask", prompt_ask)
