@@ -3,6 +3,7 @@ from __future__ import annotations
 import stat
 from types import SimpleNamespace
 
+from laptop_guard import cli
 from laptop_guard import config
 from laptop_guard import setup_wizard
 from laptop_guard.models import AppConfig
@@ -21,7 +22,7 @@ def test_interrupted_setup_resumes_from_first_incomplete(monkeypatch):
     saved_progress = []
 
     monkeypatch.setattr(setup_wizard, "load_config", lambda: cfg)
-    monkeypatch.setattr(setup_wizard.CONFIG_PATH, "exists", lambda: True)
+    monkeypatch.setattr(setup_wizard, "CONFIG_PATH", SimpleNamespace(exists=lambda: True))
     monkeypatch.setattr(
         setup_wizard,
         "load_setup_progress",
@@ -175,3 +176,12 @@ def test_setup_progress_is_private_and_round_trips(tmp_path, monkeypatch):
 
     assert config.load_setup_progress() == {"identity", "provider"}
     assert stat.S_IMODE(path.stat().st_mode) == 0o600
+
+
+
+def test_cli_accepts_targeted_reconfigure_section():
+    args = cli.build_parser().parse_args(["reconfigure", "camera"])
+
+    assert args.command == "reconfigure"
+    assert args.section == "camera"
+    assert args.func is cli.cmd_reconfigure
