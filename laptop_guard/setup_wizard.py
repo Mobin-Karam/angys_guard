@@ -45,6 +45,10 @@ SECTION_KEYS = tuple(key for key, _label in SETUP_SECTIONS)
 SECTION_LABELS = dict(SETUP_SECTIONS)
 
 
+class SetupSectionDeferred(RuntimeError):
+    """Expected setup pause that preserves current safe configuration/secrets."""
+
+
 def detect_audio_sources() -> list[str]:
     if not shutil.which("pactl"):
         return ["default"]
@@ -127,10 +131,18 @@ def _choose_camera(cfg: AppConfig, console: Console) -> None:
     cfg.camera.index = cameras[max(1, min(choice, len(cameras))) - 1].index
 
 
-def _check_provider_token(cfg: AppConfig, token: str) -> tuple[bool, str]:
-    from .doctor import check_bot_connectivity
+def _check_provider_token(cfg: AppConfig, token: str):
+    from .doctor import check_bot_connectivity_detailed
 
-    return check_bot_connectivity(cfg, token)
+    return check_bot_connectivity_detailed(cfg, token)
+
+
+def _provider_check_parts(result) -> tuple[bool, str, str]:
+    """Normalize detailed provider checks and legacy 2-tuples used by tests/callers."""
+    if isinstance(result, tuple) and len(result) >= 3:
+        return bool(result[0]), str(result[1]), str(result[2])
+    ok, detail = result
+    return bool(ok), str(detail), "ok" if ok else "auth"
 
 
 def _validate_section(cfg: AppConfig, section: str) -> tuple[bool, str]:
@@ -143,12 +155,27 @@ def _ensure_provider_token(cfg: AppConfig, console: Console) -> str:
     stored = get_bot_token()
     if stored:
         console.print("Validating stored bot credential...")
-        ok, detail = _check_provider_token(cfg, stored)
+        ok, detail, kind = _provider_check_parts(
+            _check_provider_token(cfg, stored)
+        )
         if ok:
             console.print("[green]Stored bot credential is valid and will be reused.[/green]")
             return stored
-        console.print(f"[yellow]{detail}[/yellow]")
-        console.print("The stored credential was not displayed and will be replaced only after validation.")
+
+        if kind == "auth":
+            console.print(f"[yellow]{detail}[/yellow]")
+            console.print(
+                "The stored credential was not displayed and will be replaced only after validation."
+            )
+        else:
+            console.print(f"[yellow]{detail}[/yellow]")
+            console.print(
+                "[green]Stored bot credential kept unchanged because the provider did not reject it.[/green]"
+            )
+            raise SetupSectionDeferred(
+                "Fix the internet/proxy/API-base problem, then rerun setup. "
+                "You do not need to enter another token unless the provider rejects it."
+            )
 
     while True:
         token = getpass.getpass(
@@ -157,14 +184,27 @@ def _ensure_provider_token(cfg: AppConfig, console: Console) -> str:
         if not token:
             console.print("[red]A bot token is required.[/red]")
             continue
-        ok, detail = _check_provider_token(cfg, token)
-        if not ok:
-            console.print(f"[red]{detail}[/red]")
+
+        ok, detail, kind = _provider_check_parts(
+            _check_provider_token(cfg, token)
+        )
+        if ok:
+            set_bot_token(token)
+            console.print("[green]Bot credential validated and stored privately.[/green]")
+            return token
+
+        console.print(f"[red]{detail}[/red]")
+        if kind == "auth":
             console.print("Enter a new token. The rejected token will not be saved.")
             continue
-        set_bot_token(token)
-        console.print("[green]Bot credential validated and stored privately.[/green]")
-        return token
+
+        console.print(
+            "The entered token was not saved because validation could not reach/verify the provider, "
+            "but it was not proven invalid."
+        )
+        raise SetupSectionDeferred(
+            "Fix the internet/proxy/API-base problem, then rerun setup and validate the same token again."
+        )
 
 
 def _configure_identity(cfg: AppConfig, console: Console) -> None:
@@ -229,9 +269,18 @@ def _configure_owner(cfg: AppConfig, console: Console) -> None:
     if not token:
         raise RuntimeError("Provider credential is missing.")
 
-    ok, _detail = _check_provider_token(cfg, token)
+    ok, _detail, kind = _provider_check_parts(
+        _check_provider_token(cfg, token)
+    )
     if not ok:
-        raise RuntimeError("Provider credential needs attention before owner pairing.")
+        if kind == "auth":
+            raise RuntimeError(
+                "Provider credential was rejected before owner pairing."
+            )
+        raise SetupSectionDeferred(
+            "Provider connectivity must be restored before owner pairing. "
+            "The stored credential was not proven invalid."
+        )
 
     bot = build_provider(
         cfg.bot.provider,
@@ -653,6 +702,14 @@ def _run_section(
         SECTION_HANDLERS[key](cfg, console)
     except KeyboardInterrupt:
         raise
+    except SetupSectionDeferred as exc:
+        completed.discard(key)
+        _checkpoint(cfg, completed)
+        console.print(f"[yellow]{label} paused:[/yellow] {exc}")
+        console.print(
+            "Saved settings were kept; stored secrets were not printed or replaced."
+        )
+        return False
     except Exception:
         completed.discard(key)
         _checkpoint(cfg, completed)

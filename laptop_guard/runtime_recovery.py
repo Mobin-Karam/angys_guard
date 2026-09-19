@@ -33,6 +33,14 @@ class GuidedRuntimeError(RuntimeError):
 
 
 def is_provider_auth_error(exc: BaseException) -> bool:
+    try:
+        from .providers.base import ProviderAuthError
+
+        if isinstance(exc, ProviderAuthError):
+            return True
+    except Exception:
+        pass
+
     text = str(exc).lower()
     return any(
         marker in text
@@ -355,11 +363,19 @@ def guidance_for_exception(
         return configuration_recovery(exc)
 
     if "provider" in context_key or "bot" in context_key:
-        if any(
+        try:
+            from .providers.base import ProviderConnectionError
+
+            provider_connection_error = isinstance(exc, ProviderConnectionError)
+        except Exception:
+            provider_connection_error = False
+
+        if provider_connection_error or any(
             marker in text
             for marker in (
                 "connection",
                 "network",
+                "could not reach",
                 "timeout",
                 "timed out",
                 "name resolution",

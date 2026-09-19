@@ -130,3 +130,64 @@ def test_configured_required_feature_failure_has_recovery_action(monkeypatch):
 
     assert [item.name for item in required_failures] == ["Camera"]
     assert all(item.action for item in required_failures)
+
+
+
+def test_bot_connectivity_distinguishes_network_failure_from_bad_token(monkeypatch):
+    from laptop_guard import providers
+    from laptop_guard.providers.base import ProviderConnectionError
+
+    token = "test-only-valid-looking-token"
+
+    class OfflineBot:
+        client = None
+
+        def get_me(self):
+            raise ProviderConnectionError(
+                "telegram getMe could not reach the provider service."
+            )
+
+    monkeypatch.setattr(
+        providers,
+        "build_provider",
+        lambda *_args, **_kwargs: OfflineBot(),
+    )
+    cfg = AppConfig(setup_complete=True)
+    cfg.bot.provider = "telegram"
+    cfg.bot.api_base = "https://api.telegram.org"
+
+    ok, detail, kind = doctor.check_bot_connectivity_detailed(cfg, token)
+
+    assert ok is False
+    assert kind == "network"
+    assert "not proven invalid" in detail
+    assert token not in detail
+
+
+def test_bot_connectivity_reports_actual_credential_rejection(monkeypatch):
+    from laptop_guard import providers
+    from laptop_guard.providers.base import ProviderAuthError
+
+    token = "test-only-rejected-token"
+
+    class RejectedBot:
+        client = None
+
+        def get_me(self):
+            raise ProviderAuthError("telegram rejected the bot credential.")
+
+    monkeypatch.setattr(
+        providers,
+        "build_provider",
+        lambda *_args, **_kwargs: RejectedBot(),
+    )
+    cfg = AppConfig(setup_complete=True)
+    cfg.bot.provider = "telegram"
+    cfg.bot.api_base = "https://api.telegram.org"
+
+    ok, detail, kind = doctor.check_bot_connectivity_detailed(cfg, token)
+
+    assert ok is False
+    assert kind == "auth"
+    assert "rejected" in detail.lower()
+    assert token not in detail

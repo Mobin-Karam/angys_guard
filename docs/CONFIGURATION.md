@@ -27,6 +27,13 @@ The wizard selects provider/profile/device/camera/audio settings, reads the bot
 token without echoing it, validates the token with `getMe`, and pairs the owner
 by waiting for a new `/start` update or accepting an explicit numeric chat ID.
 
+Provider validation distinguishes a credential rejection from a network/proxy/TLS
+or API-base failure. A stored credential is replaced only after the provider
+actually rejects it. If the provider cannot be reached, setup keeps the stored
+credential unchanged, pauses the Provider section, and lets you fix the proxy/API
+base/network before resuming. A newly entered token is not stored until it can be
+validated, but a transport failure is not reported as proof that the token is bad.
+
 Normal interactive startup validates stored credentials again. Missing or
 unauthorized credentials can be repaired interactively. A systemd service
 cannot safely answer prompts, so complete setup first:

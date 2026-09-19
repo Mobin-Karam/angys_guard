@@ -6,7 +6,19 @@ from typing import Any
 
 
 class ProviderError(RuntimeError):
-    pass
+    """Base class for token-safe provider failures."""
+
+
+class ProviderAuthError(ProviderError):
+    """The remote provider rejected the configured credential."""
+
+
+class ProviderConnectionError(ProviderError):
+    """The provider could not be reached because of network/proxy/TLS transport."""
+
+
+class ProviderResponseError(ProviderError):
+    """The provider returned an unexpected HTTP/API response."""
 
 
 class BotProvider(ABC):
