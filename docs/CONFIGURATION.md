@@ -77,7 +77,7 @@ Important security defaults are:
 | `stop_pin_timeout` | `15` | Local PIN window in seconds |
 | `stop_owner_confirm_timeout` | `10` | Bale confirmation window |
 | `allow_remote_unlock` | `false` | Remote unlock is opt-in |
-| `allow_remote_power` | `false` | Suspend/reboot/shutdown are opt-in |
+| `allow_remote_power` | `false` | Suspend/reboot/shutdown are opt-in; each owner request needs a fresh, single-use confirmation that expires after 30 seconds. A powered-off device cannot turn itself back on; that needs separately configured hardware/network wake support. |
 | `startup.enabled` | `false` | Start after graphical login |
 | `security.auto_arm` | `false` | Arm immediately when the service starts |
 | `monitors.failed_login_events` | `true` | Alert on readable Linux authentication failures |

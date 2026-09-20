@@ -76,6 +76,9 @@ MAIN_MENU = inline_keyboard(
 )
 
 
+POWER_CONFIRMATION_TTL_SECONDS = 30
+
+
 class LaptopGuard:
     def __init__(self, config: AppConfig | None = None) -> None:
         self.config = config or load_config()
@@ -144,6 +147,10 @@ class LaptopGuard:
         self._authorized_exit = False
         self._safe_exit_file: Path | None = None
         self._safe_exit_token = ""
+        # Power actions are destructive and must be explicitly approved by the
+        # paired owner shortly before they run.  Keep this only in memory so a
+        # restart never resurrects an old provider callback.
+        self._pending_power_confirmation: tuple[str, str, float] | None = None
 
     # --------------------------- authorization / send helpers
 
@@ -152,6 +159,52 @@ class LaptopGuard:
 
     def _owner_chat(self) -> int | None:
         return self.config.bot.chat_id
+
+    def _power_confirmation(self, action: str) -> tuple[str, dict] | None:
+        """Create one short-lived, action-bound power confirmation.
+
+        Callback payloads are opaque random values rather than reusable static
+        ``:yes`` strings.  A callback is still owner-authorized by the caller,
+        but the token prevents an old message from being replayed later.
+        """
+        if not self.config.security.allow_remote_power:
+            return None
+        token = secrets.token_urlsafe(8)
+        self._pending_power_confirmation = (
+            action,
+            token,
+            time.monotonic() + POWER_CONFIRMATION_TTL_SECONDS,
+        )
+        labels = {
+            "suspend": ("🌙 دستگاه Suspend شود؟", "✅ Suspend"),
+            "reboot": ("⚠️ دستگاه Restart شود؟", "✅ Restart"),
+            "off": ("⚠️ دستگاه خاموش شود؟", "✅ Shutdown"),
+        }
+        prompt, approve = labels[action]
+        return prompt, inline_keyboard([[
+            (approve, f"power:{action}:yes:{token}"),
+            ("❌ لغو", f"power:cancel:{token}"),
+        ]])
+
+    def _consume_power_confirmation(self, action: str, token: str) -> bool:
+        """Consume a valid pending confirmation, failing closed otherwise."""
+        pending = self._pending_power_confirmation
+        self._pending_power_confirmation = None
+        if not self.config.security.allow_remote_power or pending is None:
+            return False
+        pending_action, pending_token, expires_at = pending
+        return (
+            action == pending_action
+            and secrets.compare_digest(token, pending_token)
+            and time.monotonic() <= expires_at
+        )
+
+    def _request_power_confirmation(self, action: str, reply: Any) -> None:
+        confirmation = self._power_confirmation(action)
+        if confirmation is None:
+            reply("Remote power controls غیرفعال است. برای فعال‌سازی ./run.sh setup را اجرا کنید.", self.power_menu()[1])
+            return
+        reply(*confirmation)
 
     def _send(self, text: str, markup: dict | None = None) -> None:
         chat_id = self._owner_chat()
@@ -1053,17 +1106,11 @@ class LaptopGuard:
                 self.system_menu()[1],
             )
         elif command == "/suspend":
-            self._reply_to_chat(chat_id, "🌙 Suspend دستگاه؟", inline_keyboard([[
-                ("✅ Suspend", "power:suspend:yes"), ("❌ لغو", "power:cancel")
-            ]]))
+            self._request_power_confirmation("suspend", lambda text, markup: self._reply_to_chat(chat_id, text, markup))
         elif command in {"/reboot", "/restart"}:
-            self._reply_to_chat(chat_id, "⚠️ دستگاه Restart شود؟", inline_keyboard([[
-                ("✅ Restart", "power:reboot:yes"), ("❌ لغو", "power:cancel")
-            ]]))
+            self._request_power_confirmation("reboot", lambda text, markup: self._reply_to_chat(chat_id, text, markup))
         elif command in {"/shutdown", "/poweroff"}:
-            self._reply_to_chat(chat_id, "⚠️ دستگاه خاموش شود؟", inline_keyboard([[
-                ("✅ Shutdown", "power:off:yes"), ("❌ لغو", "power:cancel")
-            ]]))
+            self._request_power_confirmation("off", lambda text, markup: self._reply_to_chat(chat_id, text, markup))
         elif command == "/events":
             self._send_events(chat_id)
         else:
@@ -1275,46 +1322,43 @@ class LaptopGuard:
             launch_warning(5)
             menu("⚠️ تست ویدیوی شمارش ۵ ثانیه‌ای نمایش داده شد. این تست دستگاه را قفل نمی‌کند.", self.system_menu()[1])
         elif data == "power:suspend:confirm":
-            if not self.config.security.allow_remote_power:
-                menu("Remote power controls غیرفعال است.", self.power_menu()[1])
-            else:
-                menu("🌙 دستگاه Suspend شود؟", inline_keyboard([[
-                    ("✅ Suspend", "power:suspend:yes"), ("❌ لغو", "power:cancel")
-                ]]))
+            self._request_power_confirmation("suspend", menu)
         elif data == "power:reboot:confirm":
-            if not self.config.security.allow_remote_power:
-                menu("Remote power controls غیرفعال است.", self.power_menu()[1])
-            else:
-                menu("⚠️ دستگاه Restart شود؟", inline_keyboard([[
-                    ("✅ Restart", "power:reboot:yes"), ("❌ لغو", "power:cancel")
-                ]]))
+            self._request_power_confirmation("reboot", menu)
         elif data == "power:off:confirm":
-            if not self.config.security.allow_remote_power:
-                menu("Remote power controls غیرفعال است.", self.power_menu()[1])
+            self._request_power_confirmation("off", menu)
+        elif data.startswith("power:cancel:"):
+            token = data.rsplit(":", 1)[1]
+            pending = self._pending_power_confirmation
+            if pending is not None and secrets.compare_digest(token, pending[1]):
+                self._pending_power_confirmation = None
+                menu("لغو شد.", self.power_menu()[1])
             else:
-                menu("⚠️ دستگاه خاموش شود؟", inline_keyboard([[
-                    ("✅ Shutdown", "power:off:yes"), ("❌ لغو", "power:cancel")
-                ]]))
-        elif data == "power:cancel":
-            menu(*self.power_menu())
-        elif data == "power:suspend:yes":
-            if not self.config.security.allow_remote_power:
-                menu("Remote power controls غیرفعال است.", self.power_menu()[1]); return
+                menu("تأیید منقضی شده یا معتبر نیست.", self.power_menu()[1])
+        elif data.startswith("power:suspend:yes:"):
+            token = data.rsplit(":", 1)[1]
+            if not self._consume_power_confirmation("suspend", token):
+                menu("تأیید Suspend منقضی شده یا معتبر نیست.", self.power_menu()[1]); return
             self.events.add("power", "owner suspend request", "high")
             self._reply_to_chat(chat_id, "🌙 درخواست Suspend ارسال شد.")
-            suspend_system()
-        elif data == "power:reboot:yes":
-            if not self.config.security.allow_remote_power:
-                menu("Remote power controls غیرفعال است.", self.power_menu()[1]); return
+            if not suspend_system():
+                self._reply_to_chat(chat_id, "⚠️ Suspend توسط سیستم‌عامل پذیرفته نشد.")
+        elif data.startswith("power:reboot:yes:"):
+            token = data.rsplit(":", 1)[1]
+            if not self._consume_power_confirmation("reboot", token):
+                menu("تأیید Restart منقضی شده یا معتبر نیست.", self.power_menu()[1]); return
             self.events.add("power", "owner reboot request", "critical")
             self._reply_to_chat(chat_id, "🔄 دستگاه در حال Restart است.")
-            reboot_system()
-        elif data == "power:off:yes":
-            if not self.config.security.allow_remote_power:
-                menu("Remote power controls غیرفعال است.", self.power_menu()[1]); return
+            if not reboot_system():
+                self._reply_to_chat(chat_id, "⚠️ Restart توسط سیستم‌عامل پذیرفته نشد.")
+        elif data.startswith("power:off:yes:"):
+            token = data.rsplit(":", 1)[1]
+            if not self._consume_power_confirmation("off", token):
+                menu("تأیید Shutdown منقضی شده یا معتبر نیست.", self.power_menu()[1]); return
             self.events.add("power", "owner shutdown request", "critical")
             self._reply_to_chat(chat_id, "⏻ دستگاه در حال خاموش شدن است.")
-            poweroff_system()
+            if not poweroff_system():
+                self._reply_to_chat(chat_id, "⚠️ Shutdown توسط سیستم‌عامل پذیرفته نشد.")
         elif data == "events:recent":
             self._send_events(chat_id)
         elif data == "status:show":

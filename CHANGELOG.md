@@ -10,6 +10,12 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Remote power-control hardening
+
+- Kept suspend, restart and shutdown opt-in and require an owner-authorized, action-bound, random single-use confirmation that expires after 30 seconds.
+- Remote power commands now refuse immediately while the opt-in is disabled, reject expired/replayed/mismatched confirmations, and report when the operating system declines a requested action.
+- Documented that a powered-off protected device cannot turn itself back on; Wake-on-LAN or equivalent external hardware/network support is a separate capability.
+
 ### Bale / Telegram transport parity
 
 - Consolidated setup, Doctor and running Guard provider construction behind the same `providers.build_provider() -> HttpBotProvider` adapter path.
