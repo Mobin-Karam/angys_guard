@@ -147,6 +147,13 @@ def test_future_security_model_rejects_os_password_over_remote_surfaces() -> Non
     assert "device-scoped" in combined
 
 
+def test_passwordless_pairing_adr_is_accepted_and_requires_replay_safe_actions() -> None:
+    adr = (ROOT / "docs" / "adr" / "0007-passwordless-device-pairing.md").read_text(encoding="utf-8")
+    assert "- Status: Accepted" in adr
+    for requirement in ("single-use", "revocable", "replay", "local privilege", "OS password"):
+        assert requirement.lower() in adr.lower()
+
+
 def test_release_pr_and_runtime_workflows_keep_presentation_trigger() -> None:
     surfaces = {
         ROOT / ".codex" / "agents" / "release_manager.toml": "PLATFORM_SUPPORT.md",

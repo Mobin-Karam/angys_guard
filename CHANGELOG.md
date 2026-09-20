@@ -10,6 +10,12 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Passwordless device authorization architecture
+
+- Accepted ADR 0007 as the security contract for future self-hosted and managed pairing: device-scoped credentials, explicit recovery/rotation/revocation, locally enforced fixed actions, and platform-native privilege boundaries.
+- Defined replay-safe high-risk action policy while preserving the hard boundary that protected-device OS passwords never cross a bot, provider, mobile client, managed service, or ordinary environment variable.
+- This is an architecture decision only; managed control, Wake-on-LAN relay, Windows support, and privileged local adapters remain separately tracked implementation work.
+
 ### Remote power-control hardening
 
 - Kept suspend, restart and shutdown opt-in and require an owner-authorized, action-bound, random single-use confirmation that expires after 30 seconds.

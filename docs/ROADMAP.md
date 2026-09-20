@@ -115,7 +115,7 @@ Suggested order: **#31 -> #41 -> #37 -> #32**, with #30 migration timing coordin
 Issues:
 
 - [ ] #38 — managed onboarding/trust model — P1
-- [ ] #39 — passwordless device authorization + local privilege model — P1
+- [x] #39 — passwordless device authorization + local privilege model — P1 (ADR 0007 accepted; implementation remains a prerequisite for managed/platform support)
 - [ ] #40 — multi-device account/enrollment/revocation/dashboard — P2
 - [ ] #42 — managed backend + official Bale/Telegram bots — P2
 
