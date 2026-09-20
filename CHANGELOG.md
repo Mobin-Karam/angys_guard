@@ -10,6 +10,12 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Managed onboarding architecture
+
+- Defined the planned managed-service onboarding protocol: explicit pairing and revocation states, device-scoped credential generations, signed fixed-action envelopes, self-hosted separation, minimum data/retention rules, and implementation/privacy gates.
+- Evaluated command integrity options and require a device-verifiable signed request as the future managed baseline; end-to-end encrypted owner commands remain a separate design question.
+- This is planning only. No managed backend, official bot, device enrollment service, or managed evidence storage has been shipped.
+
 ### Passwordless device authorization architecture
 
 - Accepted ADR 0007 as the security contract for future self-hosted and managed pairing: device-scoped credentials, explicit recovery/rotation/revocation, locally enforced fixed actions, and platform-native privilege boundaries.

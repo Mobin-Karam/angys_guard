@@ -187,6 +187,12 @@ If a future platform truly requires a local reusable secret, it should use the O
 
 Issue #39 owns this architecture/security requirement.
 
+The planned protocol, data-minimization policy, command-integrity evaluation and
+implementation gates are defined in
+[Managed onboarding protocol](MANAGED_ONBOARDING_PROTOCOL.md). It is an
+architecture contract for future work, not a currently available managed
+service.
+
 ## Managed service security requirements
 
 Before implementation/release, the managed mode requires:
