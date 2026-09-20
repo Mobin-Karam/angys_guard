@@ -2,6 +2,10 @@
 
 Implements the first Platform v2 identity boundary.
 
+The Python package is `angys_platform.identity`, deliberately not `platform`,
+so it cannot collide with Python's standard-library `platform` module during
+application or test-runner imports.
+
 ## Current storage
 
 SQLite is used initially.

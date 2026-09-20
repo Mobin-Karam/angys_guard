@@ -1,4 +1,4 @@
-from platform.identity import IdentityService
+from angys_platform.identity import IdentityService
 
 
 def test_identity_account_login_and_device(tmp_path):
