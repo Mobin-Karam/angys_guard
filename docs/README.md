@@ -13,6 +13,7 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | See product direction and future apps | [AngysGuard product vision](ANGYSGUARD_PRODUCT_VISION.md) |
 | Know which OSes work today / are planned | [Platform support](PLATFORM_SUPPORT.md) |
 | Understand Bale, Telegram, self-hosted and managed control | [Control modes](CONTROL_MODES.md) |
+| Review the planned managed pairing/control contract | [Managed onboarding protocol](MANAGED_ONBOARDING_PROTOCOL.md) |
 | Compare Bale vs Telegram Bot API behavior | [Provider behavior](PROVIDERS.md) |
 | Request another operating system/platform | [Platform support](PLATFORM_SUPPORT.md#request-support-for-another-os) + Platform / OS request issue form |
 | Install/use current Linux release | [Root README quick start](../README.md#quick-start--linux-today) |
