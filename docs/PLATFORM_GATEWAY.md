@@ -27,6 +27,10 @@ The gateway also has a pure provider-update adapter. It accepts only an explicit
 ownership enforcement to `GatewayRouter`. HTTP/webhook polling, credentials and
 reply delivery remain separate server-adapter work.
 
+An authorized route can be converted into a short-lived signed device envelope.
+The device protocol independently validates its account/device scope, credential
+generation, signature, expiry and replay state before local policy considers it.
+
 ## Not yet shipped
 
 - a deployed official `@angysguardbot` Telegram or Bale service;
