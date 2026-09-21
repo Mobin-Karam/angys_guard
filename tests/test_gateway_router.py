@@ -1,6 +1,6 @@
 import pytest
 
-from angys_platform.gateway import GatewayDenied, GatewayRouter
+from angys_platform.gateway import GatewayDenied, GatewayRouter, ProviderUpdateAdapter
 from angys_platform.identity import IdentityService
 
 
@@ -46,3 +46,17 @@ def test_gateway_rejects_unknown_account_and_invalid_provider(tmp_path):
         router.link_provider_account("unknown", "12345", 1)
     with pytest.raises(GatewayDenied):
         router.link_provider_account(None, "12345", 1)  # type: ignore[arg-type]
+
+
+def test_provider_update_adapter_routes_only_explicit_command(tmp_path):
+    identity = IdentityService(tmp_path / "identity.db")
+    owner = identity.register("owner", "password")
+    device = identity.register_device(owner["id"], "linux", "host")
+    router = GatewayRouter(identity)
+    router.link_provider_account("telegram", "99", owner["id"])
+    adapter = ProviderUpdateAdapter(router)
+
+    routed = adapter.receive("telegram", {"message": {"from": {"id": 99}, "text": f"/device {device} shutdown"}})
+    assert routed.action == "shutdown"
+    with pytest.raises(GatewayDenied):
+        adapter.receive("telegram", {"message": {"from": {"id": 99}, "text": "/device arbitrary shell"}})

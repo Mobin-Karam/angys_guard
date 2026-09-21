@@ -23,6 +23,8 @@ The project uses semantic-style versioning where practical:
   account links and active device-owner checks.
 - The router produces inert authorized command values only: it holds no bot
   token, performs no OS operation, and provides no arbitrary command path.
+- Added a narrow Telegram/Bale update parser that rejects malformed or
+  ambiguous input before fixed-action routing.
 - Official bots, pairing proof/recovery, authenticated delivery, replies and
   notification routing remain unshipped work for issue #64 and its dependencies.
 
