@@ -10,6 +10,13 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Platform client protocol boundary
+
+- Added a device-scoped fixed-action envelope verifier with expiry, scope,
+  credential-generation, signature and durable replay checks.
+- This is a protocol primitive only; it does not ship a managed client,
+  transport, provider credentials, OS privilege, or cross-platform support.
+
 ### Platform gateway authorization boundary
 
 - Added a server-only fixed-action gateway router with persisted Telegram/Bale
