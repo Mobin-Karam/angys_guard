@@ -68,6 +68,10 @@ Owns:
 
 Tracked by #64.
 
+The initial persisted account/device authorization boundary is documented in
+[Platform gateway boundary](PLATFORM_GATEWAY.md). It does not yet provide a
+deployed provider adapter, command delivery, reply routing, or notifications.
+
 ### Unified Client Protocol
 
 Owns:
