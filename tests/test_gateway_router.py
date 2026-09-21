@@ -1,6 +1,7 @@
 import pytest
 
-from angys_platform.gateway import GatewayDenied, GatewayRouter, ProviderUpdateAdapter
+from angys_platform.gateway import CommandHandoff, GatewayDenied, GatewayRouter, ProviderUpdateAdapter
+from angys_platform.protocol import DeviceProtocol
 from angys_platform.identity import IdentityService
 
 
@@ -60,3 +61,14 @@ def test_provider_update_adapter_routes_only_explicit_command(tmp_path):
     assert routed.action == "shutdown"
     with pytest.raises(GatewayDenied):
         adapter.receive("telegram", {"message": {"from": {"id": 99}, "text": "/device arbitrary shell"}})
+
+
+def test_authorized_route_becomes_device_verifiable_envelope(tmp_path):
+    identity = IdentityService(tmp_path / "identity.db")
+    owner = identity.register("owner", "password")
+    device = identity.register_device(owner["id"], "linux", "host")
+    router = GatewayRouter(identity)
+    router.link_provider_account("bale", "owner", owner["id"])
+    secret = b"device-credential"
+    envelope = CommandHandoff({device: (1, secret)}).envelope(router.route("bale", "owner", device, "suspend"))
+    assert DeviceProtocol(device, owner["id"], 1, secret).accept(envelope).action == "suspend"

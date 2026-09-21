@@ -25,6 +25,8 @@ The project uses semantic-style versioning where practical:
   token, performs no OS operation, and provides no arbitrary command path.
 - Added a narrow Telegram/Bale update parser that rejects malformed or
   ambiguous input before fixed-action routing.
+- Added gateway-to-device signed envelope handoff; device verification remains
+  mandatory before any local action.
 - Official bots, pairing proof/recovery, authenticated delivery, replies and
   notification routing remain unshipped work for issue #64 and its dependencies.
 
