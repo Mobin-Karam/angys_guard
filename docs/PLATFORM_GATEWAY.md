@@ -22,6 +22,11 @@ Those functions need a separately authenticated device-delivery protocol and
 local confirmation/policy enforcement. The existing device agent retains the
 owner authorization and power-action safeguards.
 
+The gateway also has a pure provider-update adapter. It accepts only an explicit
+`/device <device-id> <fixed-action>` message shape, then delegates identity and
+ownership enforcement to `GatewayRouter`. HTTP/webhook polling, credentials and
+reply delivery remain separate server-adapter work.
+
 ## Not yet shipped
 
 - a deployed official `@angysguardbot` Telegram or Bale service;

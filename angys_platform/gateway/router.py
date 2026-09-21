@@ -72,3 +72,27 @@ class GatewayRouter:
         if self.identity.device_owner(device_id) != account_id:
             raise GatewayDenied("device is not owned by provider account")
         return RoutedCommand(provider, account_id, device_id, action)
+
+
+class ProviderUpdateAdapter:
+    """Parse only a narrow provider update shape into an authorized route."""
+
+    def __init__(self, router: GatewayRouter) -> None:
+        self.router = router
+
+    def receive(self, provider: str, update: dict) -> RoutedCommand:
+        """Accept `/device <uuid> <fixed-action>` from a provider update.
+
+        Credentials, HTTP/webhook handling and reply delivery remain outside this
+        pure adapter; malformed or ambiguous updates are rejected.
+        """
+        message = update.get("message") if isinstance(update, dict) else None
+        sender = message.get("from") if isinstance(message, dict) else None
+        text = message.get("text") if isinstance(message, dict) else None
+        sender_id = sender.get("id") if isinstance(sender, dict) else None
+        if not isinstance(sender_id, (str, int)) or not isinstance(text, str):
+            raise GatewayDenied("invalid provider update")
+        fields = text.strip().split()
+        if len(fields) != 3 or fields[0] != "/device":
+            raise GatewayDenied("invalid provider command")
+        return self.router.route(provider, str(sender_id), fields[1], fields[2])
