@@ -53,6 +53,15 @@ class IdentityService:
                     created_at INTEGER NOT NULL,
                     FOREIGN KEY(user_id) REFERENCES users(id)
                 );
+
+                CREATE TABLE IF NOT EXISTS provider_links (
+                    provider TEXT NOT NULL,
+                    provider_user_id TEXT NOT NULL,
+                    user_id INTEGER NOT NULL,
+                    linked_at INTEGER NOT NULL,
+                    PRIMARY KEY(provider, provider_user_id),
+                    FOREIGN KEY(user_id) REFERENCES users(id)
+                );
                 """
             )
 
@@ -111,3 +120,39 @@ class IdentityService:
                 "UPDATE users_devices SET last_seen=? WHERE device_id=?",
                 (int(time.time()), device_id),
             )
+
+    def device_owner(self, device_id: str) -> int | None:
+        """Return the active account that owns a device, if any."""
+        with self._connect() as db:
+            row = db.execute(
+                "SELECT user_id FROM users_devices WHERE device_id=? AND status='active'",
+                (device_id,),
+            ).fetchone()
+        return int(row[0]) if row else None
+
+    def link_provider_account(
+        self, provider: str, provider_user_id: str, user_id: int
+    ) -> None:
+        """Persist a provider account link after the pairing flow authorizes it."""
+        with self._connect() as db:
+            if not db.execute("SELECT 1 FROM users WHERE id=?", (user_id,)).fetchone():
+                raise ValueError("unknown user")
+            db.execute(
+                """INSERT INTO provider_links(provider,provider_user_id,user_id,linked_at)
+                VALUES(?,?,?,?)
+                ON CONFLICT(provider,provider_user_id) DO UPDATE SET
+                    user_id=excluded.user_id,
+                    linked_at=excluded.linked_at""",
+                (provider, provider_user_id, user_id, int(time.time())),
+            )
+
+    def linked_provider_account(
+        self, provider: str, provider_user_id: str
+    ) -> int | None:
+        """Return the linked account for one provider identity, if present."""
+        with self._connect() as db:
+            row = db.execute(
+                "SELECT user_id FROM provider_links WHERE provider=? AND provider_user_id=?",
+                (provider, provider_user_id),
+            ).fetchone()
+        return int(row[0]) if row else None
