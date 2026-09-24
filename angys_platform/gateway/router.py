@@ -16,6 +16,8 @@ class RoutedCommand:
     """An authorized command; this value deliberately has no execution behavior."""
 
     provider: str
+    provider_user_id: str
+    reply_chat_id: str
     account_id: int
     device_id: str
     action: str
@@ -58,7 +60,13 @@ class GatewayRouter:
             raise GatewayDenied("unknown account") from error
 
     def route(
-        self, provider: str, provider_user_id: str, device_id: str, action: str
+        self,
+        provider: str,
+        provider_user_id: str,
+        device_id: str,
+        action: str,
+        *,
+        reply_chat_id: str | None = None,
     ) -> RoutedCommand:
         """Fail closed unless a linked provider account owns the active device."""
         provider = self._provider(provider)
@@ -71,7 +79,13 @@ class GatewayRouter:
             raise GatewayDenied("unauthorized provider command")
         if self.identity.device_owner(device_id) != account_id:
             raise GatewayDenied("device is not owned by provider account")
-        return RoutedCommand(provider, account_id, device_id, action)
+        if reply_chat_id is None:
+            reply_chat_id = provider_user_id
+        if not isinstance(reply_chat_id, str) or not reply_chat_id:
+            raise GatewayDenied("invalid reply chat")
+        return RoutedCommand(
+            provider, provider_user_id, reply_chat_id, account_id, device_id, action
+        )
 
 
 class ProviderUpdateAdapter:
@@ -91,8 +105,12 @@ class ProviderUpdateAdapter:
         sender = message.get("from") if isinstance(message, dict) else None
         text = message.get("text") if isinstance(message, dict) else None
         sender_id = sender.get("id") if isinstance(sender, dict) else None
+        chat = message.get("chat") if isinstance(message, dict) else None
+        chat_id = chat.get("id") if isinstance(chat, dict) else None
         if not isinstance(sender_id, (str, int)) or not isinstance(text, str):
             raise GatewayDenied("invalid provider update")
+        if not isinstance(chat_id, (str, int)) or str(chat_id) != str(sender_id):
+            raise GatewayDenied("private chat is required")
         fields = text.strip().split()
         if len(fields) == 2 and fields[0] == "/pair":
             if self.pairing is None:
@@ -105,7 +123,15 @@ class ProviderUpdateAdapter:
             if account_id is None:
                 raise GatewayDenied("pairing device is unavailable")
             self.router.link_provider_account(provider, str(sender_id), account_id)
-            return RoutedCommand(provider, account_id, device_id, "status")
+            return RoutedCommand(
+                provider, str(sender_id), str(chat_id), account_id, device_id, "status"
+            )
         if len(fields) != 3 or fields[0] != "/device":
             raise GatewayDenied("invalid provider command")
-        return self.router.route(provider, str(sender_id), fields[1], fields[2])
+        return self.router.route(
+            provider,
+            str(sender_id),
+            fields[1],
+            fields[2],
+            reply_chat_id=str(chat_id),
+        )
