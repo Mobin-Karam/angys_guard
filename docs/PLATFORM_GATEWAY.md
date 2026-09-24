@@ -4,6 +4,11 @@ Issue #64's managed gateway is being delivered in security-preserving slices.
 This document describes the first implemented server-side boundary; it is **not**
 a claim that an official Telegram or Bale gateway service is deployed.
 
+The selected product direction is one shared official bot per provider, not a
+separate bot username/token per installed device. The server is therefore the
+only location for official provider credentials, and devices receive only
+scoped enrollment credentials.
+
 ## Implemented routing boundary
 
 `angys_platform.gateway.GatewayRouter` accepts only `telegram` and `bale`
