@@ -129,6 +129,24 @@ Issues #38, #39, #40 and #42 define the optional startup-hosted mode.
 
 This mode is for users who do **not** want to create/maintain their own Bale or Telegram bot.
 
+## Selected official-bot direction
+
+AngysGuard's intended non-technical onboarding is the shared official-bot
+model: the user installs an OS agent, opens the official `@angysguardbot` on
+their selected provider, and pairs that specific device with a one-time code.
+The official bot/server owns its provider credentials; no device client asks a
+user to paste a Telegram/Bale bot token.
+
+```text
+Install AngysGuard agent -> display one-time pairing code
+       -> open official @angysguardbot -> sign in / identify account
+       -> submit pairing code -> device becomes a scoped bot target
+```
+
+This is the chosen architecture direction, not a statement that the official
+service is deployed. The current Linux local/self-hosted provider setup remains
+available until the managed path is implemented and validated.
+
 The planned service may provide official AngysGuard Bale/Telegram bots and future Android/Linux/Windows app surfaces.
 
 ## Target managed onboarding
