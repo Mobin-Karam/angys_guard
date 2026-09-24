@@ -16,6 +16,7 @@ class RoutedCommand:
     """An authorized command; this value deliberately has no execution behavior."""
 
     provider: str
+    provider_user_id: str
     account_id: int
     device_id: str
     action: str
@@ -71,7 +72,7 @@ class GatewayRouter:
             raise GatewayDenied("unauthorized provider command")
         if self.identity.device_owner(device_id) != account_id:
             raise GatewayDenied("device is not owned by provider account")
-        return RoutedCommand(provider, account_id, device_id, action)
+        return RoutedCommand(provider, provider_user_id, account_id, device_id, action)
 
 
 class ProviderUpdateAdapter:
@@ -105,7 +106,7 @@ class ProviderUpdateAdapter:
             if account_id is None:
                 raise GatewayDenied("pairing device is unavailable")
             self.router.link_provider_account(provider, str(sender_id), account_id)
-            return RoutedCommand(provider, account_id, device_id, "status")
+            return RoutedCommand(provider, str(sender_id), account_id, device_id, "status")
         if len(fields) != 3 or fields[0] != "/device":
             raise GatewayDenied("invalid provider command")
         return self.router.route(provider, str(sender_id), fields[1], fields[2])

@@ -39,4 +39,6 @@ class OfficialBotService:
                 handled += 1
             except GatewayDenied:
                 continue
+        for request_id, chat_id, result in self.commands.completed_replies(self.provider_name):
+            self.provider.send_message(int(chat_id), f"Device result: {result} ({request_id})")
         return handled
