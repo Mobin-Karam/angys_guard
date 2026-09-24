@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from angys_platform.identity import IdentityService
+from angys_platform.identity import IdentityService, PairingDenied, PairingService
 
 
 class GatewayDenied(ValueError):
@@ -77,8 +77,9 @@ class GatewayRouter:
 class ProviderUpdateAdapter:
     """Parse only a narrow provider update shape into an authorized route."""
 
-    def __init__(self, router: GatewayRouter) -> None:
+    def __init__(self, router: GatewayRouter, pairing: PairingService | None = None) -> None:
         self.router = router
+        self.pairing = pairing
 
     def receive(self, provider: str, update: dict) -> RoutedCommand:
         """Accept `/device <uuid> <fixed-action>` from a provider update.
@@ -93,6 +94,18 @@ class ProviderUpdateAdapter:
         if not isinstance(sender_id, (str, int)) or not isinstance(text, str):
             raise GatewayDenied("invalid provider update")
         fields = text.strip().split()
+        if len(fields) == 2 and fields[0] == "/pair":
+            if self.pairing is None:
+                raise GatewayDenied("pairing is unavailable")
+            try:
+                device_id = self.pairing.consume(fields[1])
+            except PairingDenied as error:
+                raise GatewayDenied("invalid pairing code") from error
+            account_id = self.router.identity.device_owner(device_id)
+            if account_id is None:
+                raise GatewayDenied("pairing device is unavailable")
+            self.router.link_provider_account(provider, str(sender_id), account_id)
+            return RoutedCommand(provider, account_id, device_id, "status")
         if len(fields) != 3 or fields[0] != "/device":
             raise GatewayDenied("invalid provider command")
         return self.router.route(provider, str(sender_id), fields[1], fields[2])
