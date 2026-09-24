@@ -1,6 +1,6 @@
 # ADR 0008: Cross-platform capability adapters before OS expansion
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-09-12
 - Related issues: #31, #32, #33, #34, #35, #36
 
@@ -73,7 +73,7 @@ Rejected. Shell/PowerShell strings are not a safe universal OS API and would enc
 
 Rejected. Platform privacy/security APIs differ; unsupported capabilities must remain explicit.
 
-## Required validation before acceptance
+## Required validation before an OS is supported
 
 - Graphify/source map of current Linux-specific boundaries;
 - initial capability matrix for Linux/Windows/Android;

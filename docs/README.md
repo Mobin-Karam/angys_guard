@@ -12,6 +12,7 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | Understand Platform v2 multi-client architecture | [Platform v2 architecture foundation](PLATFORM_V2_ARCHITECTURE.md) |
 | See product direction and future apps | [AngysGuard product vision](ANGYSGUARD_PRODUCT_VISION.md) |
 | Know which OSes work today / are planned | [Platform support](PLATFORM_SUPPORT.md) |
+| Review the cross-platform capability contract | [Platform capabilities](PLATFORM_CAPABILITIES.md) |
 | Understand Bale, Telegram, self-hosted and managed control | [Control modes](CONTROL_MODES.md) |
 | Review the planned managed pairing/control contract | [Managed onboarding protocol](MANAGED_ONBOARDING_PROTOCOL.md) |
 | Review the implemented gateway authorization boundary and remaining work | [Platform gateway boundary](PLATFORM_GATEWAY.md) |
