@@ -29,6 +29,13 @@ def cmd_reconfigure(args):
     return 0 if cfg.setup_complete else 2
 
 
+def cmd_onboarding(args):
+    from .onboarding_window import show_onboarding
+
+    show_onboarding(getattr(args, "provider", "telegram"))
+    return 0
+
+
 def cmd_run(_):
     from .runtime_config import RuntimeConfigurationError, ensure_runtime_configuration
     from .runtime_recovery import (
@@ -396,6 +403,9 @@ def build_parser():
     p = argparse.ArgumentParser(prog="laptop-guard", description="Laptop Guard v11.1")
     sub = p.add_subparsers(dest="command")
     sub.add_parser("setup", help="guided/resumable setup").set_defaults(func=cmd_setup)
+    onboarding = sub.add_parser("onboarding", help="open the Persian guided onboarding window")
+    onboarding.add_argument("--provider", choices=["telegram", "bale"], default="telegram")
+    onboarding.set_defaults(func=cmd_onboarding)
     reconfigure = sub.add_parser("reconfigure", help="edit one setup section")
     reconfigure.add_argument(
         "section",
