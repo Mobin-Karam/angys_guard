@@ -44,5 +44,19 @@ generation, signature, expiry and replay state before local policy considers it.
 - authenticated command delivery, device replies, or notification routing;
 - managed Wake-on-LAN power-on (tracked separately in issue #71).
 
+## Wake-on-LAN power-on slice
+
+The gateway recognizes the fixed `wake` action. A `/device <device-id> wake`
+request uses the same linked-provider and device-owner authorization as other
+fixed actions, but is handled by the always-on gateway rather than queued to an
+offline device. Targets are explicit per-device records: owner account, MAC,
+IPv4 broadcast address and UDP port. Arbitrary packet destinations, malformed
+addresses and revoked targets are rejected.
+
+This is a protocol/code slice, not a production hosting claim. Real use requires
+an always-on gateway with LAN access, compatible firmware/NIC configuration and
+target-network validation. It never sends or stores the protected device's OS
+password and cannot send arbitrary UDP payloads.
+
 Provider credentials must remain server-only when those adapters are added.
 They must never be distributed to device clients or committed to this repository.

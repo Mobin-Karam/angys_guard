@@ -28,7 +28,7 @@ class GatewayRouter:
 
     PROVIDERS = frozenset({"telegram", "bale"})
     ACTIONS = frozenset(
-        {"status", "arm", "disarm", "lock", "suspend", "reboot", "shutdown"}
+        {"status", "arm", "disarm", "lock", "suspend", "reboot", "shutdown", "wake"}
     )
 
     def __init__(self, identity: IdentityService) -> None:
