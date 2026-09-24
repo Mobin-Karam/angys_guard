@@ -40,5 +40,10 @@ class OfficialBotService:
             except GatewayDenied:
                 continue
         for request_id, chat_id, result in self.commands.completed_replies(self.provider_name):
-            self.provider.send_message(int(chat_id), f"Device result: {result} ({request_id})")
+            try:
+                self.provider.send_message(int(chat_id), f"Device result: {result} ({request_id})")
+            except Exception:
+                self.commands.record_reply_failure(self.provider_name, request_id)
+                continue
+            self.commands.mark_reply_delivered(self.provider_name, request_id)
         return handled

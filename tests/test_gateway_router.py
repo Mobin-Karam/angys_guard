@@ -57,10 +57,13 @@ def test_provider_update_adapter_routes_only_explicit_command(tmp_path):
     router.link_provider_account("telegram", "99", owner["id"])
     adapter = ProviderUpdateAdapter(router)
 
-    routed = adapter.receive("telegram", {"message": {"from": {"id": 99}, "text": f"/device {device} shutdown"}})
+    routed = adapter.receive("telegram", {"message": {"from": {"id": 99}, "chat": {"id": 99}, "text": f"/device {device} shutdown"}})
     assert routed.action == "shutdown"
+    assert routed.reply_chat_id == "99"
     with pytest.raises(GatewayDenied):
-        adapter.receive("telegram", {"message": {"from": {"id": 99}, "text": "/device arbitrary shell"}})
+        adapter.receive("telegram", {"message": {"from": {"id": 99}, "chat": {"id": 99}, "text": "/device arbitrary shell"}})
+    with pytest.raises(GatewayDenied, match="private chat"):
+        adapter.receive("telegram", {"message": {"from": {"id": 99}, "chat": {"id": -100}, "text": f"/device {device} status"}})
 
 
 def test_authorized_route_becomes_device_verifiable_envelope(tmp_path):
