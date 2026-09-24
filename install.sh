@@ -292,6 +292,20 @@ verify_installation() {
   ok "Python dependency verification passed."
 }
 
+launch_first_run_ui() {
+  local vpy="$VENV_DIR/bin/python"
+  if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
+    info "No graphical session detected; skipping the setup window."
+    return 0
+  fi
+  if ! "$vpy" -c 'import tkinter' >/dev/null 2>&1; then
+    warn "Tkinter is unavailable; the setup window could not be opened."
+    return 0
+  fi
+  info "Opening the AngysGuard first-run setup window."
+  nohup "$vpy" -m laptop_guard onboarding >/dev/null 2>&1 &
+}
+
 main() {
   printf 'AngysGuard / Laptop Guard installer\n\n'
   detect_python
@@ -311,6 +325,7 @@ main() {
   verify_installation
 
   INSTALL_SUCCEEDED=1
+  launch_first_run_ui
   printf '\nInstallation summary: PASS\n'
   printf 'The Python environment is usable.\n\n'
   printf 'Next command:\n'
