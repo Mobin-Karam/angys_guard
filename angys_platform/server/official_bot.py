@@ -7,16 +7,18 @@ from typing import Any
 from angys_platform.gateway import GatewayDenied, ProviderUpdateAdapter
 
 from .command_server import CommandServer
+from .wake_on_lan import WakeOnLanGateway
 
 
 class OfficialBotService:
     """Consumes provider updates and queues only authorized device commands."""
 
-    def __init__(self, provider_name: str, provider: Any, adapter: ProviderUpdateAdapter, commands: CommandServer) -> None:
+    def __init__(self, provider_name: str, provider: Any, adapter: ProviderUpdateAdapter, commands: CommandServer, wake_on_lan: WakeOnLanGateway | None = None) -> None:
         self.provider_name = provider_name
         self.provider = provider
         self.adapter = adapter
         self.commands = commands
+        self.wake_on_lan = wake_on_lan
         self.offset: int | None = None
 
     def run_once(self) -> int:
@@ -31,6 +33,11 @@ class OfficialBotService:
                 chat_id = ((update.get("message") or {}).get("chat") or {}).get("id")
                 if text.startswith("/pair "):
                     reply = "Device paired successfully."
+                elif routed.action == "wake":
+                    if self.wake_on_lan is None:
+                        raise GatewayDenied("wake is unavailable")
+                    self.wake_on_lan.wake(routed)
+                    reply = "Wake packet sent to the enrolled device network."
                 else:
                     self.commands.queue(routed)
                     reply = "Command queued for the enrolled device."

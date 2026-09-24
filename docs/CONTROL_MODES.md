@@ -169,6 +169,14 @@ Device enrolled with fixed AngysGuard capabilities
 
 The managed backend associates an AngysGuard account with an enrolled device using a **device-scoped credential**, not the user's computer password.
 
+### Planned power-on boundary
+
+An off device cannot receive a bot command. Power-on therefore requires an
+always-on, owner-authorized Wake-on-LAN gateway and an explicitly enrolled LAN
+target; it is not universal remote-power support. AngysGuard never sends the
+protected device's OS password through Bale, Telegram or the gateway to bypass
+that limitation.
+
 ## User account authentication
 
 If AngysGuard offers username/password accounts in the future:
