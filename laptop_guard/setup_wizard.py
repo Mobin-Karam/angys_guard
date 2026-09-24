@@ -71,6 +71,7 @@ def detect_audio_sources() -> list[str]:
 
 
 def pair_chat(bot, console: Console, timeout_seconds: int = 180) -> int:
+    pairing_code = secrets.token_urlsafe(8)
     offset = None
     try:
         pending = bot.get_updates(offset=None, timeout=1)
@@ -84,10 +85,10 @@ def pair_chat(bot, console: Console, timeout_seconds: int = 180) -> int:
     except Exception:
         pass
 
-    console.print(
-        "\nSend [bold]/start[/bold] to the bot from the account you want to authorize."
-    )
-    console.print("Waiting for a NEW /start message...")
+    console.print("\nOpen the selected bot from the account you want to authorize.")
+    console.print("Send [bold]/id[/bold] to see the chat ID, then send:")
+    console.print(f"[bold]/pair {pairing_code}[/bold]")
+    console.print("Waiting for the one-time pairing command...")
     deadline = time.monotonic() + timeout_seconds
     while time.monotonic() < deadline:
         updates = bot.get_updates(offset=offset, timeout=8)
@@ -98,10 +99,12 @@ def pair_chat(bot, console: Console, timeout_seconds: int = 180) -> int:
             msg = update.get("message") or update.get("edited_message")
             if not msg:
                 continue
-            if not str(msg.get("text") or "").strip().startswith("/start"):
-                continue
             chat_id = (msg.get("chat") or {}).get("id")
-            if isinstance(chat_id, int):
+            text = str(msg.get("text") or "").strip()
+            if text == "/id" and isinstance(chat_id, int):
+                bot.send_message(chat_id, f"Your AngysGuard chat ID: {chat_id}")
+                continue
+            if text == f"/pair {pairing_code}" and isinstance(chat_id, int):
                 return chat_id
     raise RuntimeError("Pairing timed out.")
 
