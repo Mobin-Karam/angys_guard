@@ -253,10 +253,29 @@ def poll_commands(device=Depends(device_from_token)) -> dict[str, list[dict[str,
     configuration = require_settings()
     with connection(configuration.database_path) as db:
         db.execute("UPDATE devices SET last_seen_at = ? WHERE id = ?", (now(), device["id"]))
-        rows = db.execute("SELECT id, action FROM commands WHERE device_id = ? AND claimed_at IS NULL AND completed_at IS NULL AND expires_at >= ? ORDER BY requested_at LIMIT 10", (device["id"], now())).fetchall()
-        for row in rows:
-            db.execute("UPDATE commands SET claimed_at = ? WHERE id = ? AND claimed_at IS NULL", (now(), row["id"]))
-    return {"commands": [{"id": row["id"], "action": row["action"]} for row in rows]}
+        # Return a command only if this poller atomically claimed it. A second
+        # concurrent poll fails closed instead of replaying a local action.
+        row = db.execute(
+            "SELECT candidate.id, candidate.action FROM commands AS candidate "
+            "WHERE candidate.device_id = ? AND candidate.claimed_at IS NULL "
+            "AND candidate.completed_at IS NULL AND candidate.expires_at >= ? "
+            "AND NOT EXISTS (SELECT 1 FROM commands AS inflight "
+            "WHERE inflight.device_id = candidate.device_id "
+            "AND inflight.claimed_at IS NOT NULL AND inflight.completed_at IS NULL "
+            "AND inflight.expires_at >= ?) "
+            "ORDER BY candidate.requested_at LIMIT 1",
+            (device["id"], now(), now()),
+        ).fetchone()
+        if not row:
+            return {"commands": []}
+        claimed = db.execute(
+            "UPDATE commands SET claimed_at = ? WHERE id = ? AND claimed_at IS NULL "
+            "AND completed_at IS NULL",
+            (now(), row["id"]),
+        ).rowcount
+        if claimed != 1:
+            return {"commands": []}
+    return {"commands": [{"id": row["id"], "action": row["action"]}]}
 
 
 @app.post("/v1/device/commands/complete", status_code=200)

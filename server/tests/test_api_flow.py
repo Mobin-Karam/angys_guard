@@ -24,6 +24,7 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             headers = {"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"}
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": f"/link {bot_code}"}}).json() == {"status": "linked"}
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/status"}}).json() == {"status": "queued"}
+            assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/arm"}}).json() == {"status": "queued"}
             queued = client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json()["commands"]
             assert len(queued) == 1 and queued[0]["action"] == "status"
             # A claimed command is not replayed if a network retry occurs after
@@ -32,6 +33,7 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             completed = client.post("/v1/device/commands/complete", headers={"Authorization": f"Device {device['device_token']}"}, json={"command_id": queued[0]["id"], "result": "online"})
             assert completed.status_code == 200
             reply.assert_awaited_with("telegram", "12345", "status: online")
+            assert client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json()["commands"][0]["action"] == "arm"
             # A fixed allowlist is the remote-control boundary.
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/powershell whoami"}}).json() == {"status": "unsupported"}
             assert client.post(f"/v1/devices/{device['device_id']}/revoke", headers=bearer).json() == {"status": "revoked"}

@@ -47,6 +47,30 @@ limiting enabled as a separate protection.
 Back up the named Docker volume before making server changes. A backup contains
 account/password verifier data and device metadata; treat it as confidential.
 
+### Runflare Python PaaS
+
+Deploy the `server/` directory, not the repository root. Runflare's required
+entrypoint is [server/main.py](../../server/main.py), which exposes the ASGI
+application as `app`. In the Runflare environment-variable dashboard, copy the
+variable names from [server/.env.example](../../server/.env.example) and set
+their values there; do not upload a populated `.env` file.
+
+`ANGYSGUARD_SERVER_SECRET` is required and must be a new random value of at
+least 32 characters. `ANGYSGUARD_DATABASE_PATH` must point to a Runflare
+**persistent** directory/volume. If Runflare does not provide persistent disk
+storage for the selected plan, this SQLite test service is not suitable: every
+restart would lose accounts, pairings, and revocations.
+
+After the provider reports the deployment as running, confirm:
+
+```bash
+curl --fail-with-body https://api.mahakaram.ir/healthz
+```
+
+It must return `{"status":"ok"}` before registering a webhook or enrolling a
+device. A provider `503 Loading` page means the application has not started or
+the domain is not attached to the running service yet.
+
 ## Bot webhooks
 
 For each enabled provider, set a distinct high-entropy webhook secret in the
