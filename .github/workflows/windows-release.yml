@@ -58,7 +58,7 @@ jobs:
           cache: npm
           cache-dependency-path: desktop/windows-tauri/package-lock.json
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - name: Install bundled Linux runtime build dependencies
