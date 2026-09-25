@@ -97,6 +97,12 @@ sidecar. This is not yet a claim that an artifact is release-qualified: the
 actual `.deb`/AppImage must pass clean-device installation, reboot/recovery,
 X11/Wayland and provider checks before being distributed to testers.
 
+The desktop **Managed server connection** panel performs a separate,
+authenticated read-only check. It reports whether the enrolled device is
+connected, revoked, or cannot reach the service; it never claims a queued
+command. An offline managed service does not stop the already-local Laptop
+Guard profile.
+
 `ANGYSGUARD_SERVER_SECRET` is required and must be a new random value of at
 least 32 characters. `ANGYSGUARD_DATABASE_PATH` must point to a Runflare
 **persistent** directory/volume. If Runflare does not provide persistent disk

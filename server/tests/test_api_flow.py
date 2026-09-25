@@ -33,12 +33,14 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             bearer = {"Authorization": f"Bearer {created.json()['access_token']}"}
             device_code = client.post("/v1/devices/pairing-codes", headers=bearer, json={"device_name": "Windows 11"}).json()["pairing_code"]
             device = client.post("/v1/devices/claim", headers=bearer, json={"pairing_code": device_code}).json()
+            device_headers = {"Authorization": f"Device {device['device_token']}"}
+            assert client.get("/v1/device/status", headers=device_headers).json() == {"status": "connected"}
             bot_code = client.post("/v1/bot-pairing-codes", headers=bearer).json()["pairing_code"]
             headers = {"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"}
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": f"/link {bot_code}"}}).json() == {"status": "linked"}
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/status"}}).json() == {"status": "queued"}
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/arm"}}).json() == {"status": "queued"}
-            queued = client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json()["commands"]
+            queued = client.get("/v1/device/commands", headers=device_headers).json()["commands"]
             assert len(queued) == 1 and queued[0]["action"] == "status"
             assert queued[0]["account_id"] == created.json()["account_id"]
             assert queued[0]["signature"] == sign_device_command(
@@ -52,11 +54,11 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             )
             # A claimed command is not replayed if a network retry occurs after
             # the agent has accepted it (important for the local lock action).
-            assert client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json() == {"commands": []}
-            completed = client.post("/v1/device/commands/complete", headers={"Authorization": f"Device {device['device_token']}"}, json={"command_id": queued[0]["id"], "result": "online"})
+            assert client.get("/v1/device/commands", headers=device_headers).json() == {"commands": []}
+            completed = client.post("/v1/device/commands/complete", headers=device_headers, json={"command_id": queued[0]["id"], "result": "online"})
             assert completed.status_code == 200
             reply.assert_awaited_with("telegram", "12345", "status: completed")
-            assert client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json()["commands"][0]["action"] == "arm"
+            assert client.get("/v1/device/commands", headers=device_headers).json()["commands"][0]["action"] == "arm"
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/events"}}).json() == {"status": "events"}
             events = reply.await_args_list[-1].args[2]
             assert "status: completed" in events and "arm: pending" in events
@@ -64,7 +66,7 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             # A fixed allowlist is the remote-control boundary.
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/powershell whoami"}}).json() == {"status": "unsupported"}
             assert client.post(f"/v1/devices/{device['device_id']}/revoke", headers=bearer).json() == {"status": "revoked"}
-            assert client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).status_code == 401
+            assert client.get("/v1/device/status", headers=device_headers).status_code == 401
 
 
 def test_bot_selects_one_of_multiple_devices_and_revocation_needs_confirmation(monkeypatch):

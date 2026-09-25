@@ -354,6 +354,16 @@ def device_from_token(authorization: Annotated[str | None, Header()] = None):
     return device
 
 
+@app.get("/v1/device/status")
+def device_status(device=Depends(device_from_token)) -> dict[str, str]:
+    """Authenticated read-only connection check for the desktop UI."""
+
+    configuration = require_settings()
+    with connection(configuration.database_path) as db:
+        db.execute("UPDATE devices SET last_seen_at = ? WHERE id = ?", (now(), device["id"]))
+    return {"status": "connected"}
+
+
 @app.get("/v1/device/commands")
 def poll_commands(device=Depends(device_from_token)) -> dict[str, list[dict[str, str | int]]]:
     configuration = require_settings()

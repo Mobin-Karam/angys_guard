@@ -57,6 +57,11 @@ struct LocalProtectionStatus {
     service_active: bool,
 }
 
+#[derive(Debug, Serialize)]
+struct ManagedConnectionStatus {
+    state: &'static str,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 struct ConsumedCommand {
     id: String,
@@ -427,6 +432,25 @@ async fn poll_forever(state: AgentState, app: AppHandle) {
 }
 
 #[tauri::command]
+async fn managed_connection_status(
+    state: State<'_, AgentState>,
+) -> Result<ManagedConnectionStatus, String> {
+    let device = { state.0.lock().await.clone() };
+    let Some(device) = device else {
+        return Ok(ManagedConnectionStatus { state: "not_enrolled" });
+    };
+    let request = Client::new()
+        .get(format!("{}/v1/device/status", device.server_url))
+        .header("Authorization", format!("Device {}", device.device_token));
+    let state = match tokio::time::timeout(std::time::Duration::from_secs(10), request.send()).await {
+        Ok(Ok(response)) if response.status().is_success() => "connected",
+        Ok(Ok(response)) if response.status().as_u16() == 401 => "revoked",
+        _ => "offline",
+    };
+    Ok(ManagedConnectionStatus { state })
+}
+
+#[tauri::command]
 async fn store_device(
     server_url: String,
     device_id: String,
@@ -585,6 +609,7 @@ pub fn run() {
             prepare_local_protection,
             stop_local_protection,
             local_protection_status,
+            managed_connection_status,
         ])
         .setup(move |app| {
             let agent_state = app.state::<AgentState>().inner().clone();
