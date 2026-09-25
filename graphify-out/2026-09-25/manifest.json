@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "laptop_guard/cli.py": {
-    "mtime": 1790319461.09578,
-    "seen": 1790330708.3831663,
-    "ast_hash": "c772a370c93a75e2f5622bd8db19a276",
+    "mtime": 1790335199.5232399,
+    "seen": 1790335902.5017037,
+    "ast_hash": "c24831fe979582cb49b28f49b5b24675",
     "semantic_hash": ""
   },
   "laptop_guard/config.py": {
@@ -162,9 +162,9 @@
     "semantic_hash": ""
   },
   "laptop_guard/models.py": {
-    "mtime": 1789235752.6772628,
-    "seen": 1789922474.9259508,
-    "ast_hash": "fb493f911e3a7974b51d9d1cb35219c7",
+    "mtime": 1790335145.9238143,
+    "seen": 1790335902.5017316,
+    "ast_hash": "2a2659ee58f0e62f541ac9c88f3b71eb",
     "semantic_hash": ""
   },
   "laptop_guard/persian_speech.py": {
@@ -228,9 +228,9 @@
     "semantic_hash": ""
   },
   "laptop_guard/service.py": {
-    "mtime": 1789234169.088834,
-    "seen": 1789922474.9259713,
-    "ast_hash": "598e655095c707b63b8329074cea8f14",
+    "mtime": 1790335199.5232399,
+    "seen": 1790335902.5017607,
+    "ast_hash": "3d08c1d79f3bef3afefa7d00e010bd9b",
     "semantic_hash": ""
   },
   "laptop_guard/setup_wizard.py": {
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "tests/test_cli.py": {
-    "mtime": 1789812705.9608068,
-    "seen": 1789922474.926009,
-    "ast_hash": "0a6e1a1a8d3f9eba4cb6dfa2209e0802",
+    "mtime": 1790335199.5232399,
+    "seen": 1790335902.5018606,
+    "ast_hash": "bcae643b2030a308c1ae68db86b0cc12",
     "semantic_hash": ""
   },
   "tests/test_config.py": {
@@ -426,9 +426,9 @@
     "semantic_hash": ""
   },
   "tests/test_service.py": {
-    "mtime": 1789812705.961807,
-    "seen": 1789922474.9260576,
-    "ast_hash": "5807760c2e54bedaad09045709081c18",
+    "mtime": 1790335199.5242398,
+    "seen": 1790335902.501972,
+    "ast_hash": "d11b81459a5c6ff3b599c254926b8740",
     "semantic_hash": ""
   },
   "tests/test_state.py": {
@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1790319522.3497384,
-    "seen": 1790330708.3834336,
-    "ast_hash": "2509429f97831e8a83dbd8cd23a574c5",
+    "mtime": 1790335784.382882,
+    "seen": 1790335902.502288,
+    "ast_hash": "c29a64539c10a7af1259c20520d1f4f9",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1734,21 +1734,21 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/build.rs": {
-    "mtime": 1790319522.3520672,
-    "seen": 1790330708.3831384,
-    "ast_hash": "287ce498267751e6b2cfb4ade71e4d25",
+    "mtime": 1790335790.533931,
+    "seen": 1790335902.5016599,
+    "ast_hash": "1be34a5c61c2c35365de3dab14298f0b",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/src/lib.rs": {
-    "mtime": 1790319522.3532755,
-    "seen": 1790330708.3831413,
-    "ast_hash": "cd19ca9a78a337424debb8df4b63b6c5",
+    "mtime": 1790335790.5419312,
+    "seen": 1790335902.5016654,
+    "ast_hash": "189f4f6d1db584fce0a88d5b91027ed6",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/src/main.rs": {
-    "mtime": 1790319522.353687,
-    "seen": 1790330708.3831427,
-    "ast_hash": "bfcc8a40fe61a88c5a4c2f8156e3ba4e",
+    "mtime": 1790335790.542931,
+    "seen": 1790335902.5016665,
+    "ast_hash": "3cec4010d17b072548f848e44b1276e9",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/tauri.conf.json": {
@@ -1758,9 +1758,9 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src/main.ts": {
-    "mtime": 1790319522.3541543,
-    "seen": 1790330708.3831458,
-    "ast_hash": "4cc7e5c3294656dca1b732a87b5ba6bb",
+    "mtime": 1790335737.1445072,
+    "seen": 1790335902.501673,
+    "ast_hash": "25c4797fdff5a997034efdd57fdfb5e8",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/tsconfig.json": {
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "docs/managed-test/DEPLOYMENT.md": {
-    "mtime": 1790334418.7970428,
-    "seen": 1790334886.7489576,
-    "ast_hash": "4cf1737a2d8c97fb8bdc8496d7cb4b12",
+    "mtime": 1790335784.3818822,
+    "seen": 1790335902.5023665,
+    "ast_hash": "8371f7082bae0f1e2632ccfb4a944a02",
     "semantic_hash": ""
   },
   "server/requirements.txt": {
@@ -2061,6 +2061,18 @@
     "mtime": 1790334418.7980428,
     "seen": 1790334886.7487597,
     "ast_hash": "e8e6abd90fd803fb6465709ac3af7d1c",
+    "semantic_hash": ""
+  },
+  "laptop_guard/desktop_onboarding.py": {
+    "mtime": 1790335145.9228144,
+    "seen": 1790335902.5017092,
+    "ast_hash": "7285f93d75e76089fd7593e6a87ed7b8",
+    "semantic_hash": ""
+  },
+  "tests/test_desktop_onboarding.py": {
+    "mtime": 1790335145.9258144,
+    "seen": 1790335902.5018773,
+    "ast_hash": "6d4c740a4d911a71b9b794dfdf1fd55c",
     "semantic_hash": ""
   }
 }

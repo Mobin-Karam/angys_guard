@@ -1,22 +1,22 @@
 # Graph Report - angys_guard  (2026-09-25)
 
 ## Corpus Check
-- 300 files · ~202,621 words
+- 302 files · ~204,214 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2545 nodes · 4573 edges · 241 communities (134 shown, 52 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 178 edges (avg confidence: 0.9)
+- 2578 nodes · 4660 edges · 237 communities (130 shown, 52 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 183 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b370b062`
+- Built from commit: `5e2d9b01`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - ScreenCaptureManager
-- LaptopGuard
+- ._handle_callback
 - FeatureManager
 - PersianSpeechManager
 - ChatWindow
@@ -39,7 +39,7 @@
 - Testing and validation
 - Security and privacy
 - AppManager
-- runtime_recovery.py
+- write_runtime_diagnostic
 - .start
 - AngysGuard product vision
 - USBMonitor
@@ -57,7 +57,7 @@
 - Extending Laptop Guard
 - File reference
 - Architecture
-- test_first_run_regression.py
+- .__init__
 - Bug triage and fixing playbook
 - launch_warning
 - Security-preserving extension rules
@@ -103,7 +103,7 @@
 - test_repository_presentation.py
 - Runtime and security flows
 - pull_request_template.md
-- setup_wizard.py
+- AppConfig
 - AngysGuard brand assets
 - Codex project workspace
 - Future mode B — AngysGuard managed bot/service
@@ -140,7 +140,7 @@
 - Test instructions
 - Project AI skills
 - Laptop Guard AI instructions
-- notify
+- persian_speech.py
 - graphify-navigation/SKILL.md
 - issue-to-pr/SKILL.md
 - product-roadmap-maintenance/SKILL.md
@@ -168,13 +168,12 @@
 - tauri.conf.json
 - Target self-hosted setup
 - models.py
-- tests_manual.py
+- Indicator
 - main.ts
 - test_runtime_recovery.py
-- AppConfig
-- write_runtime_diagnostic
-- test_cli.py
-- .__init__
+- bounded_callback_int
+- ._reply_to_chat
+- LaptopGuard
 - RoutedCommand
 - compilerOptions
 - laptop_guard/service.py
@@ -187,32 +186,29 @@
 - WakeOnLanGateway
 - DeviceCommandAgent
 - AngysGuard Platform v2 Architecture Foundation
-- onboarding_window.py
 - features/__init__.py
 - Feature
 - Planned managed onboarding protocol
 - Models
 - Platform capability contract
 - .toggle_camera
-- Platform gateway boundary
 - load_config
 - angys_platform/__init__.py
 - DemoFeature
 - test_root_entrypoint.py
-- .camera_enabled
 - app/__init__.py
 
 ## God Nodes (most connected - your core abstractions)
-1. `AppConfig` - 110 edges
+1. `AppConfig` - 113 edges
 2. `LaptopGuard` - 97 edges
 3. `HttpBotProvider` - 56 edges
-4. `load_config()` - 39 edges
+4. `load_config()` - 42 edges
 5. `IdentityService` - 38 edges
 6. `write_runtime_diagnostic()` - 35 edges
 7. `collect_checks()` - 28 edges
 8. `FeatureManager` - 28 edges
 9. `GatewayRouter` - 27 edges
-10. `CommandServer` - 26 edges
+10. `save_config()` - 27 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `test_oversized_owner_voice_is_rejected_before_download()` --uses--> `LaptopGuard`  [INFERRED]
@@ -223,37 +219,37 @@
   tests/test_persian_tts.py → laptop_guard/models.py
 - `test_keyboard_encoding()` --uses--> `HttpBotProvider`  [INFERRED]
   tests/test_provider_keyboard.py → laptop_guard/providers/http_bot.py
-- `test_menu_disarm_requires_confirmation()` --calls--> `run_main_menu()`  [EXTRACTED]
-  tests/test_cli.py → laptop_guard/cli.py
+- `test_onboarding_command_selects_provider_without_opening_window()` --calls--> `build_parser()`  [EXTRACTED]
+  tests/test_onboarding_window.py → laptop_guard/cli.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (241 total, 52 thin omitted)
+## Communities (237 total, 52 thin omitted)
 
 ### Community 0 - "ScreenCaptureManager"
 Cohesion: 0.19
 Nodes (7): Path, Backward-compatible facade for older diagnostics/tests., ScreenCapture, ScreenCaptureManager, test_screen_manager_reports_backend_string(), test_parse_gnome_dbus_failure_is_empty(), test_parse_gnome_dbus_path()
 
-### Community 1 - "LaptopGuard"
-Cohesion: 0.11
-Nodes (6): inline_keyboard(), LaptopGuard, menu(), Any, Create one short-lived, action-bound power confirmation. Callback payloads are…, Consume a valid pending confirmation, failing closed otherwise.
+### Community 1 - "._handle_callback"
+Cohesion: 0.14
+Nodes (3): inline_keyboard(), Any, Create one short-lived, action-bound power confirmation. Callback payloads are…
 
 ### Community 2 - "FeatureManager"
 Cohesion: 0.18
 Nodes (9): CallbackHandler, CommandHandler, FeatureConflictError, FeatureManager, ValueError, Owns deterministic command/callback routes and feature lifecycle., test_duplicate_command_is_rejected(), test_failed_feature_install_rolls_back_partial_routes() (+1 more)
 
 ### Community 3 - "PersianSpeechManager"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (13): normalize_voice(), package_available(), PersianSpeechManager, synthesize(), Serialized Persian text-to-speech playback for owner messages. The third-party…, _SpeechJob, SpeechResult, test_invalid_voice_falls_back() (+5 more)
 
 ### Community 4 - "ChatWindow"
-Cohesion: 0.06
-Nodes (31): Direction, DirectionMode, _append(), _atomic_text(), Path, Visible local chat. Only text entered in its reply box is transmitted., # IMPORTANT: send/store logical Unicode, never visual/reversed text., SecurityChatManager (+23 more)
+Cohesion: 0.05
+Nodes (37): Direction, DirectionMode, _append(), _atomic_text(), Path, Visible local chat. Only text entered in its reply box is transmitted., # IMPORTANT: send/store logical Unicode, never visual/reversed text., SecurityChatManager (+29 more)
 
 ### Community 5 - "CameraMonitor"
 Cohesion: 0.06
-Nodes (33): CameraMonitor, CameraController, CameraDevice, close_camera(), _decode_c_string(), discover_cameras(), _linux_capability(), open_camera() (+25 more)
+Nodes (34): CameraMonitor, camera_label(), CameraController, CameraDevice, close_camera(), _decode_c_string(), discover_cameras(), _linux_capability() (+26 more)
 
 ### Community 6 - "HttpBotProvider"
 Cohesion: 0.17
@@ -264,12 +260,12 @@ Cohesion: 0.15
 Nodes (9): GuardRuntimeState, Live facade over the shared persisted runtime state. Assignments are…, Path, RuntimeState, RuntimeStateStore, test_guard_state_observes_external_cli_changes(), test_guard_state_persists_assignments(), Path (+1 more)
 
 ### Community 8 - "guard.py"
-Cohesion: 0.22
-Nodes (15): bounded_callback_int(), main(), Parse an integer callback suffix without letting malformed input crash polling., _format_duration(), _human_bytes(), lock_screen(), poweroff_system(), Best-effort owner-requested session unlock. Windows intentionally returns… (+7 more)
+Cohesion: 0.32
+Nodes (11): main(), _format_duration(), _human_bytes(), lock_screen(), poweroff_system(), Best-effort owner-requested session unlock. Windows intentionally returns…, reboot_system(), _run_first() (+3 more)
 
 ### Community 9 - "Full system audit"
 Cohesion: 0.09
-Nodes (20): Bot webhooks, Managed test deployment — `api.mahakaram.ir`, Operator release gate, Runflare Python PaaS, Server setup, What is deployed, Authorization and bot handling, Communications and media (+12 more)
+Nodes (21): Bot webhooks, Linux desktop local-protection flow, Managed test deployment — `api.mahakaram.ir`, Operator release gate, Runflare Python PaaS, Server setup, What is deployed, Authorization and bot handling (+13 more)
 
 ### Community 10 - "EventStore"
 Cohesion: 0.13
@@ -284,16 +280,16 @@ Cohesion: 0.09
 Nodes (23): 10. Input monitoring, 11. Screenshots and screen recording, 12. Lock and protected stop, 13. Service and autostart, 14. Offline queue and reconnect, 15. Update and rollback, 16. Sanitized diagnostics for bug reports, 17. Versioning and changelog rules (+15 more)
 
 ### Community 13 - "runtime_config.py"
-Cohesion: 0.21
-Nodes (18): default_api_base(), build_provider(), _ask_valid_token(), _auth_error(), ensure_runtime_configuration(), _interactive(), _pair_owner_chat(), _provider() (+10 more)
+Cohesion: 0.26
+Nodes (16): default_api_base(), _ask_valid_token(), _auth_error(), ensure_runtime_configuration(), _interactive(), _pair_owner_chat(), _provider(), _provider_name() (+8 more)
 
 ### Community 14 - "ProviderConnectionError"
-Cohesion: 0.15
-Nodes (17): check_bot_connectivity_detailed(), Return token-safe connectivity status plus a stable failure category., ProviderAuthError, ProviderConnectionError, ProviderResponseError, The remote provider rejected the configured credential., The provider could not be reached because of network/proxy/TLS transport., The provider returned an unexpected HTTP/API response. (+9 more)
+Cohesion: 0.14
+Nodes (17): ProviderAuthError, ProviderConnectionError, ProviderResponseError, The remote provider rejected the configured credential., The provider could not be reached because of network/proxy/TLS transport., The provider returned an unexpected HTTP/API response., test_bot_connectivity_distinguishes_network_failure_from_bad_token(), get_me() (+9 more)
 
 ### Community 15 - "RuntimeApi"
-Cohesion: 0.12
-Nodes (11): build_runtime_api(), LocalRuntimeApi, Any, Path, Protocol, Transport contract consumed by the guard runtime., No-network runtime adapter for local-only installations., RuntimeApi (+3 more)
+Cohesion: 0.14
+Nodes (7): LocalRuntimeApi, Any, Path, Protocol, Transport contract consumed by the guard runtime., No-network runtime adapter for local-only installations., RuntimeApi
 
 ### Community 16 - "InputMonitor"
 Cohesion: 0.17
@@ -308,8 +304,8 @@ Cohesion: 0.23
 Nodes (6): collect_health(), HealthMonitor, HealthSnapshot, _temperature(), HealthConfig, test_health_snapshot_is_non_throwing()
 
 ### Community 19 - "config.py"
-Cohesion: 0.12
-Nodes (39): _atomic_write_private(), _bot_token_key(), ensure_dirs(), get_api_token(), get_bot_token(), get_legacy_bot_token(), import_legacy_env_secrets(), _legacy_bot_tokens_from() (+31 more)
+Cohesion: 0.09
+Nodes (48): _apply_section(), _atomic_write_private(), _bot_token_key(), _coerce_like(), ensure_dirs(), get_bot_token(), get_bot_tokens(), get_legacy_bot_token() (+40 more)
 
 ### Community 20 - "AngysGuard"
 Cohesion: 0.05
@@ -327,9 +323,9 @@ Nodes (6): Capture and privacy, Protected termination, Remote controls, Residual
 Cohesion: 0.32
 Nodes (4): AppManager, DesktopApp, Conservative GUI application manager. It uses .desktop entries rather than…, test_app_manager_respects_allowlist()
 
-### Community 24 - "runtime_recovery.py"
-Cohesion: 0.21
-Nodes (16): cmd_run(), get_bot_tokens(), Return all provider/legacy bot secrets for redaction only., _capability_guidance(), configuration_recovery(), guidance_for_exception(), GuidedRuntimeError, is_provider_auth_error() (+8 more)
+### Community 24 - "write_runtime_diagnostic"
+Cohesion: 0.19
+Nodes (19): cmd_run(), get_api_token(), _capability_guidance(), configuration_recovery(), guidance_for_exception(), GuidedRuntimeError, is_provider_auth_error(), _known_secrets() (+11 more)
 
 ### Community 25 - ".start"
 Cohesion: 0.20
@@ -375,17 +371,17 @@ Nodes (13): Camera, input, screen, audio, and UI, Codex / AI workspace, Document
 Cohesion: 0.09
 Nodes (23): Application layer, Architectural goal, Architecture, Architecture review checklist, Compatibility layers, Composition root, Concurrency model, Current runtime (+15 more)
 
-### Community 43 - "test_first_run_regression.py"
-Cohesion: 0.16
-Nodes (8): _configure_provider(), Path, _QuietConsole, _redirect_config_paths(), test_first_run_local_setup_completes_with_private_persistence(), prompt_ask(), test_owner_pairing_ignores_stale_updates_and_requires_pair_code(), test_provider_setup_uses_fake_validation_without_network_or_token_output()
+### Community 43 - ".__init__"
+Cohesion: 0.13
+Nodes (10): load_setup_progress(), Return completed setup section ids without exposing configuration secrets., Path, _QuietConsole, _redirect_config_paths(), test_first_run_local_setup_completes_with_private_persistence(), prompt_ask(), test_owner_pairing_ignores_stale_updates_and_requires_pair_code() (+2 more)
 
 ### Community 44 - "Bug triage and fixing playbook"
 Cohesion: 0.10
 Nodes (21): 10. AI-agent workflows for finding and fixing bugs, 11. Verification after the fix, 12. Bug-fix completion checklist, 1. Start with evidence, not code changes, 2. Map the symptom with Graphify before broad searching, 3. Classify the failure, 4. Reproduce the smallest failing case, 5. Use canonical docs only after navigation is narrowed (+13 more)
 
 ### Community 45 - "launch_warning"
-Cohesion: 0.16
-Nodes (12): countdown_lock(), _build_player_command(), dismiss_warning(), launch_warning(), main(), _notification_fallback(), _notify(), play_warning_video() (+4 more)
+Cohesion: 0.33
+Nodes (11): _build_player_command(), dismiss_warning(), launch_warning(), main(), _notification_fallback(), _notify(), play_warning_video(), Path (+3 more)
 
 ### Community 69 - "Feature lifecycle: add, change, fix, and remove features"
 Cohesion: 0.10
@@ -417,7 +413,7 @@ Nodes (14): Architecture boundaries and dependency rules, Architecture exception
 
 ### Community 76 - "Unreleased"
 Cohesion: 0.07
-Nodes (28): 11.1.0 — 2026-09-12, AI-assisted engineering, AngysGuard brand system, AngysGuard product/platform planning, Architecture baseline, Audio security and communication, Bale / Telegram transport parity, Changelog (+20 more)
+Nodes (29): 11.1.0 — 2026-09-12, AI-assisted engineering, AngysGuard brand system, AngysGuard product/platform planning, Architecture baseline, Audio security and communication, Bale / Telegram transport parity, Changelog (+21 more)
 
 ### Community 78 - "Prompt index"
 Cohesion: 0.14
@@ -440,12 +436,12 @@ Cohesion: 0.15
 Nodes (13): Android companion app — issue #35, Android protected-device mode — issue #36, AngysGuard platform support and targets, Cross-platform architecture rule, Current Linux requirements, Current operating-system support, Future desktop/mobile targets, GNOME X11 and Wayland support (+5 more)
 
 ### Community 83 - "AngysGuard / Laptop Guard AI / Codex instructions"
-Cohesion: 0.17
-Nodes (12): AngysGuard / Laptop Guard AI / Codex instructions, Available project agents, Available project skills, Command-output hygiene, Completion standard, Graphify-first navigation — mandatory default, Mission, Read only what the task needs (+4 more)
+Cohesion: 0.11
+Nodes (15): AI agent compatibility note, AngysGuard / Laptop Guard AI / Codex instructions, Available project agents, Available project skills, Command-output hygiene, Completion standard, Graphify-first navigation — mandatory default, Mission (+7 more)
 
 ### Community 84 - "Graphify-first repository navigation"
-Cohesion: 0.11
-Nodes (15): AI agent compatibility note, Laptop Guard agent instructions, 1. Check graph availability and freshness, 2. Query before reading files, 3. Confirm with authoritative files, AI workflow, Graphify-first repository navigation, Human workflow (+7 more)
+Cohesion: 0.17
+Nodes (12): 1. Check graph availability and freshness, 2. Query before reading files, 3. Confirm with authoritative files, AI workflow, Graphify-first repository navigation, Human workflow, Maintenance rule, Security and privacy (+4 more)
 
 ### Community 85 - "AngysGuard / Laptop Guard documentation"
 Cohesion: 0.18
@@ -459,9 +455,9 @@ Nodes (9): Configuration change while running, Event and owner delivery, Evidenc
 Cohesion: 0.20
 Nodes (9): Discovery / scope, Manual checks, Platform / control-mode impact, Related work, Repository presentation, Risk / rollback, Summary, Type of change (+1 more)
 
-### Community 89 - "setup_wizard.py"
-Cohesion: 0.15
-Nodes (31): load_setup_progress(), Return completed setup section ids without exposing configuration secrets., _checkpoint(), _choose_camera(), _choose_section(), _configure_audio(), _configure_camera(), _configure_communication() (+23 more)
+### Community 89 - "AppConfig"
+Cohesion: 0.08
+Nodes (56): check_bot_connectivity_detailed(), Return token-safe connectivity status plus a stable failure category., AppConfig, _check_provider_token(), _checkpoint(), _choose_camera(), _choose_section(), _configure_apps_api() (+48 more)
 
 ### Community 90 - "AngysGuard brand assets"
 Cohesion: 0.22
@@ -513,7 +509,7 @@ Nodes (6): AngysGuard repository rename and GitHub Projects runbook, Canonical r
 
 ### Community 102 - "doctor.py"
 Cohesion: 0.06
-Nodes (55): Category, _audio_player_ok(), _autostart_ok(), _bot_connectivity(), _camera_ok(), _check(), check_bot_connectivity(), collect_checks() (+47 more)
+Nodes (53): Category, _audio_player_ok(), _autostart_ok(), _bot_connectivity(), _camera_ok(), _check(), check_bot_connectivity(), collect_checks() (+45 more)
 
 ### Community 103 - "Laptop Guard v11.1.0"
 Cohesion: 0.29
@@ -599,9 +595,9 @@ Nodes (61): BaseModel, Depends, FastAPI, get, Header, Runflare-compatible root A
 Cohesion: 0.50
 Nodes (3): Find tests with Graphify first, Test instructions, Test rules
 
-### Community 128 - "notify"
-Cohesion: 0.13
-Nodes (11): Indicator, main(), AudioIntercom, worker(), notify(), play_audio(), Path, Visible near-live voice intercom. Bale Bot API transports voice/audio messages… (+3 more)
+### Community 128 - "persian_speech.py"
+Cohesion: 0.23
+Nodes (8): AudioIntercom, worker(), notify(), play_audio(), Path, Visible near-live voice intercom. Bale Bot API transports voice/audio messages…, record_audio(), worker()
 
 ### Community 186 - "parse_failed_login"
 Cohesion: 0.29
@@ -620,16 +616,16 @@ Cohesion: 0.55
 Nodes (11): _prepare_install_tree(), CompletedProcess, Path, _run(), test_failed_replacement_restores_previous_venv(), test_fresh_supported_install_ends_with_setup_and_doctor(), test_installer_is_safe_to_run_twice_with_existing_matching_venv(), test_missing_venv_reports_exact_ubuntu_package_and_mirror_help() (+3 more)
 
 ### Community 190 - "cli.py"
-Cohesion: 0.19
-Nodes (24): _autostart_menu(), build_parser(), cmd_arm(), cmd_autostart(), cmd_config(), cmd_disarm(), cmd_doctor(), cmd_events() (+16 more)
+Cohesion: 0.09
+Nodes (46): _autostart_menu(), build_parser(), cmd_autostart(), cmd_config(), cmd_desktop_setup(), cmd_desktop_status(), cmd_disarm(), cmd_doctor() (+38 more)
 
 ### Community 191 - "http_bot.py"
 Cohesion: 0.16
 Nodes (14): get_provider_profile(), ProviderProfile, Documented transport differences for a Telegram-style provider., CaptureClient, parametrize, Path, test_bale_reply_uses_reply_to_message_id(), test_get_updates_has_bounded_long_poll_contract() (+6 more)
 
 ### Community 192 - "lib.rs"
-Cohesion: 0.19
-Nodes (24): Arc, Client, AgentState, apply_command(), credential_entry(), EnrolledDevice, KEYRING_ACCOUNT, KEYRING_SERVICE (+16 more)
+Cohesion: 0.16
+Nodes (30): Arc, Client, AgentState, apply_command(), credential_entry(), EnrolledDevice, KEYRING_ACCOUNT, KEYRING_SERVICE (+22 more)
 
 ### Community 193 - "CommandServer"
 Cohesion: 0.10
@@ -664,36 +660,28 @@ Cohesion: 0.50
 Nodes (4): Future mode A — self-hosted Bale/Telegram bot, Pairing-code requirements, Target self-hosted setup, Where the token belongs
 
 ### Community 205 - "models.py"
-Cohesion: 0.13
-Nodes (13): ApiConfig, AppsConfig, ChatConfig, CommunicationConfig, MonitorConfig, ScreenConfig, StartupConfig, TTSConfig (+5 more)
-
-### Community 206 - "tests_manual.py"
-Cohesion: 0.27
-Nodes (10): camera_label(), cmd_test(), lock_screen(), run_first(), unlock_screen(), test_camera(), test_input(), test_lock() (+2 more)
+Cohesion: 0.09
+Nodes (21): ApiConfig, AppsConfig, ChatConfig, CommunicationConfig, MonitorConfig, ScreenConfig, StartupConfig, TTSConfig (+13 more)
 
 ### Community 207 - "main.ts"
-Cohesion: 0.08
-Nodes (35): dependencies, @tauri-apps/api, @tauri-apps/plugin-autostart, @tauri-apps/plugin-opener, devDependencies, @tauri-apps/cli, typescript, vite (+27 more)
+Cohesion: 0.07
+Nodes (37): dependencies, @tauri-apps/api, @tauri-apps/plugin-autostart, @tauri-apps/plugin-opener, devDependencies, @tauri-apps/cli, typescript, vite (+29 more)
 
 ### Community 208 - "test_runtime_recovery.py"
-Cohesion: 0.20
-Nodes (7): _minimal_runtime_config(), test_camera_preflight_returns_direct_recovery_actions(), test_cli_configuration_failure_prints_provider_recovery_without_secret(), test_cli_unexpected_defect_is_logged_not_dumped(), test_diagnostic_log_redacts_known_tokens_and_bot_urls(), test_permission_failure_identifies_input_capability(), test_provider_auth_recovery_is_guided_and_secret_free()
+Cohesion: 0.15
+Nodes (9): _minimal_runtime_config(), test_camera_preflight_returns_direct_recovery_actions(), test_cli_configuration_failure_prints_provider_recovery_without_secret(), test_cli_unexpected_defect_is_logged_not_dumped(), test_diagnostic_log_redacts_known_tokens_and_bot_urls(), test_manual_bot_failure_is_guided_without_token(), test_permission_failure_identifies_input_capability(), test_provider_auth_recovery_is_guided_and_secret_free() (+1 more)
 
-### Community 209 - "AppConfig"
-Cohesion: 0.11
-Nodes (23): AppConfig, _check_provider_token(), _ensure_provider_token(), test_chat_defaults_to_two_minutes_and_allows_visitor_reply(), test_default_warning_sequence_is_five_seconds(), test_protected_stop_defaults(), _fake_handlers(), test_ambiguous_legacy_token_is_not_auto_tried_against_telegram() (+15 more)
+### Community 209 - "bounded_callback_int"
+Cohesion: 0.60
+Nodes (4): bounded_callback_int(), Parse an integer callback suffix without letting malformed input crash polling., test_callback_integer_is_bounded(), test_malformed_callback_integer_uses_default()
 
-### Community 210 - "write_runtime_diagnostic"
-Cohesion: 0.18
-Nodes (5): worker(), worker(), worker(), Append a sanitized diagnostic record without exposing stored credentials., write_runtime_diagnostic()
+### Community 210 - "._reply_to_chat"
+Cohesion: 0.16
+Nodes (7): worker(), worker(), worker(), worker(), menu(), worker(), worker()
 
-### Community 211 - "test_cli.py"
-Cohesion: 0.18
-Nodes (12): cmd_lock(), _interactive_terminal(), main(), test_all_cli_subcommands_parse_to_callable_handlers(), test_explicit_cli_subcommand_remains_backward_compatible(), test_interactive_no_argument_launch_uses_menu(), test_lock_command_reports_failure(), test_lock_command_reports_success() (+4 more)
-
-### Community 212 - ".__init__"
-Cohesion: 0.19
-Nodes (4): worker(), worker(), Path, Keep one camera worker alive and open the device only while enabled.
+### Community 212 - "LaptopGuard"
+Cohesion: 0.09
+Nodes (6): LaptopGuard, countdown_lock(), Path, Consume a valid pending confirmation, failing closed otherwise., True when camera use is enabled at runtime., Keep one camera worker alive and open the device only while enabled.
 
 ### Community 213 - "RoutedCommand"
 Cohesion: 0.14
@@ -704,8 +692,8 @@ Cohesion: 0.14
 Nodes (13): compilerOptions, allowImportingTsExtensions, isolatedModules, lib, module, moduleDetection, moduleResolution, noEmit (+5 more)
 
 ### Community 215 - "laptop_guard/service.py"
-Cohesion: 0.18
-Nodes (17): cmd_service(), install_service(), logs_service(), Enable/disable startup at graphical user login. Laptop Guard needs the user's…, set_autostart(), status_service(), uninstall_service(), test_enabling_for_next_login_does_not_start_immediately() (+9 more)
+Cohesion: 0.15
+Nodes (22): cmd_service(), install_service(), logs_service(), Enable/disable startup at graphical user login. Laptop Guard needs the user's…, Start the already-installed user service without changing autostart., Stop the user service without deleting the owner's configuration., set_autostart(), start_service() (+14 more)
 
 ### Community 216 - "default.json"
 Cohesion: 0.33
@@ -732,12 +720,8 @@ Cohesion: 0.20
 Nodes (6): CommandTransport, DeviceCommandAgent, Protocol, Verify signed commands and dispatch only the finite local action set., Device-side loop; local handlers own policy/confirmation and OS effects., Enrolled-device command consumer boundary.
 
 ### Community 224 - "AngysGuard Platform v2 Architecture Foundation"
-Cohesion: 0.17
-Nodes (12): AngysGuard Platform v2 Architecture Foundation, Configuration Engine, Core platform boundaries, Data ownership, Goal, Identity service, Migration strategy, Remote Bot Gateway (+4 more)
-
-### Community 225 - "onboarding_window.py"
-Cohesion: 0.36
-Nodes (6): onboarding_steps(), RTL Persian native onboarding guide for non-technical owners., Show a local informational screen; setup still owns all secret entry., show_onboarding(), test_onboarding_command_selects_provider_without_opening_window(), test_persian_onboarding_steps_explain_id_and_one_time_pairing()
+Cohesion: 0.11
+Nodes (16): Implemented routing boundary, Not yet shipped, Platform gateway boundary, Wake-on-LAN power-on slice, AngysGuard Platform v2 Architecture Foundation, Configuration Engine, Core platform boundaries, Data ownership (+8 more)
 
 ### Community 227 - "Feature"
 Cohesion: 0.29
@@ -759,27 +743,23 @@ Nodes (5): Application-owned ports, Initial platform matrix, Migration order, Pl
 Cohesion: 0.33
 Nodes (3): Allow the camera worker to open/reopen the webcam., Disable camera use and wait briefly for VideoCapture to be released., Toggle the camera and return the new enabled state.
 
-### Community 232 - "Platform gateway boundary"
-Cohesion: 0.33
-Nodes (4): Implemented routing boundary, Not yet shipped, Platform gateway boundary, Wake-on-LAN power-on slice
-
 ### Community 233 - "load_config"
-Cohesion: 0.10
-Nodes (22): _apply_legacy_env(), _apply_section(), _coerce_like(), load_config(), _migrate(), Any, Persist non-secret configuration to config.toml. Bot/API secrets deliberately…, One-way compatibility for users launching with exported old variables. The… (+14 more)
+Cohesion: 0.11
+Nodes (21): cmd_arm(), _apply_legacy_env(), load_config(), One-way compatibility for users launching with exported old variables. The…, setup_is_complete(), configure_managed_local_profile(), desktop_onboarding_status(), DesktopOnboardingError (+13 more)
 
 ## Knowledge Gaps
-- **677 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+672 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1165 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **680 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+675 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1177 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **52 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppConfig` connect `AppConfig` to `PersianSpeechManager`, `doctor.py`, `load_config`, `test_first_run_regression.py`, `models.py`, `ProviderConnectionError`, `RuntimeApi`, `runtime_config.py`, `test_remote_power_confirmations.py`, `test_runtime_recovery.py`, `config.py`, `.__init__`, `laptop_guard/service.py`, `runtime_recovery.py`, `setup_wizard.py`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
-- **Why does `LaptopGuard` connect `LaptopGuard` to `notify`, `ScreenCaptureManager`, `PersianSpeechManager`, `ChatWindow`, `RuntimeStateStore`, `guard.py`, `EventStore`, `SoundDetectionMonitor`, `runtime_config.py`, `RuntimeApi`, `InputMonitor`, `test_remote_power_confirmations.py`, `runtime_recovery.py`, `launch_warning`, `cli.py`, `write_runtime_diagnostic`, `.__init__`, `doctor.py`, `.toggle_camera`, `.camera_enabled`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
-- **Why does `HttpBotProvider` connect `HttpBotProvider` to `BotProvider`, `ProviderError`, `runtime_config.py`, `ProviderConnectionError`, `RuntimeApi`, `http_bot.py`?**
+- **Why does `HttpBotProvider` connect `HttpBotProvider` to `BotProvider`, `ProviderError`, `models.py`, `ProviderConnectionError`, `http_bot.py`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
+- **Why does `AppConfig` connect `AppConfig` to `PersianSpeechManager`, `doctor.py`, `load_config`, `.__init__`, `models.py`, `runtime_config.py`, `ProviderConnectionError`, `test_runtime_recovery.py`, `test_remote_power_confirmations.py`, `config.py`, `laptop_guard/service.py`, `write_runtime_diagnostic`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Why does `LaptopGuard` connect `LaptopGuard` to `persian_speech.py`, `._handle_callback`, `ScreenCaptureManager`, `PersianSpeechManager`, `ChatWindow`, `RuntimeStateStore`, `guard.py`, `EventStore`, `SoundDetectionMonitor`, `runtime_config.py`, `RuntimeApi`, `InputMonitor`, `test_remote_power_confirmations.py`, `write_runtime_diagnostic`, `.__init__`, `cli.py`, `._reply_to_chat`, `doctor.py`, `.toggle_camera`?**
   _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Are the 48 inferred relationships involving `AppConfig` (e.g. with `_apply_legacy_env()` and `_migrate()`) actually correct?**
   _`AppConfig` has 48 INFERRED edges - model-reasoned connections that need verification._
@@ -788,4 +768,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 9 inferred relationships involving `HttpBotProvider` (e.g. with `ProviderAuthError` and `ProviderConnectionError`) actually correct?**
   _`HttpBotProvider` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _677 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _680 weakly-connected nodes found - possible documentation gaps or missing edges._
