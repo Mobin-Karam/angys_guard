@@ -73,7 +73,7 @@ See [CHANGELOG.md](CHANGELOG.md) for shipped changes. Future plans are in [docs/
 | **Ubuntu Desktop 24.04 LTS (amd64)** | **v12.0 primary qualification target** | **Yes, with validated feature set** | Clean-machine X11/Wayland qualification is defined in the release checklist; `doctor` must be READY for enabled features. |
 | Ubuntu 22.04 / 26.04 LTS | Best effort / candidate | Maybe | 22.04 defaults below the Python minimum; 26.04 defaults beyond the current Python 3.11–3.13 release matrix. |
 | Other Linux distributions / Ubuntu flavors | Best effort | Maybe | Core Python code may work, but packages/service/desktop/capture behavior need separate validation. |
-| Windows | Planned | **No supported release yet** | Native Windows agent/app tracked by #33 and #34. |
+| Windows | Planned / managed-test source | **No supported release yet** | A limited Tauri source implementation exists for the managed test; native Windows service/security capability completion, signed installer validation, and Windows 10/11 target testing remain required (#33, #34). |
 | Android companion | Planned | **No app yet** | Planned controller for enrolled AngysGuard Linux/Windows devices (#35). |
 | Android protected-device agent | Research | No | Separate feasibility work because Android restrictions differ from desktop OSes (#36). |
 | macOS / iOS / ChromeOS / BSD / others | Not targeted yet | No | Users may request support through the Platform / OS request issue form. |

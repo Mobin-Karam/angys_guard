@@ -1,0 +1,27 @@
+[package]
+name = "angysguard-desktop"
+version = "0.1.0"
+description = "AngysGuard desktop enrollment agent"
+edition = "2021"
+
+[lib]
+name = "angysguard_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.5.1", features = [] }
+tauri-plugin-opener = "2.2.6"
+tauri-plugin-autostart = "2.5.1"
+keyring = "3.6.2"
+reqwest = { version = "0.12.15", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.44", features = ["time", "process"] }
+
+[target.'cfg(windows)'.dependencies]
+# Raw Win32 binding keeps the lock action narrow and avoids pulling a second
+# high-level Windows projection family into Tauri's dependency graph.
+windows-sys = { version = "0.59.0", features = ["Win32_UI_WindowsAndMessaging"] }

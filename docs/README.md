@@ -15,6 +15,7 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | Compare Bale vs Telegram Bot API behavior | [Provider behavior](PROVIDERS.md) |
 | Request another operating system/platform | [Platform support](PLATFORM_SUPPORT.md#request-support-for-another-os) + Platform / OS request issue form |
 | Install/use current Linux release | [Root README quick start](../README.md#quick-start--linux-today) |
+| Deploy the limited Windows managed test | [Managed test deployment](managed-test/DEPLOYMENT.md) |
 | Navigate files/symbols/callers/tests with minimal context | [Graphify navigation](GRAPHIFY_NAVIGATION.md) |
 | Understand architecture | [Architecture](ARCHITECTURE.md) |
 | See current source-level architecture evidence | [System audit](SYSTEM_AUDIT.md) |
@@ -60,6 +61,11 @@ The long-term AngysGuard roadmap adds:
 - passwordless device-scoped authorization/local privilege (#39);
 - multi-device account/dashboard (#40);
 - provider parity/capability guidance (#41).
+
+The repository now contains an **unqualified Windows managed-test implementation**
+under `desktop/windows-tauri/` plus `server/`. It remains a test-only source
+implementation until its Windows installer, real Windows 10/11 behavior, reverse
+proxy, and live Bale/Telegram flow are validated. See the deployment guide above.
 
 Future items are **not current support claims**.
 

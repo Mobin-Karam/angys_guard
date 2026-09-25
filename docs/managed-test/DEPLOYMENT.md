@@ -1,0 +1,100 @@
+# Managed test deployment — `api.mahakaram.ir`
+
+This is the controlled **10-user test** deployment for the Tauri v2 desktop
+agent. The same source builds Windows installers and a Linux `.deb`/AppImage
+desktop client. Both interfaces are Persian-first RTL with an English toggle.
+This is not a production support claim and must remain behind HTTPS.
+
+On Linux, the desktop client delegates its three existing protection actions
+only to the fixed local commands `laptop-guard status`, `laptop-guard arm`, and
+`laptop-guard disarm`. The current desktop bundle does **not** yet include that
+Python/Linux runtime. A single-install Linux release therefore remains a release
+gate: package and target-device validate the local runtime as a signed/bundled
+sidecar before distributing it to users.
+
+## What is deployed
+
+`docker-compose.managed-test.yml` starts a small account/enrollment/action-queue
+service on loopback port `8080`. Put it behind the existing TLS reverse proxy for
+`https://api.mahakaram.ir`; proxy only that hostname to `127.0.0.1:8080`.
+
+The service stores:
+
+- salted, high-work-factor AngysGuard account-password verifiers;
+- revocable **hashes** of device credentials;
+- short-lived, one-use device and bot link codes;
+- linked bot chat IDs and bounded command audit results.
+
+It never requests, stores, or transmits a protected Windows password.
+Account creation and sign-in are bounded to ten attempts per source address every
+15 minutes for this single-process test deployment; keep reverse-proxy rate
+limiting enabled as a separate protection.
+
+## Server setup
+
+1. Copy `.env.managed-test.example` to an untracked `.env.managed-test` beside
+   `docker-compose.managed-test.yml`.
+2. Set a unique random `ANGYSGUARD_SERVER_SECRET` (at least 32 characters) using
+   your server secret manager. Do not send it in chat or commit it.
+3. Configure TLS for `api.mahakaram.ir` and force HTTP-to-HTTPS redirect at the
+   proxy. Install [the Nginx rate-limit zone](nginx-http-rate-limit.conf) once
+   in the `http` context, then add [the location policy](nginx-api.mahakaram.ir.conf)
+   to the hostname's HTTPS server block. The Docker port intentionally binds to
+   loopback only.
+4. Run `docker compose -f docker-compose.managed-test.yml up -d --build`.
+5. Confirm `https://api.mahakaram.ir/healthz` returns `{"status":"ok"}`.
+
+Back up the named Docker volume before making server changes. A backup contains
+account/password verifier data and device metadata; treat it as confidential.
+
+## Bot webhooks
+
+For each enabled provider, set a distinct high-entropy webhook secret in the
+server secret manager, plus that provider's bot token. Never put tokens in the
+desktop installer, desktop app, repository, or user instructions.
+
+Configure the provider to POST updates to one of:
+
+```text
+https://api.mahakaram.ir/v1/bots/telegram/updates
+https://api.mahakaram.ir/v1/bots/bale/updates
+```
+
+Telegram must use its `secret_token` webhook feature so it sends the configured
+value in `X-Telegram-Bot-Api-Secret-Token`. Bale must be configured to send the
+same provider-specific secret in `X-AngysGuard-Bot-Secret`, or an equivalent
+gateway must translate and authenticate its webhook before forwarding it.
+
+After the HTTPS health check works, register Telegram from the server environment:
+
+```bash
+python server/scripts/configure_telegram_webhook.py
+```
+
+Create the Telegram bot with BotFather and the Bale bot through Bale's official
+bot-management flow first. This repository intentionally cannot create provider
+accounts or invent provider tokens. The supplied registration helper never prints
+the token.
+
+The current test bot accepts only `/link CODE`, `/devices`, `/status`, `/arm`,
+`/disarm`, and `/lock`. One chat is tied to one account. During the initial test
+release, bot commands require exactly one enrolled active device; multi-device
+selection deliberately fails closed. After the device completes a fixed action,
+the server sends its bounded result back to the same linked chat.
+
+## Operator release gate
+
+Do not create a `windows-v*` tag until all of these pass:
+
+- real install/uninstall and upgrade on Windows 10 and Windows 11;
+- real install/uninstall and desktop-session lock testing on supported Ubuntu
+  X11 and Wayland sessions;
+- enrollment and credential storage/revocation on each OS;
+- a live Telegram and Bale webhook/link/command test;
+- remote lock is visibly locally enabled and locks only the enrolled session;
+- independent review of reverse-proxy TLS, backups, logs, rate limits, and
+  provider token handling.
+
+The `windows-v*` tag starts GitHub Actions, which packages NSIS `.exe` and MSI
+installers and attaches them as a **prerelease**. Configure Windows code signing
+in GitHub Actions before presenting the download to test users.
