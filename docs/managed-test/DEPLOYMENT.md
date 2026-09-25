@@ -178,11 +178,14 @@ Do not create a `linux-v*` tag until all of these pass:
   provider token handling.
 
 The `linux-v*` tag starts the Linux packaging workflow and creates a GitHub
-**prerelease** with `.deb`, AppImage and `SHA256SUMS` assets. Checksums detect
-accidental corruption; they are not a substitute for a configured artifact
-signature. Do not promote that prerelease or direct test users to install it
-until the required signing key and signing workflow are configured and the
-clean-device validation is recorded.
+**prerelease** with `.deb`, AppImage and `SHA256SUMS` assets. GitHub Actions
+also creates Sigstore-signed build-provenance attestations for the two binary
+types; after downloading an asset, verify it with
+`gh attestation verify --owner Mobin-Karam PATH-TO-ASSET`. Checksums detect
+accidental corruption and the attestation proves the GitHub workflow built the
+asset; neither substitutes for clean-device validation or a future distro-level
+package-signing decision. Do not promote the prerelease until that validation
+is recorded.
 
 Do not create a `windows-v*` tag until all of these pass:
 
