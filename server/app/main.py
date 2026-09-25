@@ -8,6 +8,7 @@ whether its locally enabled capability permits the requested action.
 from __future__ import annotations
 
 import os
+import sqlite3
 import threading
 import time
 import uuid
@@ -20,7 +21,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field
 
-from .db import connection, initialize
+from .db import connection, initialize, purge_expired_records
 from .security import (
     hash_password,
     issue_token,
@@ -38,6 +39,9 @@ COMMAND_LIFETIME_SECONDS = 120
 BOT_CONFIRMATION_LIFETIME_SECONDS = 30
 AUTH_WINDOW_SECONDS = 900
 AUTH_ATTEMPT_LIMIT = 10
+COMMAND_AUDIT_RETENTION_DEFAULT_SECONDS = 30 * 24 * 60 * 60
+COMMAND_AUDIT_RETENTION_MIN_SECONDS = 24 * 60 * 60
+COMMAND_AUDIT_RETENTION_MAX_SECONDS = 90 * 24 * 60 * 60
 _auth_attempts: dict[str, list[int]] = {}
 _auth_attempts_lock = threading.Lock()
 
@@ -50,12 +54,24 @@ class Settings:
     telegram_webhook_secret: str | None
     bale_token: str | None
     bale_webhook_secret: str | None
+    command_audit_retention_seconds: int
 
     @classmethod
     def from_environment(cls) -> "Settings":
         secret = os.environ.get("ANGYSGUARD_SERVER_SECRET", "")
         if len(secret) < 32:
             raise RuntimeError("ANGYSGUARD_SERVER_SECRET must be at least 32 characters")
+        try:
+            command_audit_retention_seconds = int(
+                os.environ.get(
+                    "ANGYSGUARD_COMMAND_AUDIT_RETENTION_SECONDS",
+                    str(COMMAND_AUDIT_RETENTION_DEFAULT_SECONDS),
+                )
+            )
+        except ValueError as error:
+            raise RuntimeError("ANGYSGUARD_COMMAND_AUDIT_RETENTION_SECONDS must be an integer") from error
+        if not COMMAND_AUDIT_RETENTION_MIN_SECONDS <= command_audit_retention_seconds <= COMMAND_AUDIT_RETENTION_MAX_SECONDS:
+            raise RuntimeError("ANGYSGUARD_COMMAND_AUDIT_RETENTION_SECONDS must be between 1 and 90 days")
         return cls(
             # A relative directory is writable on common Python PaaS services.
             # Production still needs an explicitly configured persistent path.
@@ -65,6 +81,7 @@ class Settings:
             telegram_webhook_secret=os.environ.get("ANGYSGUARD_TELEGRAM_WEBHOOK_SECRET"),
             bale_token=os.environ.get("ANGYSGUARD_BALE_BOT_TOKEN"),
             bale_webhook_secret=os.environ.get("ANGYSGUARD_BALE_WEBHOOK_SECRET"),
+            command_audit_retention_seconds=command_audit_retention_seconds,
         )
 
 
@@ -80,6 +97,11 @@ async def lifespan(_: FastAPI):
     try:
         candidate = Settings.from_environment()
         initialize(candidate.database_path)
+        purge_expired_records(
+            candidate.database_path,
+            timestamp=now(),
+            command_audit_retention_seconds=candidate.command_audit_retention_seconds,
+        )
         settings = candidate
     except (OSError, RuntimeError):
         # Keep the process available for the PaaS health check. Readiness and
@@ -115,6 +137,14 @@ async def bound_request_size(request: Request, call_next):
 def require_settings() -> Settings:
     if settings is None:
         raise HTTPException(status_code=503, detail=startup_problem or "service is starting")
+    try:
+        purge_expired_records(
+            settings.database_path,
+            timestamp=now(),
+            command_audit_retention_seconds=settings.command_audit_retention_seconds,
+        )
+    except (OSError, sqlite3.Error):
+        raise HTTPException(status_code=503, detail="configuration or storage is unavailable") from None
     return settings
 
 
@@ -163,7 +193,7 @@ class PairStartRequest(BaseModel):
 
 
 class PairClaimRequest(BaseModel):
-    pairing_code: str = Field(min_length=9, max_length=16)
+    pairing_code: str = Field(min_length=24, max_length=24)
 
 
 class DeviceResponse(BaseModel):
@@ -285,7 +315,7 @@ def start_pairing(payload: PairStartRequest, account_id: Annotated[str, Depends(
     code = new_pairing_code()
     expires_at = now() + PAIRING_LIFETIME_SECONDS
     with connection(configuration.database_path) as db:
-        db.execute("INSERT INTO pairing_codes(code, account_id, purpose, device_name, expires_at) VALUES (?, ?, 'device', ?, ?)", (code, account_id, payload.device_name, expires_at))
+        db.execute("INSERT INTO pairing_codes(code_hash, account_id, purpose, device_name, expires_at) VALUES (?, ?, 'device', ?, ?)", (token_digest(code), account_id, payload.device_name, expires_at))
     return {"pairing_code": code, "expires_at": expires_at}
 
 
@@ -293,12 +323,13 @@ def start_pairing(payload: PairStartRequest, account_id: Annotated[str, Depends(
 def claim_device(payload: PairClaimRequest, account_id: Annotated[str, Depends(current_account)]) -> DeviceResponse:
     configuration = require_settings()
     with connection(configuration.database_path) as db:
-        pending = db.execute("SELECT account_id, device_name, expires_at, consumed_at FROM pairing_codes WHERE code = ? AND purpose = 'device'", (payload.pairing_code.upper(),)).fetchone()
+        code_hash = token_digest(payload.pairing_code.upper())
+        pending = db.execute("SELECT account_id, device_name, expires_at, consumed_at FROM pairing_codes WHERE code_hash = ? AND purpose = 'device'", (code_hash,)).fetchone()
         if not pending or pending["account_id"] != account_id or pending["consumed_at"] or pending["expires_at"] < now():
             raise HTTPException(status_code=400, detail="pairing code is invalid, expired, or already used")
         device_id, device_token = str(uuid.uuid4()), new_opaque_token()
         db.execute("INSERT INTO devices(id, account_id, name, credential_hash, created_at) VALUES (?, ?, ?, ?, ?)", (device_id, account_id, pending["device_name"], token_digest(device_token), now()))
-        db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code = ?", (now(), payload.pairing_code.upper()))
+        db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code_hash = ?", (now(), code_hash))
     return DeviceResponse(device_id=device_id, device_token=device_token, account_id=account_id)
 
 
@@ -421,12 +452,13 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
     argument = parts[1].strip().upper() if len(parts) == 2 else ""
     if command == "/link" and argument:
         with connection(configuration.database_path) as db:
-            code = db.execute("SELECT account_id, expires_at, consumed_at FROM pairing_codes WHERE code = ? AND purpose = 'bot'", (argument,)).fetchone()
+            code_hash = token_digest(argument)
+            code = db.execute("SELECT account_id, expires_at, consumed_at FROM pairing_codes WHERE code_hash = ? AND purpose = 'bot'", (code_hash,)).fetchone()
             if not code or code["consumed_at"] or code["expires_at"] < now():
                 await respond(provider, payload.chat_id, "Pairing code is invalid or expired.")
                 return {"status": "ignored"}
             db.execute("INSERT OR REPLACE INTO bot_chats(provider, chat_id, account_id, created_at) VALUES (?, ?, ?, ?)", (provider, payload.chat_id, code["account_id"], now()))
-            db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code = ?", (now(), argument))
+            db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code_hash = ?", (now(), code_hash))
         await respond(provider, payload.chat_id, "Bot linked. Use /devices, /use DEVICE-ID, /status, /arm, /disarm, /lock, /events, or /revoke.")
         return {"status": "linked"}
     with connection(configuration.database_path) as db:
@@ -582,5 +614,5 @@ def start_bot_pairing(account_id: Annotated[str, Depends(current_account)]) -> d
     configuration = require_settings()
     code, expires_at = new_pairing_code(), now() + PAIRING_LIFETIME_SECONDS
     with connection(configuration.database_path) as db:
-        db.execute("INSERT INTO pairing_codes(code, account_id, purpose, expires_at) VALUES (?, ?, 'bot', ?)", (code, account_id, expires_at))
+        db.execute("INSERT INTO pairing_codes(code_hash, account_id, purpose, expires_at) VALUES (?, ?, 'bot', ?)", (token_digest(code), account_id, expires_at))
     return {"pairing_code": code, "expires_at": expires_at}

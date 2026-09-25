@@ -107,9 +107,9 @@ def sign_device_command(
 
 
 def new_pairing_code() -> str:
-    # Deliberately short enough to enter in a bot, but only useful for 10 minutes
-    # and always bound to a pending account action.
-    return "-".join((secrets.token_hex(2), secrets.token_hex(2))).upper()
+    # 80 random bits remain practical to enter in a bot, and make a stored
+    # digest infeasible to guess during the ten-minute one-use lifetime.
+    return "-".join(secrets.token_hex(2) for _ in range(5)).upper()
 
 
 def issue_token(subject: str, secret: str, *, lifetime_seconds: int = 900) -> str:

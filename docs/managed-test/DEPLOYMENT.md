@@ -26,6 +26,9 @@ The service stores:
 - short-lived, one-use device and bot link codes;
 - linked bot chat IDs and bounded command audit results.
 
+The pilot's exact data handling, retention window, token-rotation response and
+operator recovery steps are in [Privacy and incident response](PRIVACY_AND_INCIDENT_RESPONSE.md).
+
 Each queued fixed action includes a short-lived HMAC-SHA256 envelope over the
 device ID, account ID, action, request ID and expiry. Its unique key is derived
 from the enrolled device credential: the server stores only that credential's

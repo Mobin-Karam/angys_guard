@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS devices (
   revoked_at INTEGER, last_seen_at INTEGER
 );
 CREATE TABLE IF NOT EXISTS pairing_codes (
-  code TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  code_hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
   purpose TEXT NOT NULL, device_name TEXT, expires_at INTEGER NOT NULL, consumed_at INTEGER
 );
 CREATE TABLE IF NOT EXISTS bot_chats (
@@ -43,6 +43,13 @@ CREATE TABLE IF NOT EXISTS commands (
 CREATE INDEX IF NOT EXISTS commands_pending_by_device ON commands(device_id, completed_at, expires_at);
 """
 
+PAIRING_CODES_SCHEMA = """
+CREATE TABLE pairing_codes (
+  code_hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  purpose TEXT NOT NULL, device_name TEXT, expires_at INTEGER NOT NULL, consumed_at INTEGER
+)
+"""
+
 
 def initialize(path: str) -> None:
     target = Path(path)
@@ -62,9 +69,37 @@ def initialize(path: str) -> None:
             connection.execute("ALTER TABLE commands ADD COLUMN issued_at INTEGER")
         if "signature" not in columns:
             connection.execute("ALTER TABLE commands ADD COLUMN signature TEXT")
+        pairing_columns = {row[1] for row in connection.execute("PRAGMA table_info(pairing_codes)")}
+        if "code_hash" not in pairing_columns:
+            # Pending pre-hash codes cannot be safely migrated: retaining their
+            # cleartext would preserve the secret this migration removes.
+            connection.execute("DROP TABLE pairing_codes")
+            connection.execute(PAIRING_CODES_SCHEMA)
         chat_columns = {row[1] for row in connection.execute("PRAGMA table_info(bot_chats)")}
         if "selected_device_id" not in chat_columns:
             connection.execute("ALTER TABLE bot_chats ADD COLUMN selected_device_id TEXT")
+
+
+def purge_expired_records(path: str, *, timestamp: int, command_audit_retention_seconds: int) -> None:
+    """Delete expired pilot credentials and aged command diagnostics.
+
+    Command results can include local diagnostics supplied by the desktop agent.
+    They are intentionally retained only for the small pilot's bounded audit
+    window and are never returned verbatim through the bot.
+    """
+
+    cutoff = timestamp - command_audit_retention_seconds
+    with connection(path) as db:
+        db.execute("DELETE FROM pairing_codes WHERE expires_at < ?", (timestamp,))
+        db.execute("DELETE FROM bot_confirmations WHERE expires_at < ?", (timestamp,))
+        db.execute(
+            "DELETE FROM commands WHERE completed_at IS NOT NULL AND completed_at < ?",
+            (cutoff,),
+        )
+        db.execute(
+            "DELETE FROM commands WHERE completed_at IS NULL AND expires_at < ?",
+            (cutoff,),
+        )
 
 
 @contextmanager

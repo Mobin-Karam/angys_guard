@@ -1,12 +1,13 @@
 from server.app.security import (
     hash_password,
     issue_token,
+    new_pairing_code,
     sign_device_command,
     token_digest,
     verify_password,
     verify_token,
 )
-from server.app.main import redacted_command_state
+from server.app.main import Settings, redacted_command_state
 
 
 def test_password_verifier_rejects_short_password_and_wrong_password():
@@ -30,6 +31,13 @@ def test_sessions_are_signed_and_expire():
 def test_device_credentials_are_not_stored_in_cleartext():
     raw = "test-device-token"
     assert token_digest(raw) != raw
+
+
+def test_pairing_codes_have_80_bits_of_human_enterable_entropy():
+    code = new_pairing_code()
+    assert len(code) == 24
+    assert code.count("-") == 4
+    assert all(character in "0123456789ABCDEF-" for character in code)
 
 
 def test_device_command_signatures_bind_scope_and_expiry():
@@ -61,3 +69,16 @@ def test_command_audit_never_returns_raw_agent_diagnostics():
     assert redacted_command_state(completed) == "completed"
     assert redacted_command_state(denied) == "denied"
     assert redacted_command_state(failed) == "failed"
+
+
+def test_command_audit_retention_setting_is_bounded(monkeypatch):
+    monkeypatch.setenv("ANGYSGUARD_SERVER_SECRET", "x" * 32)
+    monkeypatch.setenv("ANGYSGUARD_COMMAND_AUDIT_RETENTION_SECONDS", "2592000")
+    assert Settings.from_environment().command_audit_retention_seconds == 2592000
+    monkeypatch.setenv("ANGYSGUARD_COMMAND_AUDIT_RETENTION_SECONDS", "86399")
+    try:
+        Settings.from_environment()
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("retention below one day must fail closed")
