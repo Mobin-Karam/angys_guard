@@ -153,11 +153,26 @@ bounded result back to the same linked chat.
 
 ## Operator release gate
 
+Do not create a `linux-v*` tag until all of these pass:
+
+- real install/uninstall and upgrade on supported Ubuntu X11 and Wayland
+  sessions;
+- the resulting `.deb` and AppImage checksum against the release `SHA256SUMS`;
+- enrollment, credential storage and revocation on the target device;
+- a live Telegram and Bale webhook/link/command test;
+- independent review of reverse-proxy TLS, backups, logs, rate limits, and
+  provider token handling.
+
+The `linux-v*` tag starts the Linux packaging workflow and creates a GitHub
+**prerelease** with `.deb`, AppImage and `SHA256SUMS` assets. Checksums detect
+accidental corruption; they are not a substitute for a configured artifact
+signature. Do not promote that prerelease or direct test users to install it
+until the required signing key and signing workflow are configured and the
+clean-device validation is recorded.
+
 Do not create a `windows-v*` tag until all of these pass:
 
 - real install/uninstall and upgrade on Windows 10 and Windows 11;
-- real install/uninstall and desktop-session lock testing on supported Ubuntu
-  X11 and Wayland sessions;
 - enrollment and credential storage/revocation on each OS;
 - a live Telegram and Bale webhook/link/command test;
 - remote lock is visibly locally enabled and locks only the enrolled session;
