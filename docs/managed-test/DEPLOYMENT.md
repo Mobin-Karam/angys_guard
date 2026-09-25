@@ -40,8 +40,10 @@ service still needs the planned asymmetric issuer/key-rotation design.
 
 It never requests, stores, or transmits a protected Windows password.
 Account creation and sign-in are bounded to ten attempts per source address every
-15 minutes for this single-process test deployment; keep reverse-proxy rate
-limiting enabled as a separate protection.
+15 minutes. Device/bot pairing issuance, claim and link attempts are likewise
+bounded to ten per account or bot chat every 15 minutes for this single-process
+test deployment; keep reverse-proxy rate limiting enabled as a separate
+protection.
 
 ## Server setup
 

@@ -7,7 +7,9 @@ from server.app.security import (
     verify_password,
     verify_token,
 )
-from server.app.main import Settings, redacted_command_state
+from fastapi import HTTPException
+
+from server.app.main import Settings, limit_pairing_attempts, redacted_command_state
 
 
 def test_password_verifier_rejects_short_password_and_wrong_password():
@@ -82,3 +84,16 @@ def test_command_audit_retention_setting_is_bounded(monkeypatch):
         pass
     else:
         raise AssertionError("retention below one day must fail closed")
+
+
+def test_pairing_attempts_are_rate_limited(monkeypatch):
+    monkeypatch.setattr("server.app.main.PAIRING_ATTEMPT_LIMIT", 2)
+    scope = "test-pairing-scope"
+    limit_pairing_attempts(scope)
+    limit_pairing_attempts(scope)
+    try:
+        limit_pairing_attempts(scope)
+    except HTTPException as error:
+        assert error.status_code == 429
+    else:
+        raise AssertionError("pairing attempts must be rate limited")

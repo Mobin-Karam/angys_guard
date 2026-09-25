@@ -22,6 +22,8 @@ def test_ci_has_single_release_gate_that_depends_on_full_matrix() -> None:
 
     assert "release-gate:" in text
     assert "name: Release gate" in text
-    assert "needs: test" in text
+    assert "needs: [test, desktop]" in text
     assert "needs.test.result" in text
+    assert "needs.desktop.result" in text
     assert 'test "$TEST_RESULT" = "success"' in text
+    assert 'test "$DESKTOP_RESULT" = "success"' in text

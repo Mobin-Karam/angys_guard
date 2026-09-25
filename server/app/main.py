@@ -39,11 +39,14 @@ COMMAND_LIFETIME_SECONDS = 120
 BOT_CONFIRMATION_LIFETIME_SECONDS = 30
 AUTH_WINDOW_SECONDS = 900
 AUTH_ATTEMPT_LIMIT = 10
+PAIRING_ATTEMPT_LIMIT = 10
 COMMAND_AUDIT_RETENTION_DEFAULT_SECONDS = 30 * 24 * 60 * 60
 COMMAND_AUDIT_RETENTION_MIN_SECONDS = 24 * 60 * 60
 COMMAND_AUDIT_RETENTION_MAX_SECONDS = 90 * 24 * 60 * 60
 _auth_attempts: dict[str, list[int]] = {}
 _auth_attempts_lock = threading.Lock()
+_pairing_attempts: dict[str, list[int]] = {}
+_pairing_attempts_lock = threading.Lock()
 
 
 @dataclass(frozen=True)
@@ -172,6 +175,19 @@ def limit_account_attempts(request: Request) -> None:
             raise HTTPException(status_code=429, detail="too many account attempts; try again later")
         attempts.append(now())
         _auth_attempts[client] = attempts
+
+
+def limit_pairing_attempts(scope: str) -> None:
+    """Bound pairing issuance/claim/link attempts for this pilot process."""
+
+    cutoff = now() - AUTH_WINDOW_SECONDS
+    with _pairing_attempts_lock:
+        attempts = [attempt for attempt in _pairing_attempts.get(scope, []) if attempt >= cutoff]
+        if len(attempts) >= PAIRING_ATTEMPT_LIMIT:
+            _pairing_attempts[scope] = attempts
+            raise HTTPException(status_code=429, detail="too many pairing attempts; try again later")
+        attempts.append(now())
+        _pairing_attempts[scope] = attempts
 
 
 class RegisterRequest(BaseModel):
@@ -312,6 +328,7 @@ def login(payload: LoginRequest, _: Annotated[None, Depends(limit_account_attemp
 @app.post("/v1/devices/pairing-codes")
 def start_pairing(payload: PairStartRequest, account_id: Annotated[str, Depends(current_account)]) -> dict[str, str | int]:
     configuration = require_settings()
+    limit_pairing_attempts(f"device-issue:{account_id}")
     code = new_pairing_code()
     expires_at = now() + PAIRING_LIFETIME_SECONDS
     with connection(configuration.database_path) as db:
@@ -322,6 +339,7 @@ def start_pairing(payload: PairStartRequest, account_id: Annotated[str, Depends(
 @app.post("/v1/devices/claim", response_model=DeviceResponse)
 def claim_device(payload: PairClaimRequest, account_id: Annotated[str, Depends(current_account)]) -> DeviceResponse:
     configuration = require_settings()
+    limit_pairing_attempts(f"device-claim:{account_id}")
     with connection(configuration.database_path) as db:
         code_hash = token_digest(payload.pairing_code.upper())
         pending = db.execute("SELECT account_id, device_name, expires_at, consumed_at FROM pairing_codes WHERE code_hash = ? AND purpose = 'device'", (code_hash,)).fetchone()
@@ -461,6 +479,7 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
     command = parts[0].lower().split("@", 1)[0]
     argument = parts[1].strip().upper() if len(parts) == 2 else ""
     if command == "/link" and argument:
+        limit_pairing_attempts(f"bot-link:{provider}:{payload.chat_id}")
         with connection(configuration.database_path) as db:
             code_hash = token_digest(argument)
             code = db.execute("SELECT account_id, expires_at, consumed_at FROM pairing_codes WHERE code_hash = ? AND purpose = 'bot'", (code_hash,)).fetchone()
@@ -622,6 +641,7 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
 @app.post("/v1/bot-pairing-codes")
 def start_bot_pairing(account_id: Annotated[str, Depends(current_account)]) -> dict[str, str | int]:
     configuration = require_settings()
+    limit_pairing_attempts(f"bot-issue:{account_id}")
     code, expires_at = new_pairing_code(), now() + PAIRING_LIFETIME_SECONDS
     with connection(configuration.database_path) as db:
         db.execute("INSERT INTO pairing_codes(code_hash, account_id, purpose, expires_at) VALUES (?, ?, 'bot', ?)", (token_digest(code), account_id, expires_at))
