@@ -49,13 +49,15 @@ account/password verifier data and device metadata; treat it as confidential.
 
 ### Runflare Python PaaS
 
-Deploy the `server/` directory, not the repository root. Runflare's required
-entrypoint is [server/main.py](../../server/main.py), which exposes the ASGI
-application as `app` and also starts correctly when Runflare runs `python
-main.py`. In the Runflare environment-variable dashboard, copy the variable
-names from [server/.env.example](../../server/.env.example) and set their
-values there; do not upload a populated `.env` file. Let Runflare set `PORT` if
-it provides one.
+Deploy from the repository root with `runflare deploy`. The root
+[main.py](../../main.py) is the provider entrypoint and exposes the same ASGI
+application as [server/main.py](../../server/main.py), so Runflare can either
+import `main:app` or execute `python main.py`. Root
+[requirements.txt](../../requirements.txt) includes the API runtime
+dependencies. In the Runflare environment-variable dashboard, copy the
+variable names from [server/.env.example](../../server/.env.example) and set
+their values there; do not upload a populated `.env` file. Let Runflare set
+`PORT` if it provides one.
 
 The server is the control plane, not the protected-device runtime. Do **not**
 install `laptop-guard` in Runflare: Laptop Guard must run locally in each
