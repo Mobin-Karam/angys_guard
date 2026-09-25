@@ -9,9 +9,14 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | Goal | Read first |
 |---|---|
 | Understand AngysGuard quickly | [Root README](../README.md) |
+| Understand Platform v2 multi-client architecture | [Platform v2 architecture foundation](PLATFORM_V2_ARCHITECTURE.md) |
 | See product direction and future apps | [AngysGuard product vision](ANGYSGUARD_PRODUCT_VISION.md) |
 | Know which OSes work today / are planned | [Platform support](PLATFORM_SUPPORT.md) |
+| Review the cross-platform capability contract | [Platform capabilities](PLATFORM_CAPABILITIES.md) |
 | Understand Bale, Telegram, self-hosted and managed control | [Control modes](CONTROL_MODES.md) |
+| Review the planned managed pairing/control contract | [Managed onboarding protocol](MANAGED_ONBOARDING_PROTOCOL.md) |
+| Review the implemented gateway authorization boundary and remaining work | [Platform gateway boundary](PLATFORM_GATEWAY.md) |
+| Review the implemented client command-verification boundary | [Platform client protocol](PLATFORM_CLIENT_PROTOCOL.md) |
 | Compare Bale vs Telegram Bot API behavior | [Provider behavior](PROVIDERS.md) |
 | Request another operating system/platform | [Platform support](PLATFORM_SUPPORT.md#request-support-for-another-os) + Platform / OS request issue form |
 | Install/use current Linux release | [Root README quick start](../README.md#quick-start--linux-today) |
@@ -37,11 +42,18 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | Configure GitHub repository settings | [GitHub setup](GITHUB_SETUP.md) |
 | Review release/migration history | [History](HISTORY.md) |
 
+## Platform v2 tracking
+
+Issue #62 is the architecture foundation milestone. Implementation is split into:
+
+- #63 Platform Accounts + Device Identity Service
+- #64 Remote Bot Gateway Service
+- #65 Unified Client Protocol
+- #66 Server Managed Configuration Profiles
+
+Each item has its own implementation PR and preserves compatibility with the current local Guard runtime during migration.
+
 ## Current vs future
-
-### Current product
-
-Today the product is Linux-first and includes the Python security agent, guided setup, doctor, CLI/service flows, camera/input/screen/audio/security features, event history and Bale/Telegram-style owner-control/provider paths.
 
 Use `PLATFORM_SUPPORT.md` before assuming a distro/session/provider is release-supported.
 

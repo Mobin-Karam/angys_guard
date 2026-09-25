@@ -150,12 +150,16 @@ def test_provider_setup_uses_fake_validation_without_network_or_token_output(
     assert FAKE_BOT_TOKEN not in "\n".join(console.lines)
 
 
-def test_owner_pairing_ignores_stale_start_and_accepts_new_mock_update() -> None:
+def test_owner_pairing_ignores_stale_updates_and_requires_pair_code(monkeypatch) -> None:
     console = _QuietConsole()
 
     class FakeBot:
         def __init__(self) -> None:
             self.calls: list[int | None] = []
+            self.sent: list[tuple[int, str]] = []
+
+        def send_message(self, chat_id, text):
+            self.sent.append((chat_id, text))
 
         def get_updates(self, offset=None, timeout=0):
             self.calls.append(offset)
@@ -164,7 +168,7 @@ def test_owner_pairing_ignores_stale_start_and_accepts_new_mock_update() -> None
                     {
                         "update_id": 10,
                         "message": {
-                            "text": "/start",
+                            "text": "/pair stale-code",
                             "chat": {"id": 111},
                         },
                     }
@@ -173,14 +177,19 @@ def test_owner_pairing_ignores_stale_start_and_accepts_new_mock_update() -> None
                 {
                     "update_id": 11,
                     "message": {
-                        "text": "/start",
+                        "text": "/id",
                         "chat": {"id": 222},
                     },
                 }
-            ]
+            ] if len(self.calls) == 2 else [{
+                "update_id": 12,
+                "message": {"text": "/pair fixed-code", "chat": {"id": 222}},
+            }]
 
     bot = FakeBot()
+    monkeypatch.setattr(setup_wizard.secrets, "token_urlsafe", lambda _: "fixed-code")
     chat_id = setup_wizard.pair_chat(bot, console, timeout_seconds=1)
 
     assert chat_id == 222
-    assert bot.calls == [None, 11]
+    assert bot.calls == [None, 11, 12]
+    assert bot.sent == [(222, "Your AngysGuard chat ID: 222")]

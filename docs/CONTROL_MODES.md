@@ -139,6 +139,24 @@ are complete.
 
 This mode is for users who do **not** want to create/maintain their own Bale or Telegram bot.
 
+## Selected official-bot direction
+
+AngysGuard's intended non-technical onboarding is the shared official-bot
+model: the user installs an OS agent, opens the official `@angysguardbot` on
+their selected provider, and pairs that specific device with a one-time code.
+The official bot/server owns its provider credentials; no device client asks a
+user to paste a Telegram/Bale bot token.
+
+```text
+Install AngysGuard agent -> display one-time pairing code
+       -> open official @angysguardbot -> sign in / identify account
+       -> submit pairing code -> device becomes a scoped bot target
+```
+
+This is the chosen architecture direction, not a statement that the official
+service is deployed. The current Linux local/self-hosted provider setup remains
+available until the managed path is implemented and validated.
+
 The planned service may provide official AngysGuard Bale/Telegram bots and future Android/Linux/Windows app surfaces.
 
 ## Target managed onboarding
@@ -160,6 +178,14 @@ Device enrolled with fixed AngysGuard capabilities
 ```
 
 The managed backend associates an AngysGuard account with an enrolled device using a **device-scoped credential**, not the user's computer password.
+
+### Planned power-on boundary
+
+An off device cannot receive a bot command. Power-on therefore requires an
+always-on, owner-authorized Wake-on-LAN gateway and an explicitly enrolled LAN
+target; it is not universal remote-power support. AngysGuard never sends the
+protected device's OS password through Bale, Telegram or the gateway to bypass
+that limitation.
 
 ## User account authentication
 
@@ -196,6 +222,12 @@ Examples of safer local privilege mechanisms include platform-native services, p
 If a future platform truly requires a local reusable secret, it should use the OS credential/keyring facility with explicit lifecycle/revocation rules—not a bot message or general environment variable.
 
 Issue #39 owns this architecture/security requirement.
+
+The planned protocol, data-minimization policy, command-integrity evaluation and
+implementation gates are defined in
+[Managed onboarding protocol](MANAGED_ONBOARDING_PROTOCOL.md). It is an
+architecture contract for future work, not a currently available managed
+service.
 
 ## Managed service security requirements
 

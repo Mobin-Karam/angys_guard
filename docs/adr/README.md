@@ -23,5 +23,5 @@ Proposed ADRs are not proof that a feature/platform is shipped. Runtime/product 
 - `0004-layered-modular-monolith.md` — **Proposed** — incremental modular-monolith / ports-and-adapters direction.
 - `0005-durable-owner-delivery.md` — **Proposed** — durable outbox-backed important owner delivery.
 - `0006-compatibility-facade-consolidation.md` — **Proposed** — converge duplicate/compatibility facades.
-- `0007-passwordless-device-pairing.md` — **Proposed** — remote pairing uses device-scoped credentials; protected-device OS passwords never cross bot/backend boundaries and local privilege remains platform-native.
+- `0007-passwordless-device-pairing.md` — **Accepted** — remote pairing uses device-scoped credentials; protected-device OS passwords never cross bot/backend boundaries and local privilege remains platform-native.
 - `0008-cross-platform-capability-adapters.md` — **Proposed** — define narrow platform capability ports/adapters before Windows/Android expansion.

@@ -22,6 +22,38 @@ The project uses semantic-style versioning where practical:
   `laptop-guard` commands. Windows and Linux desktop packages remain
   unqualified test builds until their platform-specific release gates pass.
 
+### Platform client protocol boundary
+
+- Added a device-scoped fixed-action envelope verifier with expiry, scope,
+  credential-generation, signature and durable replay checks.
+- This is a protocol primitive only; it does not ship a managed client,
+  transport, provider credentials, OS privilege, or cross-platform support.
+
+### Platform gateway authorization boundary
+
+- Added a server-only fixed-action gateway router with persisted Telegram/Bale
+  account links and active device-owner checks.
+- The router produces inert authorized command values only: it holds no bot
+  token, performs no OS operation, and provides no arbitrary command path.
+- Added a narrow Telegram/Bale update parser that rejects malformed or
+  ambiguous input before fixed-action routing.
+- Added gateway-to-device signed envelope handoff; device verification remains
+  mandatory before any local action.
+- Official bots, pairing proof/recovery, authenticated delivery, replies and
+  notification routing remain unshipped work for issue #64 and its dependencies.
+
+### Managed onboarding architecture
+
+- Defined the planned managed-service onboarding protocol: explicit pairing and revocation states, device-scoped credential generations, signed fixed-action envelopes, self-hosted separation, minimum data/retention rules, and implementation/privacy gates.
+- Evaluated command integrity options and require a device-verifiable signed request as the future managed baseline; end-to-end encrypted owner commands remain a separate design question.
+- This is planning only. No managed backend, official bot, device enrollment service, or managed evidence storage has been shipped.
+
+### Passwordless device authorization architecture
+
+- Accepted ADR 0007 as the security contract for future self-hosted and managed pairing: device-scoped credentials, explicit recovery/rotation/revocation, locally enforced fixed actions, and platform-native privilege boundaries.
+- Defined replay-safe high-risk action policy while preserving the hard boundary that protected-device OS passwords never cross a bot, provider, mobile client, managed service, or ordinary environment variable.
+- This is an architecture decision only; managed control, Wake-on-LAN relay, Windows support, and privileged local adapters remain separately tracked implementation work.
+
 ### Remote power-control hardening
 
 - Kept suspend, restart and shutdown opt-in and require an owner-authorized, action-bound, random single-use confirmation that expires after 30 seconds.
