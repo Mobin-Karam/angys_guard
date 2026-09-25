@@ -55,8 +55,12 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             assert client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json() == {"commands": []}
             completed = client.post("/v1/device/commands/complete", headers={"Authorization": f"Device {device['device_token']}"}, json={"command_id": queued[0]["id"], "result": "online"})
             assert completed.status_code == 200
-            reply.assert_awaited_with("telegram", "12345", "status: online")
+            reply.assert_awaited_with("telegram", "12345", "status: completed")
             assert client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json()["commands"][0]["action"] == "arm"
+            assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/events"}}).json() == {"status": "events"}
+            events = reply.await_args_list[-1].args[2]
+            assert "status: completed" in events and "arm: pending" in events
+            assert "online" not in events
             # A fixed allowlist is the remote-control boundary.
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/powershell whoami"}}).json() == {"status": "unsupported"}
             assert client.post(f"/v1/devices/{device['device_id']}/revoke", headers=bearer).json() == {"status": "revoked"}

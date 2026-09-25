@@ -144,9 +144,12 @@ accounts or invent provider tokens. The supplied registration helper never print
 the token.
 
 The current test bot accepts only `/link CODE`, `/devices`, `/use DEVICE-ID`,
-`/status`, `/arm`, `/disarm`, `/lock`, and `/revoke`. One chat is tied to one
-account. With multiple devices, `/devices` lists the account's short IDs and
-`/use DEVICE-ID` selects one; no action is queued until that selection is made.
+`/status`, `/arm`, `/disarm`, `/lock`, `/events`, and `/revoke`. One chat is
+tied to one account. With multiple devices, `/devices` lists the account's
+short IDs and `/use DEVICE-ID` selects one; no action is queued until that
+selection is made. `/events` shows at most ten recent fixed command outcomes
+for that selected device using only redacted state labels; it never returns raw
+agent diagnostics, captured media, paths, or secrets.
 `/revoke` requires a separate, single-use `/confirm-revoke CODE` reply within
 30 seconds. After the device completes a fixed action, the server sends its
 bounded result back to the same linked chat.

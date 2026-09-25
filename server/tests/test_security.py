@@ -6,6 +6,7 @@ from server.app.security import (
     verify_password,
     verify_token,
 )
+from server.app.main import redacted_command_state
 
 
 def test_password_verifier_rejects_short_password_and_wrong_password():
@@ -51,3 +52,12 @@ def test_device_command_signatures_bind_scope_and_expiry():
         issued_at=1_700_000_000,
         expires_at=1_700_000_060,
     )
+
+
+def test_command_audit_never_returns_raw_agent_diagnostics():
+    completed = {"completed_at": 1, "expires_at": 2, "result": "completed: /home/user/private-file"}
+    denied = {"completed_at": 1, "expires_at": 2, "result": "denied: local consent is absent"}
+    failed = {"completed_at": 1, "expires_at": 2, "result": "failed: token=secret"}
+    assert redacted_command_state(completed) == "completed"
+    assert redacted_command_state(denied) == "denied"
+    assert redacted_command_state(failed) == "failed"

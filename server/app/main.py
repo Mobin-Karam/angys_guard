@@ -213,6 +213,21 @@ def selected_or_only_device(db, *, account_id: str, provider: str, chat_id: str)
     return devices[0] if len(devices) == 1 else None
 
 
+def redacted_command_state(command) -> str:
+    """Return a small safe status label without exposing agent diagnostics."""
+
+    if command["completed_at"] is not None:
+        result = str(command["result"] or "")
+        if result == "online" or result.startswith("completed:"):
+            return "completed"
+        if result.startswith("denied:"):
+            return "denied"
+        return "failed"
+    if command["expires_at"] < now():
+        return "expired"
+    return "pending"
+
+
 @app.get("/healthz")
 def health() -> dict[str, str]:
     return {"status": "ok" if settings is not None else "degraded"}
@@ -355,7 +370,11 @@ async def complete_command(payload: CommandCompletion, device=Depends(device_fro
         changed = db.execute("UPDATE commands SET completed_at = ?, result = ? WHERE id = ? AND device_id = ? AND completed_at IS NULL", (now(), payload.result, payload.command_id, device["id"])).rowcount
     if command["origin_provider"] and command["origin_chat_id"]:
         try:
-            await respond(command["origin_provider"], command["origin_chat_id"], f"{command['action']}: {payload.result}")
+            await respond(
+                command["origin_provider"],
+                command["origin_chat_id"],
+                f"{command['action']}: {redacted_command_state({'completed_at': now(), 'expires_at': now(), 'result': payload.result})}",
+            )
         except httpx.HTTPError:
             # The action is already complete. A provider retry must not make the
             # device repeat it or turn this acknowledgement into a 5xx loop.
@@ -408,7 +427,7 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
                 return {"status": "ignored"}
             db.execute("INSERT OR REPLACE INTO bot_chats(provider, chat_id, account_id, created_at) VALUES (?, ?, ?, ?)", (provider, payload.chat_id, code["account_id"], now()))
             db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code = ?", (now(), argument))
-        await respond(provider, payload.chat_id, "Bot linked. Use /devices, /use DEVICE-ID, /status, /arm, /disarm, /lock, or /revoke.")
+        await respond(provider, payload.chat_id, "Bot linked. Use /devices, /use DEVICE-ID, /status, /arm, /disarm, /lock, /events, or /revoke.")
         return {"status": "linked"}
     with connection(configuration.database_path) as db:
         chat = db.execute("SELECT account_id FROM bot_chats WHERE provider = ? AND chat_id = ?", (provider, payload.chat_id)).fetchone()
@@ -433,6 +452,27 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
             ]
             await respond(provider, payload.chat_id, "Devices:\n" + "\n".join(lines) + "\nUse /use DEVICE-ID to select one.")
             return {"status": "listed"}
+        if command == "/events":
+            device = selected_or_only_device(
+                db,
+                account_id=chat["account_id"],
+                provider=provider,
+                chat_id=payload.chat_id,
+            )
+            if not device:
+                await respond(provider, payload.chat_id, "Select one device first with /devices then /use DEVICE-ID.")
+                return {"status": "ambiguous"}
+            recent = db.execute(
+                "SELECT action, expires_at, completed_at, result FROM commands "
+                "WHERE device_id = ? ORDER BY requested_at DESC LIMIT 10",
+                (device["id"],),
+            ).fetchall()
+            if not recent:
+                await respond(provider, payload.chat_id, f"No recent command events for {device['name']}.")
+                return {"status": "events"}
+            lines = [f"{row['action']}: {redacted_command_state(row)}" for row in recent]
+            await respond(provider, payload.chat_id, f"Recent command events for {device['name']}:\n" + "\n".join(lines))
+            return {"status": "events"}
         if command == "/use":
             if len(argument) != 8 or not all(character in "0123456789ABCDEF" for character in argument):
                 await respond(provider, payload.chat_id, "Use /use followed by the 8-character device ID shown by /devices.")
@@ -498,7 +538,7 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
             return {"status": "revoked"}
         action = command.removeprefix("/")
         if action not in ALLOWED_ACTIONS:
-            await respond(provider, payload.chat_id, "Allowed commands: /devices, /use, /status, /arm, /disarm, /lock, /revoke.")
+            await respond(provider, payload.chat_id, "Allowed commands: /devices, /use, /status, /arm, /disarm, /lock, /events, /revoke.")
             return {"status": "unsupported"}
         device = selected_or_only_device(
             db,
