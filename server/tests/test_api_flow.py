@@ -7,6 +7,15 @@ from fastapi.testclient import TestClient
 from server.app.main import app
 
 
+def test_missing_server_configuration_stays_alive_for_paas_diagnostics(monkeypatch):
+    monkeypatch.delenv("ANGYSGUARD_SERVER_SECRET", raising=False)
+    with TestClient(app) as client:
+        assert client.get("/healthz").json() == {"status": "degraded"}
+        ready = client.get("/readyz")
+        assert ready.status_code == 503
+        assert ready.json() == {"detail": "configuration or storage is unavailable"}
+
+
 def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
     with tempfile.TemporaryDirectory() as directory:
         reply = AsyncMock()

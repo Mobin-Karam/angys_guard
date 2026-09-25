@@ -55,7 +55,9 @@ class Settings:
         if len(secret) < 32:
             raise RuntimeError("ANGYSGUARD_SERVER_SECRET must be at least 32 characters")
         return cls(
-            database_path=os.environ.get("ANGYSGUARD_DATABASE_PATH", "/data/angysguard.db"),
+            # A relative directory is writable on common Python PaaS services.
+            # Production still needs an explicitly configured persistent path.
+            database_path=os.environ.get("ANGYSGUARD_DATABASE_PATH", "./data/angysguard.db"),
             jwt_secret=secret,
             telegram_token=os.environ.get("ANGYSGUARD_TELEGRAM_BOT_TOKEN"),
             telegram_webhook_secret=os.environ.get("ANGYSGUARD_TELEGRAM_WEBHOOK_SECRET"),
@@ -65,13 +67,23 @@ class Settings:
 
 
 settings: Settings | None = None
+startup_problem: str | None = None
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    global settings
-    settings = Settings.from_environment()
-    initialize(settings.database_path)
+    global settings, startup_problem
+    settings = None
+    startup_problem = None
+    try:
+        candidate = Settings.from_environment()
+        initialize(candidate.database_path)
+        settings = candidate
+    except (OSError, RuntimeError):
+        # Keep the process available for the PaaS health check. Readiness and
+        # authenticated routes fail closed until the operator fixes settings or
+        # writable persistent storage; no raw path/secret details are exposed.
+        startup_problem = "configuration or storage is unavailable"
     yield
 
 
@@ -100,7 +112,7 @@ async def bound_request_size(request: Request, call_next):
 
 def require_settings() -> Settings:
     if settings is None:
-        raise HTTPException(status_code=503, detail="service is starting")
+        raise HTTPException(status_code=503, detail=startup_problem or "service is starting")
     return settings
 
 
@@ -173,7 +185,7 @@ class BotUpdate(BaseModel):
 
 @app.get("/healthz")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok" if settings is not None else "degraded"}
 
 
 @app.get("/")

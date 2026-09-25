@@ -79,7 +79,9 @@ curl --fail-with-body https://api.mahakaram.ir/readyz
 They must return `{"status":"ok"}` and `{"status":"ready"}` before
 registering a webhook or enrolling a device. A provider `503 Loading` page means
 the application has not started or the domain is not attached to the running
-service yet.
+service yet. If `/healthz` returns `{"status":"degraded"}`, the process is
+running but `ANGYSGUARD_SERVER_SECRET` is missing/too short or the configured
+database directory is not writable.
 
 ## Bot webhooks
 
