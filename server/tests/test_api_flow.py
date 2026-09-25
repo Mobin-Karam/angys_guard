@@ -15,6 +15,9 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
         monkeypatch.setenv("ANGYSGUARD_DATABASE_PATH", os.path.join(directory, "guard.db"))
         monkeypatch.setenv("ANGYSGUARD_TELEGRAM_WEBHOOK_SECRET", "telegram-webhook-secret")
         with TestClient(app) as client:
+            assert client.get("/").json() == {"service": "AngysGuard managed test", "status": "ok", "health": "/healthz"}
+            assert client.get("/healthz").json() == {"status": "ok"}
+            assert client.get("/readyz").json() == {"status": "ready"}
             created = client.post("/v1/accounts", json={"email": "owner@example.com", "password": "a secure test password"})
             assert created.status_code == 201
             bearer = {"Authorization": f"Bearer {created.json()['access_token']}"}

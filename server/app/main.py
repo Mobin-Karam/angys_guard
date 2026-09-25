@@ -176,6 +176,24 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/")
+def service_index() -> dict[str, str]:
+    """Small public landing response; it reveals no account or device data."""
+    return {"service": "AngysGuard managed test", "status": "ok", "health": "/healthz"}
+
+
+@app.get("/readyz")
+def readiness() -> dict[str, str]:
+    """Confirm configuration and SQLite are usable without leaking details."""
+    configuration = require_settings()
+    try:
+        with connection(configuration.database_path) as db:
+            db.execute("SELECT 1").fetchone()
+    except Exception as error:
+        raise HTTPException(status_code=503, detail="service storage is unavailable") from error
+    return {"status": "ready"}
+
+
 @app.post("/v1/accounts", response_model=SessionResponse, status_code=201)
 def register(payload: RegisterRequest, _: Annotated[None, Depends(limit_account_attempts)]) -> SessionResponse:
     configuration = require_settings()

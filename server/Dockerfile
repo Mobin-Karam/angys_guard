@@ -7,4 +7,4 @@ COPY app ./app
 RUN useradd --system --uid 10001 angysguard && mkdir /data && chown angysguard:angysguard /data
 USER angysguard
 EXPOSE 8080
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]
+CMD ["python", "main.py"]

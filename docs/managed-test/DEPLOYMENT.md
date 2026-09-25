@@ -51,9 +51,11 @@ account/password verifier data and device metadata; treat it as confidential.
 
 Deploy the `server/` directory, not the repository root. Runflare's required
 entrypoint is [server/main.py](../../server/main.py), which exposes the ASGI
-application as `app`. In the Runflare environment-variable dashboard, copy the
-variable names from [server/.env.example](../../server/.env.example) and set
-their values there; do not upload a populated `.env` file.
+application as `app` and also starts correctly when Runflare runs `python
+main.py`. In the Runflare environment-variable dashboard, copy the variable
+names from [server/.env.example](../../server/.env.example) and set their
+values there; do not upload a populated `.env` file. Let Runflare set `PORT` if
+it provides one.
 
 The server is the control plane, not the protected-device runtime. Do **not**
 install `laptop-guard` in Runflare: Laptop Guard must run locally in each
@@ -71,11 +73,13 @@ After the provider reports the deployment as running, confirm:
 
 ```bash
 curl --fail-with-body https://api.mahakaram.ir/healthz
+curl --fail-with-body https://api.mahakaram.ir/readyz
 ```
 
-It must return `{"status":"ok"}` before registering a webhook or enrolling a
-device. A provider `503 Loading` page means the application has not started or
-the domain is not attached to the running service yet.
+They must return `{"status":"ok"}` and `{"status":"ready"}` before
+registering a webhook or enrolling a device. A provider `503 Loading` page means
+the application has not started or the domain is not attached to the running
+service yet.
 
 ## Bot webhooks
 
