@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1789922800.1680987,
-    "seen": 1789922846.3432834,
-    "ast_hash": "7916ceb19b3143185acf938eb617662b",
+    "mtime": 1790318993.3406022,
+    "seen": 1790319085.2771597,
+    "ast_hash": "633228818b9f8d53c288d10eaae236b3",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1272,9 +1272,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789816841.8776357,
-    "seen": 1789922474.926241,
-    "ast_hash": "a9dbfd791309134380b8eaa97d5c5d09",
+    "mtime": 1790318993.339602,
+    "seen": 1790319085.2771645,
+    "ast_hash": "c50a175fae0bfc23c8c3616cd9becc7f",
     "semantic_hash": ""
   },
   "SECURITY.md": {
@@ -1722,15 +1722,15 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/package.json": {
-    "mtime": 1790317196.1113365,
-    "seen": 1790317715.6874108,
-    "ast_hash": "1e844bac02cc4d2f2b6a6c350ae59335",
+    "mtime": 1790318640.570802,
+    "seen": 1790319085.2768486,
+    "ast_hash": "9081862cc549b51eefeac4f88d452215",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/Cargo.toml": {
-    "mtime": 1790317555.2861874,
-    "seen": 1790317715.687414,
-    "ast_hash": "e6301059768ec72c37ecc05e785b34d3",
+    "mtime": 1790318556.3481333,
+    "seen": 1790319085.276851,
+    "ast_hash": "67d66666984099da5efa4cec41207d72",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/build.rs": {
@@ -1740,27 +1740,27 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/src/lib.rs": {
-    "mtime": 1790317555.2861874,
-    "seen": 1790317715.6874201,
-    "ast_hash": "e5d1c8a04ac4077aa33ac17ddfba28d6",
+    "mtime": 1790318424.4590864,
+    "seen": 1790319085.2768567,
+    "ast_hash": "cd19ca9a78a337424debb8df4b63b6c5",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/src/main.rs": {
-    "mtime": 1790316366.9027545,
-    "seen": 1790317006.8181624,
-    "ast_hash": "185c28f73d70e529b2d8969f2f9efcac",
+    "mtime": 1790318596.9184554,
+    "seen": 1790319085.2768586,
+    "ast_hash": "bfcc8a40fe61a88c5a4c2f8156e3ba4e",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/tauri.conf.json": {
-    "mtime": 1790317555.2861874,
-    "seen": 1790317715.6874232,
-    "ast_hash": "9c13cdcb573041b92ae7f54832c4c2bb",
+    "mtime": 1790318424.4590864,
+    "seen": 1790319085.27686,
+    "ast_hash": "24b0b4ba97ee870175c5530ad2800742",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src/main.ts": {
-    "mtime": 1790317650.8249457,
-    "seen": 1790317715.6874247,
-    "ast_hash": "02b29a3906491fea56f2387e62c748eb",
+    "mtime": 1790318481.701541,
+    "seen": 1790319085.2768614,
+    "ast_hash": "4cc7e5c3294656dca1b732a87b5ba6bb",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/tsconfig.json": {
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "docs/managed-test/DEPLOYMENT.md": {
-    "mtime": 1790317700.9103434,
-    "seen": 1790317715.6877885,
-    "ast_hash": "11ca8f5be8670be746492e4dd159d192",
+    "mtime": 1790318556.3481333,
+    "seen": 1790319085.277263,
+    "ast_hash": "655cc52a1cdee1a410422cb8cf8dac91",
     "semantic_hash": ""
   },
   "server/requirements.txt": {
@@ -1857,6 +1857,12 @@
     "mtime": 1790317251.9397798,
     "seen": 1790317715.687519,
     "ast_hash": "5ded546bfa529673a681acd473e69709",
+    "semantic_hash": ""
+  },
+  "server/main.py": {
+    "mtime": 1790318084.8323908,
+    "seen": 1790319085.2769537,
+    "ast_hash": "9731535a17725d249d5b5b77c71a91a3",
     "semantic_hash": ""
   }
 }

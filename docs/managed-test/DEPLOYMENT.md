@@ -55,6 +55,12 @@ application as `app`. In the Runflare environment-variable dashboard, copy the
 variable names from [server/.env.example](../../server/.env.example) and set
 their values there; do not upload a populated `.env` file.
 
+The server is the control plane, not the protected-device runtime. Do **not**
+install `laptop-guard` in Runflare: Laptop Guard must run locally in each
+user's Linux desktop session, where it owns monitoring, visible warnings,
+device state, and local OS policy. The desktop app links that local runtime to
+the user's account and bot with the fixed action queue.
+
 `ANGYSGUARD_SERVER_SECRET` is required and must be a new random value of at
 least 32 characters. `ANGYSGUARD_DATABASE_PATH` must point to a Runflare
 **persistent** directory/volume. If Runflare does not provide persistent disk
