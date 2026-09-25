@@ -1728,9 +1728,9 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/Cargo.toml": {
-    "mtime": 1790319522.351834,
-    "seen": 1790330708.383137,
-    "ast_hash": "67d66666984099da5efa4cec41207d72",
+    "mtime": 1790336891.2906682,
+    "seen": 1790337198.8097763,
+    "ast_hash": "b2f466d9bbc90d7e14ecebc8cb417e2a",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/build.rs": {
@@ -1740,9 +1740,9 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/src/lib.rs": {
-    "mtime": 1790336557.6860201,
-    "seen": 1790336579.1606257,
-    "ast_hash": "636114f5ae31b701513f51fe71e5e777",
+    "mtime": 1790337149.538718,
+    "seen": 1790337198.809782,
+    "ast_hash": "773b673136800adf2c56ba9d436050cd",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src-tauri/src/main.rs": {
@@ -1758,9 +1758,9 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src/main.ts": {
-    "mtime": 1790335737.1445072,
-    "seen": 1790335902.501673,
-    "ast_hash": "25c4797fdff5a997034efdd57fdfb5e8",
+    "mtime": 1790336751.2515566,
+    "seen": 1790337198.8097885,
+    "ast_hash": "62cc55385424547cd6c2809465194619",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/tsconfig.json": {
@@ -1782,33 +1782,33 @@
     "semantic_hash": ""
   },
   "server/app/db.py": {
-    "mtime": 1790336015.3457155,
-    "seen": 1790336138.6296623,
-    "ast_hash": "b473cf2bc67f8c4187ecf758181ee741",
+    "mtime": 1790336735.2204294,
+    "seen": 1790337198.8099182,
+    "ast_hash": "fbb22e2d075178c665c767d014ef18ab",
     "semantic_hash": ""
   },
   "server/app/main.py": {
-    "mtime": 1790336015.348322,
-    "seen": 1790336138.6296637,
-    "ast_hash": "768a7137a68b05717c9a61c60f3a11d3",
+    "mtime": 1790336961.2502236,
+    "seen": 1790337198.8099217,
+    "ast_hash": "f9823601752d1b3d6125aad648ccb912",
     "semantic_hash": ""
   },
   "server/app/security.py": {
-    "mtime": 1790319522.3808012,
-    "seen": 1790330708.3832338,
-    "ast_hash": "89b9ac6e52eec26ddd60ee47ddc9e97c",
+    "mtime": 1790336735.2204294,
+    "seen": 1790337198.8099241,
+    "ast_hash": "8efe81b275871d3c09895d118f43fcbe",
     "semantic_hash": ""
   },
   "server/tests/test_api_flow.py": {
-    "mtime": 1790336069.072142,
-    "seen": 1790336138.629669,
-    "ast_hash": "652c5db92fb2fcb5b527795156b30e0f",
+    "mtime": 1790336935.0540156,
+    "seen": 1790337198.809931,
+    "ast_hash": "a72a04ab07c18bc9d14d3b2337d10cd5",
     "semantic_hash": ""
   },
   "server/tests/test_security.py": {
-    "mtime": 1790319522.3832376,
-    "seen": 1790330708.3832393,
-    "ast_hash": "77cb915e15d22a0b9243a07843d9d3b0",
+    "mtime": 1790337175.5699246,
+    "seen": 1790337198.8099346,
+    "ast_hash": "da39ef76fd5b362d56fe5b09f1b91ac5",
     "semantic_hash": ""
   },
   ".github/workflows/windows-release.yml": {
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "docs/managed-test/DEPLOYMENT.md": {
-    "mtime": 1790336361.8484657,
-    "seen": 1790336579.160949,
-    "ast_hash": "b6e01d2157f7fa91bee87becbbe4b574",
+    "mtime": 1790336942.9600785,
+    "seen": 1790337198.8102293,
+    "ast_hash": "9f8602864f45fe1f934059532d8b6515",
     "semantic_hash": ""
   },
   "server/requirements.txt": {
