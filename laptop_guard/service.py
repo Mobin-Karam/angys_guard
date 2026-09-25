@@ -67,6 +67,24 @@ def install_service(*, start_now: bool = True) -> bool:
     return reload_result.returncode == 0 and enable_result.returncode == 0
 
 
+def start_service() -> bool:
+    """Start the already-installed user service without changing autostart."""
+    if not SERVICE_PATH.exists():
+        return False
+    return subprocess.run(
+        ["systemctl", "--user", "start", "laptop-guard.service"],
+        check=False,
+    ).returncode == 0
+
+
+def stop_service() -> bool:
+    """Stop the user service without deleting the owner's configuration."""
+    return subprocess.run(
+        ["systemctl", "--user", "stop", "laptop-guard.service"],
+        check=False,
+    ).returncode == 0
+
+
 def uninstall_service() -> bool:
     disable_result = subprocess.run(["systemctl", "--user", "disable", "--now", "laptop-guard.service"], check=False)
     SERVICE_PATH.unlink(missing_ok=True)

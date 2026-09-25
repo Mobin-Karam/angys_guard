@@ -133,3 +133,22 @@ def test_uninstall_service_removes_unit_and_reloads_systemd(
         ["systemctl", "--user", "disable", "--now", "laptop-guard.service"],
         ["systemctl", "--user", "daemon-reload"],
     ]
+
+
+def test_start_and_stop_service_use_fixed_systemctl_actions(tmp_path: Path, monkeypatch) -> None:
+    service_path = tmp_path / "laptop-guard.service"
+    service_path.write_text("[Service]\n", encoding="utf-8")
+    calls: list[list[str]] = []
+    monkeypatch.setattr(service, "SERVICE_PATH", service_path)
+    monkeypatch.setattr(
+        service.subprocess,
+        "run",
+        lambda command, **_kwargs: calls.append(list(command)) or _Result(0),
+    )
+
+    assert service.start_service() is True
+    assert service.stop_service() is True
+    assert calls == [
+        ["systemctl", "--user", "start", "laptop-guard.service"],
+        ["systemctl", "--user", "stop", "laptop-guard.service"],
+    ]

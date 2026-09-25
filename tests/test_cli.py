@@ -106,7 +106,11 @@ def test_all_cli_subcommands_parse_to_callable_handlers():
         ["health"],
         ["test", "camera"],
         ["service", "status"],
+        ["service", "start"],
+        ["service", "stop"],
         ["autostart", "status"],
+        ["desktop-setup", "--device-name", "Linux Desktop", "--consent"],
+        ["desktop-status"],
     ]
 
     for argv in commands:

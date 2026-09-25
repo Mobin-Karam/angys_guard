@@ -10,6 +10,14 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Managed desktop test path
+
+- Added a consent-required Linux desktop preparation flow for the managed-test
+  Tauri client. It creates a restricted local Laptop Guard profile and starts a
+  user service without enabling capture, broad app control, remote unlock or
+  remote power. This is source/test functionality, not a supported Linux
+  desktop release or Windows support claim.
+
 ### Managed desktop test foundation
 
 - Added a Persian-first Tauri v2 desktop enrollment client and an optional

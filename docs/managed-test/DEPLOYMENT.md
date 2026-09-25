@@ -65,6 +65,25 @@ user's Linux desktop session, where it owns monitoring, visible warnings,
 device state, and local OS policy. The desktop app links that local runtime to
 the user's account and bot with the fixed action queue.
 
+### Linux desktop local-protection flow
+
+The shared Tauri desktop source includes a **managed-test** Linux flow after a
+user enrolls the device: they explicitly accept the local privacy notice, press
+**Start local protection**, and the app invokes only fixed local commands to
+create a `bot.provider = "local"` Laptop Guard profile and start its systemd
+user service. That first-run profile deliberately leaves camera, microphone
+sound detection, screenshots/screen recording, application control, remote
+unlock and remote power disabled. Those capabilities can only be enabled later
+through local Laptop Guard configuration and its existing consent/Doctor flow.
+
+The Tauri app continues to poll the managed fixed-action queue while it is
+running; the Laptop Guard user service keeps local protection running after
+desktop login. The desktop app currently requires a locally installed
+`laptop-guard` executable. It is not yet a claim that the `.deb`/AppImage
+bundles that runtime or that Linux desktop installation is release-qualified.
+The app must show this prerequisite clearly until a bundled/runtime-provisioned
+Linux artifact has passed clean-device validation.
+
 `ANGYSGUARD_SERVER_SECRET` is required and must be a new random value of at
 least 32 characters. `ANGYSGUARD_DATABASE_PATH` must point to a Runflare
 **persistent** directory/volume. If Runflare does not provide persistent disk

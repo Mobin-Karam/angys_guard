@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import time
 from types import SimpleNamespace
@@ -33,6 +34,30 @@ def cmd_onboarding(args):
     from .onboarding_window import show_onboarding
 
     show_onboarding(getattr(args, "provider", "telegram"))
+    return 0
+
+
+def cmd_desktop_setup(args):
+    """Configure the safe managed desktop profile without terminal prompts."""
+    from .desktop_onboarding import DesktopOnboardingError, configure_managed_local_profile
+
+    try:
+        status = configure_managed_local_profile(
+            device_name=args.device_name,
+            consent=bool(args.consent),
+        )
+    except DesktopOnboardingError as error:
+        console.print(f"[red]{error}[/red]")
+        return 2
+    console.print(json.dumps(status.__dict__, ensure_ascii=False))
+    return 0
+
+
+def cmd_desktop_status(_):
+    """Print non-secret local setup state for the desktop application."""
+    from .desktop_onboarding import desktop_onboarding_status
+
+    console.print(json.dumps(desktop_onboarding_status().__dict__, ensure_ascii=False))
     return 0
 
 
@@ -161,8 +186,15 @@ def cmd_test(args):
 
 
 def cmd_service(args):
-    from .service import install_service, logs_service, status_service, uninstall_service
-    ok = {"install": install_service, "uninstall": uninstall_service, "status": status_service, "logs": logs_service}[args.action]()
+    from .service import install_service, logs_service, start_service, status_service, stop_service, uninstall_service
+    ok = {
+        "install": install_service,
+        "uninstall": uninstall_service,
+        "start": start_service,
+        "stop": stop_service,
+        "status": status_service,
+        "logs": logs_service,
+    }[args.action]()
     return 0 if ok else 2
 
 
@@ -406,6 +438,11 @@ def build_parser():
     onboarding = sub.add_parser("onboarding", help="open the Persian guided onboarding window")
     onboarding.add_argument("--provider", choices=["telegram", "bale"], default="telegram")
     onboarding.set_defaults(func=cmd_onboarding)
+    desktop_setup = sub.add_parser("desktop-setup", help="prepare the consented managed desktop profile")
+    desktop_setup.add_argument("--device-name", required=True)
+    desktop_setup.add_argument("--consent", action="store_true", help="record local privacy consent")
+    desktop_setup.set_defaults(func=cmd_desktop_setup)
+    sub.add_parser("desktop-status", help="show non-secret managed desktop status as JSON").set_defaults(func=cmd_desktop_status)
     reconfigure = sub.add_parser("reconfigure", help="edit one setup section")
     reconfigure.add_argument(
         "section",
@@ -424,7 +461,7 @@ def build_parser():
     ev = sub.add_parser("events", help="show recent local events"); ev.add_argument("--limit", type=int, default=20); ev.set_defaults(func=cmd_events)
     sub.add_parser("health", help="show local health snapshot").set_defaults(func=cmd_health)
     test = sub.add_parser("test", help="test hardware/integration"); test.add_argument("target", choices=["camera", "microphone", "bot", "lock", "screen", "input"]); test.set_defaults(func=cmd_test)
-    svc = sub.add_parser("service", help="manage systemd user service"); svc.add_argument("action", choices=["install", "uninstall", "status", "logs"]); svc.set_defaults(func=cmd_service)
+    svc = sub.add_parser("service", help="manage systemd user service"); svc.add_argument("action", choices=["install", "uninstall", "start", "stop", "status", "logs"]); svc.set_defaults(func=cmd_service)
     auto = sub.add_parser("autostart", help="run automatically after graphical login"); auto.add_argument("action", choices=["on", "off", "status"]); auto.set_defaults(func=cmd_autostart)
     return p
 
