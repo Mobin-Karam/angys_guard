@@ -25,7 +25,14 @@ CREATE TABLE IF NOT EXISTS pairing_codes (
 );
 CREATE TABLE IF NOT EXISTS bot_chats (
   provider TEXT NOT NULL, chat_id TEXT NOT NULL, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-  created_at INTEGER NOT NULL, PRIMARY KEY(provider, chat_id)
+  created_at INTEGER NOT NULL, selected_device_id TEXT REFERENCES devices(id) ON DELETE SET NULL,
+  PRIMARY KEY(provider, chat_id)
+);
+CREATE TABLE IF NOT EXISTS bot_confirmations (
+  provider TEXT NOT NULL, chat_id TEXT NOT NULL, action TEXT NOT NULL,
+  device_id TEXT NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL, expires_at INTEGER NOT NULL, consumed_at INTEGER,
+  PRIMARY KEY(provider, chat_id, action)
 );
 CREATE TABLE IF NOT EXISTS commands (
   id TEXT PRIMARY KEY, device_id TEXT NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
@@ -50,6 +57,9 @@ def initialize(path: str) -> None:
             connection.execute("ALTER TABLE commands ADD COLUMN origin_provider TEXT")
         if "origin_chat_id" not in columns:
             connection.execute("ALTER TABLE commands ADD COLUMN origin_chat_id TEXT")
+        chat_columns = {row[1] for row in connection.execute("PRAGMA table_info(bot_chats)")}
+        if "selected_device_id" not in chat_columns:
+            connection.execute("ALTER TABLE bot_chats ADD COLUMN selected_device_id TEXT")
 
 
 @contextmanager

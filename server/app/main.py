@@ -34,6 +34,7 @@ from .security import (
 ALLOWED_ACTIONS = frozenset({"status", "arm", "disarm", "lock"})
 PAIRING_LIFETIME_SECONDS = 600
 COMMAND_LIFETIME_SECONDS = 120
+BOT_CONFIRMATION_LIFETIME_SECONDS = 30
 AUTH_WINDOW_SECONDS = 900
 AUTH_ATTEMPT_LIMIT = 10
 _auth_attempts: dict[str, list[int]] = {}
@@ -181,6 +182,33 @@ class RevokeResponse(BaseModel):
 class BotUpdate(BaseModel):
     chat_id: str = Field(min_length=1, max_length=128)
     text: str = Field(min_length=1, max_length=300)
+
+
+def selected_or_only_device(db, *, account_id: str, provider: str, chat_id: str):
+    """Return the bot-selected active device, with a safe one-device fallback."""
+
+    chat = db.execute(
+        "SELECT account_id, selected_device_id FROM bot_chats WHERE provider = ? AND chat_id = ?",
+        (provider, chat_id),
+    ).fetchone()
+    if not chat or chat["account_id"] != account_id:
+        return None
+    if chat["selected_device_id"]:
+        selected = db.execute(
+            "SELECT id, name FROM devices WHERE id = ? AND account_id = ? AND revoked_at IS NULL",
+            (chat["selected_device_id"], account_id),
+        ).fetchone()
+        if selected:
+            return selected
+        db.execute(
+            "UPDATE bot_chats SET selected_device_id = NULL WHERE provider = ? AND chat_id = ?",
+            (provider, chat_id),
+        )
+    devices = db.execute(
+        "SELECT id, name FROM devices WHERE account_id = ? AND revoked_at IS NULL ORDER BY last_seen_at DESC",
+        (account_id,),
+    ).fetchall()
+    return devices[0] if len(devices) == 1 else None
 
 
 @app.get("/healthz")
@@ -371,7 +399,7 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
                 return {"status": "ignored"}
             db.execute("INSERT OR REPLACE INTO bot_chats(provider, chat_id, account_id, created_at) VALUES (?, ?, ?, ?)", (provider, payload.chat_id, code["account_id"], now()))
             db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code = ?", (now(), argument))
-        await respond(provider, payload.chat_id, "Bot linked. Use /devices, /status, /arm, /disarm, or /lock.")
+        await respond(provider, payload.chat_id, "Bot linked. Use /devices, /use DEVICE-ID, /status, /arm, /disarm, /lock, or /revoke.")
         return {"status": "linked"}
     with connection(configuration.database_path) as db:
         chat = db.execute("SELECT account_id FROM bot_chats WHERE provider = ? AND chat_id = ?", (provider, payload.chat_id)).fetchone()
@@ -379,19 +407,101 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
             await respond(provider, payload.chat_id, "Link this chat first with /link YOUR-CODE.")
             return {"status": "unlinked"}
         if command == "/devices":
-            devices = db.execute("SELECT name, id FROM devices WHERE account_id = ? AND revoked_at IS NULL", (chat["account_id"],)).fetchall()
-            await respond(provider, payload.chat_id, "Devices:\n" + "\n".join(f"{row['name']} ({row['id'][:8]})" for row in devices))
+            devices = db.execute(
+                "SELECT id, name FROM devices WHERE account_id = ? AND revoked_at IS NULL ORDER BY last_seen_at DESC",
+                (chat["account_id"],),
+            ).fetchall()
+            selected = db.execute(
+                "SELECT selected_device_id FROM bot_chats WHERE provider = ? AND chat_id = ?",
+                (provider, payload.chat_id),
+            ).fetchone()
+            if not devices:
+                await respond(provider, payload.chat_id, "No active enrolled devices.")
+                return {"status": "listed"}
+            lines = [
+                f"{'* ' if selected and selected['selected_device_id'] == row['id'] else ''}{row['name']} ({row['id'][:8]})"
+                for row in devices
+            ]
+            await respond(provider, payload.chat_id, "Devices:\n" + "\n".join(lines) + "\nUse /use DEVICE-ID to select one.")
             return {"status": "listed"}
+        if command == "/use":
+            if len(argument) != 8 or not all(character in "0123456789ABCDEF" for character in argument):
+                await respond(provider, payload.chat_id, "Use /use followed by the 8-character device ID shown by /devices.")
+                return {"status": "invalid-selection"}
+            matches = db.execute(
+                "SELECT id, name FROM devices WHERE account_id = ? AND revoked_at IS NULL "
+                "AND substr(upper(id), 1, 8) = ?",
+                (chat["account_id"], argument),
+            ).fetchall()
+            if len(matches) != 1:
+                await respond(provider, payload.chat_id, "That device is unavailable. Run /devices and try again.")
+                return {"status": "invalid-selection"}
+            db.execute(
+                "UPDATE bot_chats SET selected_device_id = ? WHERE provider = ? AND chat_id = ?",
+                (matches[0]["id"], provider, payload.chat_id),
+            )
+            await respond(provider, payload.chat_id, f"Selected device: {matches[0]['name']}.")
+            return {"status": "selected"}
+        if command == "/revoke":
+            device = selected_or_only_device(
+                db,
+                account_id=chat["account_id"],
+                provider=provider,
+                chat_id=payload.chat_id,
+            )
+            if not device:
+                await respond(provider, payload.chat_id, "Select one device first with /devices then /use DEVICE-ID.")
+                return {"status": "ambiguous"}
+            confirmation = new_pairing_code()
+            db.execute(
+                "INSERT OR REPLACE INTO bot_confirmations(provider, chat_id, action, device_id, token_hash, expires_at, consumed_at) "
+                "VALUES (?, ?, 'revoke', ?, ?, ?, NULL)",
+                (provider, payload.chat_id, device["id"], token_digest(confirmation), now() + BOT_CONFIRMATION_LIFETIME_SECONDS),
+            )
+            await respond(provider, payload.chat_id, f"To revoke {device['name']}, send /confirm-revoke {confirmation} within 30 seconds.")
+            return {"status": "confirmation-required"}
+        if command == "/confirm-revoke":
+            confirmation = db.execute(
+                "SELECT device_id, expires_at, consumed_at FROM bot_confirmations "
+                "WHERE provider = ? AND chat_id = ? AND action = 'revoke' AND token_hash = ?",
+                (provider, payload.chat_id, token_digest(argument)),
+            ).fetchone()
+            if not argument or not confirmation or confirmation["consumed_at"] or confirmation["expires_at"] < now():
+                await respond(provider, payload.chat_id, "Revocation confirmation is invalid or expired.")
+                return {"status": "invalid-confirmation"}
+            consumed = db.execute(
+                "UPDATE bot_confirmations SET consumed_at = ? WHERE provider = ? AND chat_id = ? "
+                "AND action = 'revoke' AND token_hash = ? AND consumed_at IS NULL",
+                (now(), provider, payload.chat_id, token_digest(argument)),
+            ).rowcount
+            changed = db.execute(
+                "UPDATE devices SET revoked_at = ? WHERE id = ? AND account_id = ? AND revoked_at IS NULL",
+                (now(), confirmation["device_id"], chat["account_id"]),
+            ).rowcount if consumed == 1 else 0
+            if changed != 1:
+                await respond(provider, payload.chat_id, "The selected device is already unavailable.")
+                return {"status": "invalid-confirmation"}
+            db.execute(
+                "UPDATE bot_chats SET selected_device_id = NULL WHERE provider = ? AND chat_id = ?",
+                (provider, payload.chat_id),
+            )
+            await respond(provider, payload.chat_id, "Device revoked. Its credential can no longer poll for commands.")
+            return {"status": "revoked"}
         action = command.removeprefix("/")
         if action not in ALLOWED_ACTIONS:
-            await respond(provider, payload.chat_id, "Allowed commands: /devices, /status, /arm, /disarm, /lock.")
+            await respond(provider, payload.chat_id, "Allowed commands: /devices, /use, /status, /arm, /disarm, /lock, /revoke.")
             return {"status": "unsupported"}
-        devices = db.execute("SELECT id FROM devices WHERE account_id = ? AND revoked_at IS NULL ORDER BY last_seen_at DESC", (chat["account_id"],)).fetchall()
-        if len(devices) != 1:
-            await respond(provider, payload.chat_id, "Choose one enrolled device in the desktop app; multi-device bot selection is not enabled in this test release.")
+        device = selected_or_only_device(
+            db,
+            account_id=chat["account_id"],
+            provider=provider,
+            chat_id=payload.chat_id,
+        )
+        if not device:
+            await respond(provider, payload.chat_id, "Select one device first with /devices then /use DEVICE-ID.")
             return {"status": "ambiguous"}
-        db.execute("INSERT INTO commands(id, device_id, action, requested_at, expires_at, origin_provider, origin_chat_id) VALUES (?, ?, ?, ?, ?, ?, ?)", (str(uuid.uuid4()), devices[0]["id"], action, now(), now() + COMMAND_LIFETIME_SECONDS, provider, payload.chat_id))
-    await respond(provider, payload.chat_id, f"Requested {action}. The enrolled device must be online and permit that action locally.")
+        db.execute("INSERT INTO commands(id, device_id, action, requested_at, expires_at, origin_provider, origin_chat_id) VALUES (?, ?, ?, ?, ?, ?, ?)", (str(uuid.uuid4()), device["id"], action, now(), now() + COMMAND_LIFETIME_SECONDS, provider, payload.chat_id))
+    await respond(provider, payload.chat_id, f"Requested {action} for {device['name']}. The device must be online and permit that action locally.")
     return {"status": "queued"}
 
 

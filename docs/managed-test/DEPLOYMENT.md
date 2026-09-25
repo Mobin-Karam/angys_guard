@@ -133,11 +133,13 @@ bot-management flow first. This repository intentionally cannot create provider
 accounts or invent provider tokens. The supplied registration helper never prints
 the token.
 
-The current test bot accepts only `/link CODE`, `/devices`, `/status`, `/arm`,
-`/disarm`, and `/lock`. One chat is tied to one account. During the initial test
-release, bot commands require exactly one enrolled active device; multi-device
-selection deliberately fails closed. After the device completes a fixed action,
-the server sends its bounded result back to the same linked chat.
+The current test bot accepts only `/link CODE`, `/devices`, `/use DEVICE-ID`,
+`/status`, `/arm`, `/disarm`, `/lock`, and `/revoke`. One chat is tied to one
+account. With multiple devices, `/devices` lists the account's short IDs and
+`/use DEVICE-ID` selects one; no action is queued until that selection is made.
+`/revoke` requires a separate, single-use `/confirm-revoke CODE` reply within
+30 seconds. After the device completes a fixed action, the server sends its
+bounded result back to the same linked chat.
 
 ## Operator release gate
 
