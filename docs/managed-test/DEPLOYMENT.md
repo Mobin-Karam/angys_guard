@@ -187,6 +187,11 @@ asset; neither substitutes for clean-device validation or a future distro-level
 package-signing decision. Do not promote the prerelease until that validation
 is recorded.
 
+For a non-release artifact build, open **Actions → Desktop test release → Run
+workflow**, choose **linux**, and download the `AngysGuard-Linux-installers`
+workflow artifact. That artifact is for clean-device pilot testing only; it is
+not a GitHub Release and does not prove target-device qualification.
+
 Do not create a `windows-v*` tag until all of these pass:
 
 - real install/uninstall and upgrade on Windows 10 and Windows 11;
