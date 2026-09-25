@@ -48,9 +48,40 @@ jobs:
           DISPLAY: ""
         run: python -m pytest -q
 
+  desktop:
+    name: Desktop source build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: desktop/windows-tauri
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/windows-tauri/package-lock.json
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Test the native desktop agent
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked
+
+      - name: Build the RTL desktop interface
+        run: npm run build
+
   release-gate:
     name: Release gate
-    needs: test
+    needs: [test, desktop]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -59,10 +90,15 @@ jobs:
       - name: Require supported-Python test matrix
         env:
           TEST_RESULT: ${{ needs.test.result }}
+          DESKTOP_RESULT: ${{ needs.desktop.result }}
         shell: bash
         run: |
           set -euo pipefail
           test "$TEST_RESULT" = "success" || {
             echo "Release gate blocked because one or more supported-Python test jobs failed."
+            exit 1
+          }
+          test "$DESKTOP_RESULT" = "success" || {
+            echo "Release gate blocked because the desktop source build failed."
             exit 1
           }
