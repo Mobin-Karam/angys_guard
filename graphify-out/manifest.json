@@ -1812,9 +1812,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/windows-release.yml": {
-    "mtime": 1790338305.5178938,
-    "seen": 1790338336.3955212,
-    "ast_hash": "87b3ece59b49d0691577e138f00d3233",
+    "mtime": 1790338437.3709402,
+    "seen": 1790338470.2614753,
+    "ast_hash": "7b8f035c1ac32c596dba123879d57e12",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/index.html": {
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "docs/managed-test/DEPLOYMENT.md": {
-    "mtime": 1790338305.5178938,
-    "seen": 1790338336.395602,
-    "ast_hash": "28995016893171a0dc70d7df05225e24",
+    "mtime": 1790338437.3709402,
+    "seen": 1790338470.2615907,
+    "ast_hash": "6441edf9c9d78e0d41f9b5a5f731a9f2",
     "semantic_hash": ""
   },
   "server/requirements.txt": {
