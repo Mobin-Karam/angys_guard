@@ -26,6 +26,7 @@ from .security import (
     issue_token,
     new_opaque_token,
     new_pairing_code,
+    sign_device_command,
     token_digest,
     verify_password,
     verify_token,
@@ -168,6 +169,7 @@ class PairClaimRequest(BaseModel):
 class DeviceResponse(BaseModel):
     device_id: str
     device_token: str
+    account_id: str
 
 
 class CommandCompletion(BaseModel):
@@ -282,7 +284,7 @@ def claim_device(payload: PairClaimRequest, account_id: Annotated[str, Depends(c
         device_id, device_token = str(uuid.uuid4()), new_opaque_token()
         db.execute("INSERT INTO devices(id, account_id, name, credential_hash, created_at) VALUES (?, ?, ?, ?, ?)", (device_id, account_id, pending["device_name"], token_digest(device_token), now()))
         db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code = ?", (now(), payload.pairing_code.upper()))
-    return DeviceResponse(device_id=device_id, device_token=device_token)
+    return DeviceResponse(device_id=device_id, device_token=device_token, account_id=account_id)
 
 
 @app.post("/v1/devices/{device_id}/revoke", response_model=RevokeResponse)
@@ -307,16 +309,16 @@ def device_from_token(authorization: Annotated[str | None, Header()] = None):
 
 
 @app.get("/v1/device/commands")
-def poll_commands(device=Depends(device_from_token)) -> dict[str, list[dict[str, str]]]:
+def poll_commands(device=Depends(device_from_token)) -> dict[str, list[dict[str, str | int]]]:
     configuration = require_settings()
     with connection(configuration.database_path) as db:
         db.execute("UPDATE devices SET last_seen_at = ? WHERE id = ?", (now(), device["id"]))
         # Return a command only if this poller atomically claimed it. A second
         # concurrent poll fails closed instead of replaying a local action.
         row = db.execute(
-            "SELECT candidate.id, candidate.action FROM commands AS candidate "
+            "SELECT candidate.id, candidate.action, candidate.issued_at, candidate.expires_at, candidate.signature FROM commands AS candidate "
             "WHERE candidate.device_id = ? AND candidate.claimed_at IS NULL "
-            "AND candidate.completed_at IS NULL AND candidate.expires_at >= ? "
+            "AND candidate.completed_at IS NULL AND candidate.expires_at >= ? AND candidate.signature IS NOT NULL "
             "AND NOT EXISTS (SELECT 1 FROM commands AS inflight "
             "WHERE inflight.device_id = candidate.device_id "
             "AND inflight.claimed_at IS NOT NULL AND inflight.completed_at IS NULL "
@@ -333,7 +335,14 @@ def poll_commands(device=Depends(device_from_token)) -> dict[str, list[dict[str,
         ).rowcount
         if claimed != 1:
             return {"commands": []}
-    return {"commands": [{"id": row["id"], "action": row["action"]}]}
+    return {"commands": [{
+        "id": row["id"],
+        "action": row["action"],
+        "account_id": device["account_id"],
+        "issued_at": row["issued_at"],
+        "expires_at": row["expires_at"],
+        "signature": row["signature"],
+    }]}
 
 
 @app.post("/v1/device/commands/complete", status_code=200)
@@ -500,7 +509,30 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
         if not device:
             await respond(provider, payload.chat_id, "Select one device first with /devices then /use DEVICE-ID.")
             return {"status": "ambiguous"}
-        db.execute("INSERT INTO commands(id, device_id, action, requested_at, expires_at, origin_provider, origin_chat_id) VALUES (?, ?, ?, ?, ?, ?, ?)", (str(uuid.uuid4()), device["id"], action, now(), now() + COMMAND_LIFETIME_SECONDS, provider, payload.chat_id))
+        device_credential = db.execute(
+            "SELECT credential_hash FROM devices WHERE id = ? AND account_id = ? AND revoked_at IS NULL",
+            (device["id"], chat["account_id"]),
+        ).fetchone()
+        if not device_credential:
+            await respond(provider, payload.chat_id, "The selected device is unavailable.")
+            return {"status": "ambiguous"}
+        issued_at = now()
+        command_id = str(uuid.uuid4())
+        expires_at = issued_at + COMMAND_LIFETIME_SECONDS
+        signature = sign_device_command(
+            device_credential["credential_hash"],
+            device_id=device["id"],
+            account_id=chat["account_id"],
+            action=action,
+            command_id=command_id,
+            issued_at=issued_at,
+            expires_at=expires_at,
+        )
+        db.execute(
+            "INSERT INTO commands(id, device_id, action, requested_at, expires_at, issued_at, signature, origin_provider, origin_chat_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (command_id, device["id"], action, issued_at, expires_at, issued_at, signature, provider, payload.chat_id),
+        )
     await respond(provider, payload.chat_id, f"Requested {action} for {device['name']}. The device must be online and permit that action locally.")
     return {"status": "queued"}
 

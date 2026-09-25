@@ -20,6 +20,8 @@ reqwest = { version = "0.12.15", default-features = false, features = ["json", "
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.44", features = ["time", "process"] }
+base64 = "0.22"
+sha2 = "0.10"
 
 [target.'cfg(windows)'.dependencies]
 # Raw Win32 binding keeps the lock action narrow and avoids pulling a second

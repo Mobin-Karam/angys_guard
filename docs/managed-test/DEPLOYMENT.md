@@ -26,6 +26,15 @@ The service stores:
 - short-lived, one-use device and bot link codes;
 - linked bot chat IDs and bounded command audit results.
 
+Each queued fixed action includes a short-lived HMAC-SHA256 envelope over the
+device ID, account ID, action, request ID and expiry. Its unique key is derived
+from the enrolled device credential: the server stores only that credential's
+hash, while the desktop agent derives the same bytes from its keyring-held
+credential. The agent verifies scope, action, signature and expiry and records
+the request ID locally before executing, rejecting replayed or modified
+envelopes. This is a per-device **pilot symmetric protocol**; a public managed
+service still needs the planned asymmetric issuer/key-rotation design.
+
 It never requests, stores, or transmits a protected Windows password.
 Account creation and sign-in are bounded to ten attempts per source address every
 15 minutes for this single-process test deployment; keep reverse-proxy rate

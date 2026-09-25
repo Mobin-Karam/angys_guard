@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS bot_confirmations (
 CREATE TABLE IF NOT EXISTS commands (
   id TEXT PRIMARY KEY, device_id TEXT NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
   action TEXT NOT NULL, requested_at INTEGER NOT NULL, expires_at INTEGER NOT NULL,
-  origin_provider TEXT, origin_chat_id TEXT, claimed_at INTEGER, completed_at INTEGER, result TEXT
+  issued_at INTEGER, signature TEXT, origin_provider TEXT, origin_chat_id TEXT,
+  claimed_at INTEGER, completed_at INTEGER, result TEXT
 );
 CREATE INDEX IF NOT EXISTS commands_pending_by_device ON commands(device_id, completed_at, expires_at);
 """
@@ -57,6 +58,10 @@ def initialize(path: str) -> None:
             connection.execute("ALTER TABLE commands ADD COLUMN origin_provider TEXT")
         if "origin_chat_id" not in columns:
             connection.execute("ALTER TABLE commands ADD COLUMN origin_chat_id TEXT")
+        if "issued_at" not in columns:
+            connection.execute("ALTER TABLE commands ADD COLUMN issued_at INTEGER")
+        if "signature" not in columns:
+            connection.execute("ALTER TABLE commands ADD COLUMN signature TEXT")
         chat_columns = {row[1] for row in connection.execute("PRAGMA table_info(bot_chats)")}
         if "selected_device_id" not in chat_columns:
             connection.execute("ALTER TABLE bot_chats ADD COLUMN selected_device_id TEXT")

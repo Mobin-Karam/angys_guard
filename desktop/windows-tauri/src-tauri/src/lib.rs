@@ -1,6 +1,8 @@
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use keyring::Entry;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -23,6 +25,7 @@ struct EnrolledDevice {
     server_url: String,
     device_id: String,
     device_token: String,
+    account_id: String,
     remote_lock_enabled: bool,
 }
 
@@ -34,10 +37,14 @@ struct PollResponse {
     commands: Vec<RemoteCommand>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 struct RemoteCommand {
     id: String,
     action: String,
+    account_id: String,
+    issued_at: i64,
+    expires_at: i64,
+    signature: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -50,6 +57,12 @@ struct LocalProtectionStatus {
     service_active: bool,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+struct ConsumedCommand {
+    id: String,
+    expires_at: i64,
+}
+
 fn credential_entry() -> Result<Entry, String> {
     Entry::new(KEYRING_SERVICE, KEYRING_ACCOUNT)
         .map_err(|error| format!("The operating-system credential store is unavailable: {error}"))
@@ -58,6 +71,129 @@ fn credential_entry() -> Result<Entry, String> {
 fn load_device() -> Option<EnrolledDevice> {
     let secret = credential_entry().ok()?.get_password().ok()?;
     serde_json::from_str(&secret).ok()
+}
+
+fn command_payload(command: &RemoteCommand, device: &EnrolledDevice) -> Vec<u8> {
+    format!(
+        "{}\n{}\n{}\n{}\n{}\n{}",
+        device.device_id,
+        command.account_id,
+        command.action,
+        command.id,
+        command.issued_at,
+        command.expires_at,
+    )
+    .into_bytes()
+}
+
+fn command_now() -> Result<i64, String> {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|duration| duration.as_secs() as i64)
+        .map_err(|_| "The device clock is invalid".into())
+}
+
+fn hmac_sha256(key: &[u8], payload: &[u8]) -> [u8; 32] {
+    // HMAC construction from RFC 2104. The derived device key is SHA-256
+    // sized, but retain the long-key branch to keep this helper correct.
+    let normalized = if key.len() > 64 {
+        Sha256::digest(key).to_vec()
+    } else {
+        key.to_vec()
+    };
+    let mut block = [0_u8; 64];
+    block[..normalized.len()].copy_from_slice(&normalized);
+    let mut inner_pad = [0_u8; 64];
+    let mut outer_pad = [0_u8; 64];
+    for (index, value) in block.iter().enumerate() {
+        inner_pad[index] = value ^ 0x36;
+        outer_pad[index] = value ^ 0x5c;
+    }
+    let mut inner = Sha256::new();
+    inner.update(inner_pad);
+    inner.update(payload);
+    let mut outer = Sha256::new();
+    outer.update(outer_pad);
+    outer.update(inner.finalize());
+    outer.finalize().into()
+}
+
+fn constant_time_equal(left: &[u8], right: &[u8]) -> bool {
+    if left.len() != right.len() {
+        return false;
+    }
+    left.iter()
+        .zip(right)
+        .fold(0_u8, |difference, (a, b)| difference | (a ^ b))
+        == 0
+}
+
+fn verify_command_signature(
+    command: &RemoteCommand,
+    device: &EnrolledDevice,
+) -> Result<(), String> {
+    let now = command_now()?;
+    if command.account_id != device.account_id {
+        return Err("command scope does not match this device".into());
+    }
+    if !matches!(
+        command.action.as_str(),
+        "status" | "arm" | "disarm" | "lock"
+    ) {
+        return Err("unsupported command action".into());
+    }
+    if command.id.is_empty()
+        || command.id.len() > 64
+        || command.issued_at > now + 15
+        || command.expires_at < now
+        || command.expires_at - command.issued_at > 120
+    {
+        return Err("command is expired or invalid".into());
+    }
+    let credential_key = Sha256::digest(device.device_token.as_bytes());
+    let signature = URL_SAFE_NO_PAD
+        .decode(command.signature.as_bytes())
+        .map_err(|_| "command signature is invalid".to_string())?;
+    let expected = hmac_sha256(&credential_key, &command_payload(command, device));
+    if constant_time_equal(&expected, &signature) {
+        Ok(())
+    } else {
+        Err("command signature is invalid".into())
+    }
+}
+
+fn consume_command_replay_marker(app: &AppHandle, command: &RemoteCommand) -> Result<(), String> {
+    let now = command_now()?;
+    let directory = app
+        .path()
+        .app_local_data_dir()
+        .map_err(|error| format!("Could not resolve local command storage: {error}"))?;
+    fs::create_dir_all(&directory)
+        .map_err(|error| format!("Could not create local command storage: {error}"))?;
+    let path = directory.join("consumed-managed-commands.json");
+    let mut consumed: Vec<ConsumedCommand> = match fs::read(&path) {
+        Ok(data) => serde_json::from_slice(&data).map_err(|_| {
+            "Local command replay storage is invalid; refusing the command".to_string()
+        })?,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Vec::new(),
+        Err(_) => return Err("Could not read local command replay storage".into()),
+    };
+    consumed.retain(|item| item.expires_at >= now);
+    if consumed.iter().any(|item| item.id == command.id) {
+        return Err("replayed command".into());
+    }
+    consumed.push(ConsumedCommand {
+        id: command.id.clone(),
+        expires_at: command.expires_at,
+    });
+    let encoded = serde_json::to_vec(&consumed)
+        .map_err(|_| "Could not serialize local command replay storage".to_string())?;
+    let temporary = directory.join(".consumed-managed-commands.new");
+    fs::write(&temporary, encoded)
+        .map_err(|_| "Could not write local command replay storage".to_string())?;
+    fs::rename(&temporary, &path)
+        .map_err(|_| "Could not finalize local command replay storage".to_string())?;
+    Ok(())
 }
 
 async fn send_completion(client: &Client, device: &EnrolledDevice, command_id: &str, result: &str) {
@@ -233,6 +369,12 @@ async fn apply_command(
     command: &RemoteCommand,
     device: &EnrolledDevice,
 ) -> String {
+    if let Err(error) = verify_command_signature(command, device) {
+        return format!("denied: {error}");
+    }
+    if let Err(error) = consume_command_replay_marker(app, command) {
+        return format!("denied: {error}");
+    }
     #[cfg(target_os = "linux")]
     if matches!(command.action.as_str(), "status" | "arm" | "disarm") {
         return match run_laptop_guard_action(app, &command.action).await {
@@ -289,15 +431,24 @@ async fn store_device(
     server_url: String,
     device_id: String,
     device_token: String,
+    account_id: String,
     state: State<'_, AgentState>,
 ) -> Result<(), String> {
     if !server_url.starts_with("https://") && !server_url.starts_with("http://localhost") {
         return Err("An HTTPS server URL is required outside local development".into());
     }
+    if device_id.is_empty()
+        || device_id.len() > 64
+        || account_id.is_empty()
+        || account_id.len() > 64
+    {
+        return Err("The server returned an invalid enrollment scope".into());
+    }
     let device = EnrolledDevice {
         server_url: server_url.trim_end_matches('/').to_string(),
         device_id,
         device_token,
+        account_id,
         remote_lock_enabled: false,
     };
     credential_entry()?
@@ -442,4 +593,70 @@ pub fn run() {
         })
         .run(tauri::generate_context!())
         .expect("error while running AngysGuard desktop agent");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn signed_command(device: &EnrolledDevice) -> RemoteCommand {
+        let now = command_now().expect("clock");
+        let mut command = RemoteCommand {
+            id: "test-command".into(),
+            action: "status".into(),
+            account_id: device.account_id.clone(),
+            issued_at: now,
+            expires_at: now + 60,
+            signature: String::new(),
+        };
+        let key = Sha256::digest(device.device_token.as_bytes());
+        command.signature = URL_SAFE_NO_PAD.encode(hmac_sha256(&key, &command_payload(&command, device)));
+        command
+    }
+
+    #[test]
+    fn signed_command_rejects_tampering_and_wrong_scope() {
+        let device = EnrolledDevice {
+            server_url: "https://example.test".into(),
+            device_id: "device-1".into(),
+            device_token: "device-token".into(),
+            account_id: "account-1".into(),
+            remote_lock_enabled: false,
+        };
+        let command = signed_command(&device);
+        assert!(verify_command_signature(&command, &device).is_ok());
+
+        let mut changed = command.clone();
+        changed.action = "lock".into();
+        assert!(verify_command_signature(&changed, &device).is_err());
+        let mut wrong_scope = command;
+        wrong_scope.account_id = "account-2".into();
+        assert!(verify_command_signature(&wrong_scope, &device).is_err());
+    }
+
+    #[test]
+    fn hmac_matches_the_managed_api_canonical_vector() {
+        // Produced by server.app.security.sign_device_command.  Keeping a
+        // fixed vector here prevents accidental Rust/Python payload drift.
+        let device = EnrolledDevice {
+            server_url: "https://example.test".into(),
+            device_id: "device-1".into(),
+            device_token: "device-token".into(),
+            account_id: "account-1".into(),
+            remote_lock_enabled: false,
+        };
+        let command = RemoteCommand {
+            id: "test-command".into(),
+            action: "status".into(),
+            account_id: "account-1".into(),
+            issued_at: 1_700_000_000,
+            expires_at: 1_700_000_060,
+            signature: String::new(),
+        };
+        let key = Sha256::digest(device.device_token.as_bytes());
+        assert_eq!(
+            URL_SAFE_NO_PAD.encode(hmac_sha256(&key, &command_payload(&command, &device))),
+            "MSjxhmK8zjHG6clWWp17ZyR1hphxWhO5mreJWCEVhVU"
+        );
+    }
 }

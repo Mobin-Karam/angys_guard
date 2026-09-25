@@ -1,4 +1,11 @@
-from server.app.security import hash_password, issue_token, token_digest, verify_password, verify_token
+from server.app.security import (
+    hash_password,
+    issue_token,
+    sign_device_command,
+    token_digest,
+    verify_password,
+    verify_token,
+)
 
 
 def test_password_verifier_rejects_short_password_and_wrong_password():
@@ -22,3 +29,25 @@ def test_sessions_are_signed_and_expire():
 def test_device_credentials_are_not_stored_in_cleartext():
     raw = "test-device-token"
     assert token_digest(raw) != raw
+
+
+def test_device_command_signatures_bind_scope_and_expiry():
+    key = token_digest("test-device-token")
+    signed = sign_device_command(
+        key,
+        device_id="device-1",
+        account_id="account-1",
+        action="status",
+        command_id="command-1",
+        issued_at=1_700_000_000,
+        expires_at=1_700_000_060,
+    )
+    assert signed != sign_device_command(
+        key,
+        device_id="device-1",
+        account_id="account-1",
+        action="lock",
+        command_id="command-1",
+        issued_at=1_700_000_000,
+        expires_at=1_700_000_060,
+    )

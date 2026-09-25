@@ -54,6 +54,58 @@ def token_digest(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
+def device_command_payload(
+    *,
+    device_id: str,
+    account_id: str,
+    action: str,
+    command_id: str,
+    issued_at: int,
+    expires_at: int,
+) -> bytes:
+    """Canonical finite command payload shared with the desktop verifier."""
+
+    return "\n".join((device_id, account_id, action, command_id, str(issued_at), str(expires_at))).encode("utf-8")
+
+
+def sign_device_command(
+    credential_hash: str,
+    *,
+    device_id: str,
+    account_id: str,
+    action: str,
+    command_id: str,
+    issued_at: int,
+    expires_at: int,
+) -> str:
+    """Sign a command using a key only the enrolled device can derive.
+
+    The database holds a hash of the device credential, not the credential
+    itself. The device derives the same SHA-256 bytes from its keyring-held
+    credential. This pilot symmetric design gives each device a distinct key;
+    a future managed production service should migrate to an asymmetric issuer.
+    """
+
+    try:
+        key = bytes.fromhex(credential_hash)
+    except ValueError as error:
+        raise ValueError("invalid enrolled device credential digest") from error
+    return _b64(
+        hmac.new(
+            key,
+            device_command_payload(
+                device_id=device_id,
+                account_id=account_id,
+                action=action,
+                command_id=command_id,
+                issued_at=issued_at,
+                expires_at=expires_at,
+            ),
+            hashlib.sha256,
+        ).digest()
+    )
+
+
 def new_pairing_code() -> str:
     # Deliberately short enough to enter in a bot, but only useful for 10 minutes
     # and always bound to a pending account action.

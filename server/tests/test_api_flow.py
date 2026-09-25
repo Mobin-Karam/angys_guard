@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 from fastapi.testclient import TestClient
 
 from server.app.main import app
+from server.app.security import sign_device_command, token_digest
 
 
 def test_missing_server_configuration_stays_alive_for_paas_diagnostics(monkeypatch):
@@ -39,6 +40,16 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/arm"}}).json() == {"status": "queued"}
             queued = client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json()["commands"]
             assert len(queued) == 1 and queued[0]["action"] == "status"
+            assert queued[0]["account_id"] == created.json()["account_id"]
+            assert queued[0]["signature"] == sign_device_command(
+                token_digest(device["device_token"]),
+                device_id=device["device_id"],
+                account_id=created.json()["account_id"],
+                action="status",
+                command_id=queued[0]["id"],
+                issued_at=queued[0]["issued_at"],
+                expires_at=queued[0]["expires_at"],
+            )
             # A claimed command is not replayed if a network retry occurs after
             # the agent has accepted it (important for the local lock action).
             assert client.get("/v1/device/commands", headers={"Authorization": f"Device {device['device_token']}"}).json() == {"commands": []}
