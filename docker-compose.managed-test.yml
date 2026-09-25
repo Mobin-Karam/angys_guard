@@ -1,0 +1,14 @@
+services:
+  angysguard-server:
+    build:
+      context: ./server
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    env_file:
+      - ./.env.managed-test
+    volumes:
+      - angysguard-test-data:/data
+
+volumes:
+  angysguard-test-data:

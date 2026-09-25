@@ -127,6 +127,16 @@ The planned pairing code should be:
 
 Issues #38, #39, #40 and #42 define the optional startup-hosted mode.
 
+## Limited managed-test implementation
+
+A source-only, self-hosted test implementation is available for the initial
+small cohort at `server/` and `desktop/windows-tauri/`. Its deployment target is
+documented in `managed-test/DEPLOYMENT.md`. It supports account passwords hashed
+on the server, short-lived device/bot linking codes, hashed revocable device
+credentials, and a fixed device command queue. It is **not a production service
+or a Windows support claim** until its release gate and target-device validation
+are complete.
+
 This mode is for users who do **not** want to create/maintain their own Bale or Telegram bot.
 
 ## Selected official-bot direction

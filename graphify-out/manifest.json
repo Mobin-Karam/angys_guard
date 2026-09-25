@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1789816841.8776357,
-    "seen": 1789922474.926272,
-    "ast_hash": "c806289a024356a0e3d10360f979a333",
+    "mtime": 1790316577.6894279,
+    "seen": 1790317006.8184788,
+    "ast_hash": "8c18886926236dad83047cd717cbfba3",
     "semantic_hash": ""
   },
   "docs/SECURITY.md": {
@@ -1218,9 +1218,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1789812705.959807,
-    "seen": 1789922474.9262242,
-    "ast_hash": "954fb8445dab309bcccd5045d38cd16e",
+    "mtime": 1790316975.7945879,
+    "seen": 1790317006.8184366,
+    "ast_hash": "82bfe679624dfcebbe7276c06e3223ab",
     "semantic_hash": ""
   },
   ".github/workflows/project-v2-bootstrap.yml": {
@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1789922800.1680987,
-    "seen": 1789922846.3432834,
-    "ast_hash": "7916ceb19b3143185acf938eb617662b",
+    "mtime": 1790318993.3406022,
+    "seen": 1790319085.2771597,
+    "ast_hash": "633228818b9f8d53c288d10eaae236b3",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1272,9 +1272,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789816841.8776357,
-    "seen": 1789922474.926241,
-    "ast_hash": "a9dbfd791309134380b8eaa97d5c5d09",
+    "mtime": 1790318993.339602,
+    "seen": 1790319085.2771645,
+    "ast_hash": "c50a175fae0bfc23c8c3616cd9becc7f",
     "semantic_hash": ""
   },
   "SECURITY.md": {
@@ -1320,9 +1320,9 @@
     "semantic_hash": ""
   },
   "docs/CONTROL_MODES.md": {
-    "mtime": 1789808066.2401009,
-    "seen": 1789922474.926255,
-    "ast_hash": "d59b6239e743048efcf88cf681b1c990",
+    "mtime": 1790316577.6914277,
+    "seen": 1790317006.8184645,
+    "ast_hash": "2d4cf6c33b06fad5157e98e3611d2809",
     "semantic_hash": ""
   },
   "docs/FEATURE_LIFECYCLE.md": {
@@ -1356,9 +1356,9 @@
     "semantic_hash": ""
   },
   "docs/PLATFORM_SUPPORT.md": {
-    "mtime": 1789812705.9608068,
-    "seen": 1789922474.9262688,
-    "ast_hash": "ea2efb24fe29e213359d0d0fc51d5a70",
+    "mtime": 1790317700.9103434,
+    "seen": 1790317715.6877577,
+    "ast_hash": "4733cded6d2250998634cc8534d4e0ef",
     "semantic_hash": ""
   },
   "docs/PROJECT_MANAGEMENT.md": {
@@ -1719,6 +1719,150 @@
     "mtime": 1789922754.4257357,
     "seen": 1789922846.3431418,
     "ast_hash": "77821d7ba8ee6f267265b5332bb01d35",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/package.json": {
+    "mtime": 1790318640.570802,
+    "seen": 1790319085.2768486,
+    "ast_hash": "9081862cc549b51eefeac4f88d452215",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src-tauri/Cargo.toml": {
+    "mtime": 1790318556.3481333,
+    "seen": 1790319085.276851,
+    "ast_hash": "67d66666984099da5efa4cec41207d72",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src-tauri/build.rs": {
+    "mtime": 1790316328.2944481,
+    "seen": 1790317006.8181553,
+    "ast_hash": "287ce498267751e6b2cfb4ade71e4d25",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src-tauri/src/lib.rs": {
+    "mtime": 1790318424.4590864,
+    "seen": 1790319085.2768567,
+    "ast_hash": "cd19ca9a78a337424debb8df4b63b6c5",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src-tauri/src/main.rs": {
+    "mtime": 1790318596.9184554,
+    "seen": 1790319085.2768586,
+    "ast_hash": "bfcc8a40fe61a88c5a4c2f8156e3ba4e",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src-tauri/tauri.conf.json": {
+    "mtime": 1790318424.4590864,
+    "seen": 1790319085.27686,
+    "ast_hash": "24b0b4ba97ee870175c5530ad2800742",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src/main.ts": {
+    "mtime": 1790318481.701541,
+    "seen": 1790319085.2768614,
+    "ast_hash": "4cc7e5c3294656dca1b732a87b5ba6bb",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/tsconfig.json": {
+    "mtime": 1790316328.2934482,
+    "seen": 1790317006.8181653,
+    "ast_hash": "f5a7e4ba8885324a5c8ed3cbef3cc488",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/vite.config.ts": {
+    "mtime": 1790316328.2934482,
+    "seen": 1790317006.8181665,
+    "ast_hash": "00103d40581c40f410736a48ef9008bf",
+    "semantic_hash": ""
+  },
+  "server/app/__init__.py": {
+    "mtime": 1790316196.6714034,
+    "seen": 1790317006.818251,
+    "ast_hash": "fb7a84e612712970792c8ab2825fa0a3",
+    "semantic_hash": ""
+  },
+  "server/app/db.py": {
+    "mtime": 1790317313.8982713,
+    "seen": 1790317715.6875143,
+    "ast_hash": "6e774958a78f76d3e300120495ed213e",
+    "semantic_hash": ""
+  },
+  "server/app/main.py": {
+    "mtime": 1790317327.58838,
+    "seen": 1790317715.687516,
+    "ast_hash": "fbafdaa584e8e9e6bf7ccdda5accbba0",
+    "semantic_hash": ""
+  },
+  "server/app/security.py": {
+    "mtime": 1790316196.6714034,
+    "seen": 1790317006.8182542,
+    "ast_hash": "89b9ac6e52eec26ddd60ee47ddc9e97c",
+    "semantic_hash": ""
+  },
+  "server/tests/test_api_flow.py": {
+    "mtime": 1790317327.58838,
+    "seen": 1790317715.6875207,
+    "ast_hash": "e1371b545ca3ef5eaadafd28f4dc9b05",
+    "semantic_hash": ""
+  },
+  "server/tests/test_security.py": {
+    "mtime": 1790316577.6884277,
+    "seen": 1790317006.8182566,
+    "ast_hash": "77cb915e15d22a0b9243a07843d9d3b0",
+    "semantic_hash": ""
+  },
+  ".github/workflows/windows-release.yml": {
+    "mtime": 1790317692.4982765,
+    "seen": 1790317715.6877236,
+    "ast_hash": "f6d09fd3cc48af184635ef1dd7f5d11d",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/index.html": {
+    "mtime": 1790316436.7293456,
+    "seen": 1790317006.8184538,
+    "ast_hash": "2492ccf011857b34f4a06962061c17b7",
+    "semantic_hash": ""
+  },
+  "docker-compose.managed-test.yml": {
+    "mtime": 1790316275.5440295,
+    "seen": 1790317006.8184547,
+    "ast_hash": "82150a2f6b48917566ffac91bb607ec0",
+    "semantic_hash": ""
+  },
+  "docs/managed-test/DEPLOYMENT.md": {
+    "mtime": 1790318556.3481333,
+    "seen": 1790319085.277263,
+    "ast_hash": "655cc52a1cdee1a410422cb8cf8dac91",
+    "semantic_hash": ""
+  },
+  "server/requirements.txt": {
+    "mtime": 1790316743.641745,
+    "seen": 1790317006.8185081,
+    "ast_hash": "7cad12cd5ce538ad9a0e6a76d0253411",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src-tauri/icons/icon.png": {
+    "mtime": 1790316948.4453707,
+    "seen": 1790317006.8185105,
+    "ast_hash": "415a278b32e57edea69a654f3a02f65d",
+    "semantic_hash": ""
+  },
+  "desktop/windows-tauri/src-tauri/capabilities/default.json": {
+    "mtime": 1790317196.1132243,
+    "seen": 1790317715.6874182,
+    "ast_hash": "6032fbabd0a90abee6cd284f61362706",
+    "semantic_hash": ""
+  },
+  "server/scripts/configure_telegram_webhook.py": {
+    "mtime": 1790317251.9397798,
+    "seen": 1790317715.687519,
+    "ast_hash": "5ded546bfa529673a681acd473e69709",
+    "semantic_hash": ""
+  },
+  "server/main.py": {
+    "mtime": 1790318084.8323908,
+    "seen": 1790319085.2769537,
+    "ast_hash": "9731535a17725d249d5b5b77c71a91a3",
     "semantic_hash": ""
   }
 }

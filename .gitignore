@@ -31,3 +31,9 @@ credentials.json
 .coverage
 .pytest_cache/
 htmlcov/
+
+# Tauri/Vite build outputs
+desktop/windows-tauri/node_modules/
+desktop/windows-tauri/dist/
+desktop/windows-tauri/src-tauri/target/
+desktop/windows-tauri/src-tauri/gen/

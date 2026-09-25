@@ -26,7 +26,7 @@ enabled on that machine and the relevant target-device checks pass.
 | **Ubuntu Desktop 26.04 LTS — amd64** | **Best effort / candidate** | Not v12.0 release-qualified yet | Ubuntu 26.04 uses Python 3.14 by default, while the current release CI/support matrix is Python 3.11–3.13. Qualification requires an explicitly supported Python/toolchain and the full target-device checklist. |
 | **Ubuntu Desktop 22.04 LTS — amd64** | **Best effort** | Not v12.0 release-qualified | Its default Python 3.10 is below AngysGuard's Python 3.11 minimum; a separately installed supported Python does not by itself make the OS release-qualified. |
 | **Other Linux distributions / Ubuntu flavors** | **Best effort** | Not automatically supported | Installer packages, service behavior, desktop commands and capture backends may differ. Ubuntu success does not transfer automatically to another distro/flavor. |
-| **Windows** | **Planned** | No supported release today | Requires platform adapters and Windows-native service/security/capture implementation. Tracked by #33 and #34. |
+| **Windows** | **Planned / managed-test implementation** | No supported release today | A Tauri v2 source implementation for the limited managed test exists, but requires Windows-native service/security/capture capability completion, signed installer validation, and real Windows 10/11 testing. Tracked by #33 and #34. |
 | **Android companion app** | **Planned** | No app today | Planned first as a secure companion/controller for enrolled AngysGuard Linux/Windows devices. Tracked by #35. |
 | **Android protected-device agent** | **Research** | Not available | Android security/privacy/API/store restrictions make this a separate feasibility question. Tracked by #36. |
 | **macOS / iOS / iPadOS / BSD / ChromeOS / other OSes** | **Not targeted yet** | Not supported | Users may request support with a concrete use case/device/version. |
@@ -113,6 +113,12 @@ The current Linux interface is primarily CLI/guided setup plus bot/chat surfaces
 
 The existing CLI remains important for advanced, recovery and automation workflows.
 
+The shared Tauri v2 managed-test client now also has Linux `.deb`/AppImage build
+targets and Persian-first RTL onboarding UI. It uses the desktop session's
+`loginctl lock-session` request only when the device owner explicitly enables
+remote lock locally. This is a source/test implementation, not a Linux desktop
+support or package-quality claim until real Ubuntu X11/Wayland validation occurs.
+
 ### Windows desktop agent/app — issues #33 and #34
 
 Windows is a planned first-class desktop target after platform-specific capabilities are separated behind narrow adapters. The project should use Windows-native APIs/services rather than emulate Linux commands or expose PowerShell as a remote-control shortcut.
@@ -125,6 +131,12 @@ Before Windows is declared supported, the project must define:
 - secure credential storage;
 - lock/session/notification/capture capabilities;
 - real Windows target-device validation.
+
+The current managed-test source is `desktop/windows-tauri/`: it stores an
+enrolled device credential in Windows Credential Manager and accepts only the
+fixed action queue `status`, `arm`, `disarm`, and locally opt-in `lock`. It does
+not create a Windows service, does not expose a generic PowerShell/shell surface,
+and must not be presented as Windows support before the listed validation.
 
 ### Android companion app — issue #35
 

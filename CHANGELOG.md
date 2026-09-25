@@ -10,6 +10,18 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Managed desktop test foundation
+
+- Added a Persian-first Tauri v2 desktop enrollment client and an optional
+  self-hosted managed-test service for account/device/bot linking and a small,
+  auditable command queue.
+- The queue permits only `status`, `arm`, `disarm`, and a locally opted-in
+  session lock; it does not expose a remote shell, filesystem access, or OS
+  password transport.
+- Linux dispatches the first three actions only to the fixed local
+  `laptop-guard` commands. Windows and Linux desktop packages remain
+  unqualified test builds until their platform-specific release gates pass.
+
 ### Platform client protocol boundary
 
 - Added a device-scoped fixed-action envelope verifier with expiry, scope,

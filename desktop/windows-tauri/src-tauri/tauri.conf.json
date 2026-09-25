@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "AngysGuard",
+  "version": "0.1.0",
+  "identifier": "com.angysguard.desktop",
+  "build": {"frontendDist": "../dist", "devUrl": "http://localhost:1420", "beforeDevCommand": "npm run dev", "beforeBuildCommand": "npm run build"},
+  "app": {"windows": [{"title": "AngysGuard", "width": 720, "height": 640, "resizable": false}], "security": {"csp": "default-src 'self'; connect-src 'self' https: http://localhost:*; style-src 'self' 'unsafe-inline'"}},
+  "bundle": {"active": true, "targets": ["nsis", "msi", "deb", "appimage"], "windows": {"wix": {"language": ["en-US"]}, "nsis": {"displayLanguageSelector": false}}, "icon": ["icons/icon.ico"]}
+}
