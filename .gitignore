@@ -37,3 +37,6 @@ desktop/windows-tauri/node_modules/
 desktop/windows-tauri/dist/
 desktop/windows-tauri/src-tauri/target/
 desktop/windows-tauri/src-tauri/gen/
+desktop/windows-tauri/src-tauri/binaries/
+.build/pyinstaller-work/
+.build/pyinstaller-spec/

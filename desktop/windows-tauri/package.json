@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "package-runtime": "python3 ../../scripts/build_linux_desktop_runtime.py",
     "tauri": "tauri"
   },
   "dependencies": {

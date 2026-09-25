@@ -1,12 +1,22 @@
 use keyring::Entry;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
-use tauri::{Manager, State};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
+use tauri::{AppHandle, Manager, State};
 use tokio::sync::Mutex;
 
 const KEYRING_SERVICE: &str = "com.angysguard.desktop";
 const KEYRING_ACCOUNT: &str = "enrolled-device";
+#[cfg(target_os = "linux")]
+const BUNDLED_RUNTIME_DIRECTORY: &str = "binaries/laptop-guard-runtime";
+#[cfg(target_os = "linux")]
+const BUNDLED_RUNTIME_NAME: &str = "laptop-guard-runtime";
+#[cfg(target_os = "linux")]
+const BUNDLED_RUNTIME_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct EnrolledDevice {
@@ -67,23 +77,110 @@ async fn lock_workstation() -> Result<(), String> {
     Ok(())
 }
 
-/// Invoke only a fixed, locally installed Laptop Guard command.  Never pass
-/// bot text or server-provided arguments to a process.
 #[cfg(target_os = "linux")]
-async fn run_laptop_guard(args: &[&str]) -> Result<(), String> {
-    let status = tokio::time::timeout(
-        std::time::Duration::from_secs(20),
-        tokio::process::Command::new("laptop-guard")
-            .args(args)
-            .stdout(std::process::Stdio::null())
-            .stderr(std::process::Stdio::null())
-            .status(),
-    )
-    .await
-    .map_err(|_| "Local Laptop Guard command timed out".to_string())?
-    .map_err(|_| {
-        "The local Laptop Guard runtime is not installed or cannot be started".to_string()
-    })?;
+fn provisioned_runtime_path(app: &AppHandle) -> Result<PathBuf, String> {
+    app.path()
+        .app_local_data_dir()
+        .map(|root| {
+            root.join("runtime")
+                .join(BUNDLED_RUNTIME_VERSION)
+                .join(BUNDLED_RUNTIME_NAME)
+        })
+        .map_err(|error| format!("Could not resolve the local AngysGuard data directory: {error}"))
+}
+
+#[cfg(target_os = "linux")]
+fn bundled_runtime_directory(app: &AppHandle) -> Option<PathBuf> {
+    app.path()
+        .resource_dir()
+        .ok()
+        .map(|root| root.join(BUNDLED_RUNTIME_DIRECTORY))
+        .filter(|directory| directory.join(BUNDLED_RUNTIME_NAME).is_file())
+}
+
+#[cfg(target_os = "linux")]
+fn copy_runtime_tree(source: &Path, destination: &Path) -> Result<(), String> {
+    fs::create_dir_all(destination)
+        .map_err(|error| format!("Could not create the local runtime directory: {error}"))?;
+    for entry in fs::read_dir(source)
+        .map_err(|error| format!("Could not read the bundled runtime: {error}"))?
+    {
+        let entry =
+            entry.map_err(|error| format!("Could not read a bundled runtime file: {error}"))?;
+        let source_path = entry.path();
+        let destination_path = destination.join(entry.file_name());
+        let metadata = fs::metadata(&source_path)
+            .map_err(|error| format!("Could not inspect a bundled runtime file: {error}"))?;
+        if metadata.is_dir() {
+            copy_runtime_tree(&source_path, &destination_path)?;
+        } else if metadata.is_file() {
+            fs::copy(&source_path, &destination_path)
+                .map_err(|error| format!("Could not provision the local runtime: {error}"))?;
+            fs::set_permissions(&destination_path, metadata.permissions()).map_err(|error| {
+                format!("Could not preserve local runtime permissions: {error}")
+            })?;
+        } else {
+            return Err("The bundled runtime contains an unsupported file type".into());
+        }
+    }
+    Ok(())
+}
+
+/// Provision a packaged runtime in a durable per-user directory. AppImage mount
+/// paths are temporary, so they must never be written into a user service.
+#[cfg(target_os = "linux")]
+fn provision_runtime(app: &AppHandle) -> Result<PathBuf, String> {
+    let target = provisioned_runtime_path(app)?;
+    if target.is_file() {
+        return Ok(target);
+    }
+    let Some(source) = bundled_runtime_directory(app) else {
+        return Ok(PathBuf::from("laptop-guard"));
+    };
+    let target_directory = target.parent().ok_or("Invalid local runtime path")?;
+    copy_runtime_tree(&source, target_directory)?;
+    if !target.is_file() {
+        return Err("The bundled runtime did not contain its executable".into());
+    }
+    Ok(target)
+}
+
+/// Resolve an already-provisioned sidecar, otherwise use the packaged resource
+/// for status checks before first setup or a local developer fallback.
+#[cfg(target_os = "linux")]
+fn runtime_program(app: &AppHandle) -> PathBuf {
+    if let Ok(provisioned) = provisioned_runtime_path(app) {
+        if provisioned.is_file() {
+            return provisioned;
+        }
+    }
+    bundled_runtime_directory(app)
+        .map(|directory| directory.join(BUNDLED_RUNTIME_NAME))
+        .filter(|candidate| candidate.is_file())
+        .unwrap_or_else(|| PathBuf::from("laptop-guard"))
+}
+
+/// Invoke only a fixed Laptop Guard command. Never pass bot text or
+/// server-provided arguments to a process.
+#[cfg(target_os = "linux")]
+async fn run_laptop_guard_with_program(program: &Path, args: &[&str]) -> Result<(), String> {
+    let bundled_path = program.is_absolute().then_some(program);
+    let mut command = tokio::process::Command::new(program);
+    command
+        .args(args)
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null());
+    if let Some(path) = bundled_path {
+        // The service installer records this absolute installed sidecar path;
+        // it never uses a shell lookup or a temporary unpacking directory.
+        command.env("ANGYSGUARD_RUNTIME_EXECUTABLE", path);
+    }
+    let status = tokio::time::timeout(std::time::Duration::from_secs(20), command.status())
+        .await
+        .map_err(|_| "Local Laptop Guard command timed out".to_string())?
+        .map_err(|_| {
+            "The local Laptop Guard runtime is not installed or cannot be started".to_string()
+        })?;
     if status.success() {
         Ok(())
     } else {
@@ -91,15 +188,21 @@ async fn run_laptop_guard(args: &[&str]) -> Result<(), String> {
     }
 }
 
+#[cfg(target_os = "linux")]
+async fn run_laptop_guard(app: &AppHandle, args: &[&str]) -> Result<(), String> {
+    let program = runtime_program(app);
+    run_laptop_guard_with_program(&program, args).await
+}
+
 /// Invoke only a fixed, locally installed Laptop Guard command. Never pass bot
 /// text or server-provided arguments to a process.
 #[cfg(target_os = "linux")]
-async fn run_laptop_guard_action(action: &str) -> Result<(), String> {
+async fn run_laptop_guard_action(app: &AppHandle, action: &str) -> Result<(), String> {
     let allowed_action = match action {
         "status" | "arm" | "disarm" => action,
         _ => return Err("Unsupported local Laptop Guard action".into()),
     };
-    run_laptop_guard(&[allowed_action]).await
+    run_laptop_guard(app, &[allowed_action]).await
 }
 
 #[cfg(target_os = "linux")]
@@ -125,10 +228,14 @@ async fn lock_workstation() -> Result<(), String> {
     Err("Session lock is not available on this platform".into())
 }
 
-async fn apply_command(command: &RemoteCommand, device: &EnrolledDevice) -> String {
+async fn apply_command(
+    app: &AppHandle,
+    command: &RemoteCommand,
+    device: &EnrolledDevice,
+) -> String {
     #[cfg(target_os = "linux")]
     if matches!(command.action.as_str(), "status" | "arm" | "disarm") {
-        return match run_laptop_guard_action(&command.action).await {
+        return match run_laptop_guard_action(app, &command.action).await {
             Ok(()) => format!("completed: local Laptop Guard {} action", command.action),
             Err(error) => format!("failed: {error}"),
         };
@@ -154,7 +261,7 @@ async fn apply_command(command: &RemoteCommand, device: &EnrolledDevice) -> Stri
     }
 }
 
-async fn poll_forever(state: AgentState) {
+async fn poll_forever(state: AgentState, app: AppHandle) {
     let client = Client::new();
     loop {
         let device = { state.0.lock().await.clone() };
@@ -167,7 +274,7 @@ async fn poll_forever(state: AgentState) {
             {
                 if let Ok(pending) = response.json::<PollResponse>().await {
                     for command in pending.commands {
-                        let result = apply_command(&command, &device).await;
+                        let result = apply_command(&app, &command, &device).await;
                         send_completion(&client, &device, &command.id, &result).await;
                     }
                 }
@@ -230,6 +337,7 @@ async fn systemd_user_service_active() -> bool {
 #[cfg(target_os = "linux")]
 #[tauri::command]
 async fn prepare_local_protection(
+    app: AppHandle,
     device_name: String,
     consent: bool,
 ) -> Result<LocalProtectionStatus, String> {
@@ -242,38 +350,44 @@ async fn prepare_local_protection(
     }
     // `device_name` is locally typed, length-bounded, and supplied as one
     // argument; no provider/server content is ever executed here.
-    run_laptop_guard(&[
-        "desktop-setup",
-        "--device-name",
-        normalized_name,
-        "--consent",
-    ])
-    .await?;
-    run_laptop_guard(&["service", "install"]).await?;
-    local_protection_status().await
-}
-
-#[cfg(target_os = "linux")]
-#[tauri::command]
-async fn stop_local_protection() -> Result<LocalProtectionStatus, String> {
-    run_laptop_guard(&["service", "stop"]).await?;
-    local_protection_status().await
-}
-
-#[cfg(target_os = "linux")]
-#[tauri::command]
-async fn local_protection_status() -> Result<LocalProtectionStatus, String> {
-    let output = tokio::time::timeout(
-        std::time::Duration::from_secs(10),
-        tokio::process::Command::new("laptop-guard")
-            .arg("desktop-status")
-            .output(),
+    let runtime = provision_runtime(&app)?;
+    run_laptop_guard_with_program(
+        &runtime,
+        &[
+            "desktop-setup",
+            "--device-name",
+            normalized_name,
+            "--consent",
+        ],
     )
-    .await
-    .map_err(|_| "Local Laptop Guard status check timed out".to_string())?
-    .map_err(|_| {
-        "The local Laptop Guard runtime is not installed or cannot be started".to_string()
-    })?;
+    .await?;
+    run_laptop_guard_with_program(&runtime, &["service", "install"]).await?;
+    local_protection_status(app).await
+}
+
+#[cfg(target_os = "linux")]
+#[tauri::command]
+async fn stop_local_protection(app: AppHandle) -> Result<LocalProtectionStatus, String> {
+    run_laptop_guard(&app, &["service", "stop"]).await?;
+    local_protection_status(app).await
+}
+
+#[cfg(target_os = "linux")]
+#[tauri::command]
+async fn local_protection_status(app: AppHandle) -> Result<LocalProtectionStatus, String> {
+    let program = runtime_program(&app);
+    let bundled_path = program.is_absolute().then_some(program.clone());
+    let mut command = tokio::process::Command::new(program);
+    command.arg("desktop-status");
+    if let Some(path) = bundled_path {
+        command.env("ANGYSGUARD_RUNTIME_EXECUTABLE", path);
+    }
+    let output = tokio::time::timeout(std::time::Duration::from_secs(10), command.output())
+        .await
+        .map_err(|_| "Local Laptop Guard status check timed out".to_string())?
+        .map_err(|_| {
+            "The local Laptop Guard runtime is not installed or cannot be started".to_string()
+        })?;
     if !output.status.success() {
         return Err("Local Laptop Guard could not report its status".into());
     }
@@ -285,19 +399,23 @@ async fn local_protection_status() -> Result<LocalProtectionStatus, String> {
 
 #[cfg(not(target_os = "linux"))]
 #[tauri::command]
-async fn prepare_local_protection(_device_name: String, _consent: bool) -> Result<(), String> {
+async fn prepare_local_protection(
+    _app: AppHandle,
+    _device_name: String,
+    _consent: bool,
+) -> Result<(), String> {
     Err("Automatic local Laptop Guard setup is currently available only on Linux".into())
 }
 
 #[cfg(not(target_os = "linux"))]
 #[tauri::command]
-async fn stop_local_protection() -> Result<(), String> {
+async fn stop_local_protection(_app: AppHandle) -> Result<(), String> {
     Err("Local Laptop Guard service control is currently available only on Linux".into())
 }
 
 #[cfg(not(target_os = "linux"))]
 #[tauri::command]
-async fn local_protection_status() -> Result<(), String> {
+async fn local_protection_status(_app: AppHandle) -> Result<(), String> {
     Err("Local Laptop Guard status is currently available only on Linux".into())
 }
 
@@ -319,7 +437,7 @@ pub fn run() {
         ])
         .setup(move |app| {
             let agent_state = app.state::<AgentState>().inner().clone();
-            tauri::async_runtime::spawn(poll_forever(agent_state));
+            tauri::async_runtime::spawn(poll_forever(agent_state, app.handle().clone()));
             Ok(())
         })
         .run(tauri::generate_context!())

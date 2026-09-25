@@ -7,10 +7,11 @@ This is not a production support claim and must remain behind HTTPS.
 
 On Linux, the desktop client delegates its three existing protection actions
 only to the fixed local commands `laptop-guard status`, `laptop-guard arm`, and
-`laptop-guard disarm`. The current desktop bundle does **not** yet include that
-Python/Linux runtime. A single-install Linux release therefore remains a release
-gate: package and target-device validate the local runtime as a signed/bundled
-sidecar before distributing it to users.
+`laptop-guard disarm`. The Linux package workflow builds that Python runtime as
+an audited sidecar and bundles it into the `.deb`/AppImage; the installed user
+service records the sidecar's stable installed path. A single-install Linux
+release remains a release gate until the resulting artifacts are signed and
+validated on clean target devices.
 
 ## What is deployed
 
@@ -78,11 +79,11 @@ through local Laptop Guard configuration and its existing consent/Doctor flow.
 
 The Tauri app continues to poll the managed fixed-action queue while it is
 running; the Laptop Guard user service keeps local protection running after
-desktop login. The desktop app currently requires a locally installed
-`laptop-guard` executable. It is not yet a claim that the `.deb`/AppImage
-bundles that runtime or that Linux desktop installation is release-qualified.
-The app must show this prerequisite clearly until a bundled/runtime-provisioned
-Linux artifact has passed clean-device validation.
+desktop login. Development builds may fall back to a locally installed
+`laptop-guard` executable, but packaged Linux builds resolve the bundled
+sidecar. This is not yet a claim that an artifact is release-qualified: the
+actual `.deb`/AppImage must pass clean-device installation, reboot/recovery,
+X11/Wayland and provider checks before being distributed to testers.
 
 `ANGYSGUARD_SERVER_SECRET` is required and must be a new random value of at
 least 32 characters. `ANGYSGUARD_DATABASE_PATH` must point to a Runflare

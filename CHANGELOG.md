@@ -15,8 +15,10 @@ The project uses semantic-style versioning where practical:
 - Added a consent-required Linux desktop preparation flow for the managed-test
   Tauri client. It creates a restricted local Laptop Guard profile and starts a
   user service without enabling capture, broad app control, remote unlock or
-  remote power. This is source/test functionality, not a supported Linux
-  desktop release or Windows support claim.
+  remote power. Linux packaging now builds a bundled Python sidecar and
+  provisions it into a stable per-user path before starting the service, so an
+  AppImage mount path is never persisted. This is source/test functionality,
+  not a supported Linux desktop release or Windows support claim.
 
 ### Managed desktop test foundation
 

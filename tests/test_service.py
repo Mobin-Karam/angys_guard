@@ -62,6 +62,29 @@ def test_install_service_writes_safe_user_unit_and_enables_it(
     ]
 
 
+def test_install_service_records_a_stable_bundled_runtime_path(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    service_path = tmp_path / "systemd" / "user" / "laptop-guard.service"
+    runtime = tmp_path / "AngysGuard" / "binaries" / "laptop-guard-runtime"
+    runtime.parent.mkdir(parents=True)
+    runtime.write_text("runtime", encoding="utf-8")
+    runtime.chmod(0o700)
+    cfg = AppConfig(setup_complete=True)
+    cfg.bot.provider = "local"
+
+    monkeypatch.setattr(service, "SERVICE_DIR", service_path.parent)
+    monkeypatch.setattr(service, "SERVICE_PATH", service_path)
+    monkeypatch.setattr(config, "setup_is_complete", lambda: True)
+    monkeypatch.setattr(config, "load_config", lambda: cfg)
+    monkeypatch.setenv("ANGYSGUARD_RUNTIME_EXECUTABLE", str(runtime))
+    monkeypatch.setattr(service.subprocess, "run", lambda *_args, **_kwargs: _Result(0))
+
+    assert service.install_service() is True
+    assert f"ExecStart={runtime}" in service_path.read_text(encoding="utf-8")
+
+
 def test_install_service_refuses_incomplete_setup_without_systemctl(
     tmp_path: Path,
     monkeypatch,

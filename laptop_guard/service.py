@@ -2,10 +2,28 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import os
+import shlex
 from pathlib import Path
 
 SERVICE_DIR = Path.home() / ".config" / "systemd" / "user"
 SERVICE_PATH = SERVICE_DIR / "laptop-guard.service"
+
+
+def _service_exec_start() -> str:
+    """Return the fixed local runtime command for the systemd user service.
+
+    Tauri sets ``ANGYSGUARD_RUNTIME_EXECUTABLE`` only while installing its
+    bundled sidecar. The service stores that absolute installed path so it does
+    not rely on a temporary PyInstaller extraction path or a shell lookup.
+    """
+
+    bundled = os.environ.get("ANGYSGUARD_RUNTIME_EXECUTABLE", "").strip()
+    if bundled:
+        path = Path(bundled)
+        if path.is_absolute() and path.is_file() and os.access(path, os.X_OK):
+            return shlex.quote(str(path))
+    return f"{shlex.quote(sys.executable)} -m laptop_guard run"
 
 
 def autostart_enabled() -> bool:
@@ -56,7 +74,7 @@ def install_service(*, start_now: bool = True) -> bool:
         return False
 
     SERVICE_DIR.mkdir(parents=True, exist_ok=True)
-    content = f"""[Unit]\nDescription=Laptop Guard v11\nAfter=network-online.target graphical-session.target\nWants=network-online.target\n\n[Service]\nType=simple\nExecStart={sys.executable} -m laptop_guard run\nRestart=always\nRestartSec=5\nEnvironment=PYTHONUNBUFFERED=1\nPassEnvironment=DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE XDG_CURRENT_DESKTOP DESKTOP_SESSION XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS PULSE_SERVER\n\n[Install]\nWantedBy=default.target\n"""
+    content = f"""[Unit]\nDescription=Laptop Guard v11\nAfter=network-online.target graphical-session.target\nWants=network-online.target\n\n[Service]\nType=simple\nExecStart={_service_exec_start()}\nRestart=always\nRestartSec=5\nEnvironment=PYTHONUNBUFFERED=1\nPassEnvironment=DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE XDG_CURRENT_DESKTOP DESKTOP_SESSION XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS PULSE_SERVER\n\n[Install]\nWantedBy=default.target\n"""
     SERVICE_PATH.write_text(content, encoding="utf-8")
     reload_result = subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
     command = ["systemctl", "--user", "enable"]
