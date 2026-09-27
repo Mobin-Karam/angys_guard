@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1790336527.299779,
-    "seen": 1790336579.1608946,
-    "ast_hash": "de50462522047e884d71330a69c73f6b",
+    "mtime": 1790496619.2193694,
+    "seen": 1790503428.9561496,
+    "ast_hash": "d393ba0cecb7200300253054c4686801",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1320,9 +1320,9 @@
     "semantic_hash": ""
   },
   "docs/CONTROL_MODES.md": {
-    "mtime": 1790319522.3554218,
-    "seen": 1790330708.3834522,
-    "ast_hash": "9173dec155d16e3f09adba7b1879667f",
+    "mtime": 1790496619.2183695,
+    "seen": 1790503428.95617,
+    "ast_hash": "3eed1183d19e19a5312078a82e48bb03",
     "semantic_hash": ""
   },
   "docs/FEATURE_LIFECYCLE.md": {
@@ -1758,9 +1758,9 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src/main.ts": {
-    "mtime": 1790496432.3048859,
-    "seen": 1790496534.713015,
-    "ast_hash": "1834865cf6850598c00d440d5e1c7e79",
+    "mtime": 1790503412.2055025,
+    "seen": 1790503428.955809,
+    "ast_hash": "c4300ebf085a9a84465540981cd14be0",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/tsconfig.json": {
@@ -2094,9 +2094,9 @@
     "semantic_hash": ""
   },
   "server/tests/test_db.py": {
-    "mtime": 1790337728.7093153,
-    "seen": 1790337768.3018196,
-    "ast_hash": "3512e530eac8e9e7e5c66e1c79f20839",
+    "mtime": 1790496552.263838,
+    "seen": 1790503428.9559243,
+    "ast_hash": "f60dba2f96090917f4995c72b1d6d02a",
     "semantic_hash": ""
   },
   "docs/managed-test/PRIVACY_AND_INCIDENT_RESPONSE.md": {

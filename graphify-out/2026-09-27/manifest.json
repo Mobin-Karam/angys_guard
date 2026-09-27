@@ -1758,9 +1758,9 @@
     "semantic_hash": ""
   },
   "desktop/windows-tauri/src/main.ts": {
-    "mtime": 1790337930.0299132,
-    "seen": 1790338013.2133348,
-    "ast_hash": "2f0450ede58cfe51bf33202316938f53",
+    "mtime": 1790496432.3048859,
+    "seen": 1790496534.713015,
+    "ast_hash": "1834865cf6850598c00d440d5e1c7e79",
     "semantic_hash": ""
   },
   "desktop/windows-tauri/tsconfig.json": {
@@ -1782,15 +1782,15 @@
     "semantic_hash": ""
   },
   "server/app/db.py": {
-    "mtime": 1790337728.7093153,
-    "seen": 1790337768.3018112,
-    "ast_hash": "c5c9e6ef59fc15535cfb8c38af5dfdcd",
+    "mtime": 1790496464.3751404,
+    "seen": 1790496534.7130945,
+    "ast_hash": "8692e6f36bcbaa608cde8b9b542523d6",
     "semantic_hash": ""
   },
   "server/app/main.py": {
-    "mtime": 1790338160.7117443,
-    "seen": 1790338208.6634626,
-    "ast_hash": "eb758aa0ec0016df8ee45ddd892b21c9",
+    "mtime": 1790496348.2642188,
+    "seen": 1790496534.7130954,
+    "ast_hash": "dd8b2a34bf295aaec118f29ccf627824",
     "semantic_hash": ""
   },
   "server/app/security.py": {
@@ -1800,9 +1800,9 @@
     "semantic_hash": ""
   },
   "server/tests/test_api_flow.py": {
-    "mtime": 1790337944.7920303,
-    "seen": 1790338013.2134438,
-    "ast_hash": "75fc386d0694a7cd33dc7f8f9cbfb3e5",
+    "mtime": 1790496454.9260654,
+    "seen": 1790496534.7130997,
+    "ast_hash": "0124bc9cc0526bcd112b60d29933858e",
     "semantic_hash": ""
   },
   "server/tests/test_security.py": {
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "docs/managed-test/DEPLOYMENT.md": {
-    "mtime": 1790338437.3709402,
-    "seen": 1790338470.2615907,
-    "ast_hash": "6441edf9c9d78e0d41f9b5a5f731a9f2",
+    "mtime": 1790496514.2005358,
+    "seen": 1790496534.7133267,
+    "ast_hash": "90e0ad34c6543c4538cdccfbeffd96ad",
     "semantic_hash": ""
   },
   "server/requirements.txt": {
