@@ -320,6 +320,22 @@ def readiness() -> dict[str, str]:
     return {"status": "ready"}
 
 
+@app.get("/v1/provider-readiness")
+def provider_readiness() -> dict[str, dict[str, bool]]:
+    """Expose only whether each official-bot provider is configured.
+
+    This intentionally never returns a token, webhook secret, chat ID, or
+    provider error. It lets an operator distinguish a missing server setting
+    from a provider-side webhook problem without making secrets observable.
+    """
+
+    configuration = require_settings()
+    return {
+        "telegram": {"configured": bool(configuration.telegram_token and configuration.telegram_webhook_secret)},
+        "bale": {"configured": bool(configuration.bale_token and configuration.bale_webhook_secret)},
+    }
+
+
 @app.post("/v1/accounts", response_model=SessionResponse, status_code=201)
 def register(payload: RegisterRequest, _: Annotated[None, Depends(limit_account_attempts)]) -> SessionResponse:
     configuration = require_settings()

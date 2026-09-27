@@ -17,6 +17,21 @@ def test_missing_server_configuration_stays_alive_for_paas_diagnostics(monkeypat
         assert ready.json() == {"detail": "configuration or storage is unavailable"}
 
 
+def test_provider_readiness_reports_only_boolean_configuration(monkeypatch):
+    with tempfile.TemporaryDirectory() as directory:
+        monkeypatch.setenv("ANGYSGUARD_SERVER_SECRET", "x" * 32)
+        monkeypatch.setenv("ANGYSGUARD_DATABASE_PATH", os.path.join(directory, "guard.db"))
+        monkeypatch.setenv("ANGYSGUARD_TELEGRAM_BOT_TOKEN", "test-telegram-token")
+        monkeypatch.setenv("ANGYSGUARD_TELEGRAM_WEBHOOK_SECRET", "test-telegram-secret")
+        monkeypatch.delenv("ANGYSGUARD_BALE_BOT_TOKEN", raising=False)
+        monkeypatch.delenv("ANGYSGUARD_BALE_WEBHOOK_SECRET", raising=False)
+        with TestClient(app) as client:
+            assert client.get("/v1/provider-readiness").json() == {
+                "telegram": {"configured": True},
+                "bale": {"configured": False},
+            }
+
+
 def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
     with tempfile.TemporaryDirectory() as directory:
         reply = AsyncMock()

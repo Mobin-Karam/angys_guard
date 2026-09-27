@@ -125,6 +125,15 @@ service yet. If `/healthz` returns `{"status":"degraded"}`, the process is
 running but `ANGYSGUARD_SERVER_SECRET` is missing/too short or the configured
 database directory is not writable.
 
+Use the redacted provider check after setting bot environment variables:
+
+```bash
+curl --fail-with-body https://api.mahakaram.ir/v1/provider-readiness
+```
+
+It returns only `configured: true` or `false` for Telegram and Bale; it never
+returns a bot token, webhook secret, chat ID, or provider response.
+
 ## Bot webhooks
 
 For each enabled provider, set a distinct high-entropy webhook secret in the
