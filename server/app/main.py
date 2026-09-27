@@ -19,7 +19,7 @@ from typing import Annotated, Literal
 import httpx
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 from .db import connection, initialize, purge_expired_records
 from .security import (
@@ -190,12 +190,33 @@ def limit_pairing_attempts(scope: str) -> None:
         _pairing_attempts[scope] = attempts
 
 
-class RegisterRequest(BaseModel):
-    email: EmailStr
+class CredentialRequest(BaseModel):
+    email: EmailStr | None = None
+    username: str | None = None
     password: str = Field(min_length=12, max_length=256)
 
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip().lower()
+        if not 3 <= len(normalized) <= 32 or any(character not in "abcdefghijklmnopqrstuvwxyz0123456789_.-" for character in normalized):
+            raise ValueError("username must be 3-32 lowercase letters, digits, dots, hyphens, or underscores")
+        return normalized
 
-class LoginRequest(RegisterRequest):
+    @model_validator(mode="after")
+    def require_identity(self):
+        if bool(self.email) == bool(self.username):
+            raise ValueError("provide exactly one email or username")
+        return self
+
+
+class RegisterRequest(CredentialRequest):
+    pass
+
+
+class LoginRequest(CredentialRequest):
     pass
 
 
@@ -206,6 +227,7 @@ class SessionResponse(BaseModel):
 
 class PairStartRequest(BaseModel):
     device_name: str = Field(min_length=1, max_length=80)
+    require_bot_confirmation: bool = False
 
 
 class PairClaimRequest(BaseModel):
@@ -230,6 +252,7 @@ class RevokeResponse(BaseModel):
 class BotUpdate(BaseModel):
     chat_id: str = Field(min_length=1, max_length=128)
     text: str = Field(min_length=1, max_length=300)
+    chat_type: str | None = None
 
 
 def selected_or_only_device(db, *, account_id: str, provider: str, chat_id: str):
@@ -307,7 +330,8 @@ def register(payload: RegisterRequest, _: Annotated[None, Depends(limit_account_
         raise HTTPException(status_code=422, detail=str(error)) from error
     try:
         with connection(configuration.database_path) as db:
-            db.execute("INSERT INTO accounts(id, email, password_hash, created_at) VALUES (?, ?, ?, ?)", (account_id, str(payload.email).lower(), verifier, now()))
+            email = str(payload.email).lower() if payload.email else f"account-{account_id}@internal.invalid"
+            db.execute("INSERT INTO accounts(id, email, username, password_hash, created_at) VALUES (?, ?, ?, ?, ?)", (account_id, email, payload.username, verifier, now()))
     except Exception as error:
         if "UNIQUE constraint failed" in str(error):
             raise HTTPException(status_code=409, detail="account already exists") from error
@@ -319,7 +343,10 @@ def register(payload: RegisterRequest, _: Annotated[None, Depends(limit_account_
 def login(payload: LoginRequest, _: Annotated[None, Depends(limit_account_attempts)]) -> SessionResponse:
     configuration = require_settings()
     with connection(configuration.database_path) as db:
-        account = db.execute("SELECT id, password_hash FROM accounts WHERE email = ?", (str(payload.email).lower(),)).fetchone()
+        account = db.execute(
+            "SELECT id, password_hash FROM accounts WHERE email = ?" if payload.email else "SELECT id, password_hash FROM accounts WHERE username = ?",
+            (str(payload.email).lower() if payload.email else payload.username,),
+        ).fetchone()
     if not account or not verify_password(payload.password, account["password_hash"]):
         raise HTTPException(status_code=401, detail="invalid email or password")
     return SessionResponse(access_token=issue_token(account["id"], configuration.jwt_secret), account_id=account["id"])
@@ -332,7 +359,10 @@ def start_pairing(payload: PairStartRequest, account_id: Annotated[str, Depends(
     code = new_pairing_code()
     expires_at = now() + PAIRING_LIFETIME_SECONDS
     with connection(configuration.database_path) as db:
-        db.execute("INSERT INTO pairing_codes(code_hash, account_id, purpose, device_name, expires_at) VALUES (?, ?, 'device', ?, ?)", (token_digest(code), account_id, payload.device_name, expires_at))
+        db.execute(
+            "INSERT INTO pairing_codes(code_hash, account_id, purpose, device_name, expires_at, confirmation_required) VALUES (?, ?, 'device', ?, ?, ?)",
+            (token_digest(code), account_id, payload.device_name, expires_at, int(payload.require_bot_confirmation)),
+        )
     return {"pairing_code": code, "expires_at": expires_at}
 
 
@@ -342,9 +372,11 @@ def claim_device(payload: PairClaimRequest, account_id: Annotated[str, Depends(c
     limit_pairing_attempts(f"device-claim:{account_id}")
     with connection(configuration.database_path) as db:
         code_hash = token_digest(payload.pairing_code.upper())
-        pending = db.execute("SELECT account_id, device_name, expires_at, consumed_at FROM pairing_codes WHERE code_hash = ? AND purpose = 'device'", (code_hash,)).fetchone()
+        pending = db.execute("SELECT account_id, device_name, expires_at, consumed_at, confirmation_required, confirmed_at FROM pairing_codes WHERE code_hash = ? AND purpose = 'device'", (code_hash,)).fetchone()
         if not pending or pending["account_id"] != account_id or pending["consumed_at"] or pending["expires_at"] < now():
             raise HTTPException(status_code=400, detail="pairing code is invalid, expired, or already used")
+        if pending["confirmation_required"] and not pending["confirmed_at"]:
+            raise HTTPException(status_code=409, detail="confirm this device code in your linked bot with /pair CODE")
         device_id, device_token = str(uuid.uuid4()), new_opaque_token()
         db.execute("INSERT INTO devices(id, account_id, name, credential_hash, created_at) VALUES (?, ?, ?, ?, ?)", (device_id, account_id, pending["device_name"], token_digest(device_token), now()))
         db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code_hash = ?", (now(), code_hash))
@@ -471,13 +503,54 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
         payload = BotUpdate(
             chat_id=str(candidate.get("chat_id", chat.get("id", ""))),
             text=str(candidate.get("text", "")),
+            chat_type=str(candidate.get("chat_type", chat.get("type", ""))) or None,
         )
     except Exception as error:
         raise HTTPException(status_code=422, detail="unsupported bot update") from error
     configuration = require_settings()
     parts = payload.text.strip().split(maxsplit=1)
     command = parts[0].lower().split("@", 1)[0]
-    argument = parts[1].strip().upper() if len(parts) == 2 else ""
+    raw_argument = parts[1].strip() if len(parts) == 2 else ""
+    argument = raw_argument.upper()
+    if command == "/start":
+        await respond(
+            provider,
+            payload.chat_id,
+            "Welcome to AngysGuard. New private chats: create an account with /signup USERNAME PASSWORD (use a unique account password, never your Windows/Linux password). Then sign in in the desktop app and pair the device code here with /pair CODE.",
+        )
+        return {"status": "started"}
+    if command == "/signup":
+        if payload.chat_type != "private":
+            await respond(provider, payload.chat_id, "For privacy, create an account only in a private chat with this bot.")
+            return {"status": "private-chat-required"}
+        signup_parts = raw_argument.split(maxsplit=1)
+        if len(signup_parts) != 2:
+            await respond(provider, payload.chat_id, "Use /signup USERNAME PASSWORD. The password must be at least 12 characters and must not be your Windows/Linux password.")
+            return {"status": "invalid-signup"}
+        try:
+            username = CredentialRequest(username=signup_parts[0], password=signup_parts[1]).username
+            verifier = hash_password(signup_parts[1])
+        except ValueError as error:
+            await respond(provider, payload.chat_id, str(error))
+            return {"status": "invalid-signup"}
+        limit_account_attempts(request)
+        account_id = str(uuid.uuid4())
+        try:
+            with connection(configuration.database_path) as db:
+                existing = db.execute("SELECT account_id FROM bot_chats WHERE provider = ? AND chat_id = ?", (provider, payload.chat_id)).fetchone()
+                if existing:
+                    await respond(provider, payload.chat_id, "This chat is already linked to an AngysGuard account.")
+                    return {"status": "already-linked"}
+                db.execute(
+                    "INSERT INTO accounts(id, email, username, password_hash, created_at) VALUES (?, ?, ?, ?, ?)",
+                    (account_id, f"account-{account_id}@internal.invalid", username, verifier, now()),
+                )
+                db.execute("INSERT INTO bot_chats(provider, chat_id, account_id, created_at) VALUES (?, ?, ?, ?)", (provider, payload.chat_id, account_id, now()))
+        except sqlite3.IntegrityError:
+            await respond(provider, payload.chat_id, "That username is already in use. Choose another one.")
+            return {"status": "username-taken"}
+        await respond(provider, payload.chat_id, "Account created and this chat is linked. Delete your signup message now. Sign in to the AngysGuard desktop app with this username, generate the device code, then send /pair CODE here.")
+        return {"status": "registered"}
     if command == "/link" and argument:
         limit_pairing_attempts(f"bot-link:{provider}:{payload.chat_id}")
         with connection(configuration.database_path) as db:
@@ -493,8 +566,23 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
     with connection(configuration.database_path) as db:
         chat = db.execute("SELECT account_id FROM bot_chats WHERE provider = ? AND chat_id = ?", (provider, payload.chat_id)).fetchone()
         if not chat:
-            await respond(provider, payload.chat_id, "Link this chat first with /link YOUR-CODE.")
+            await respond(provider, payload.chat_id, "Start with /start, then create an account using /signup USERNAME PASSWORD, or link an existing account with /link YOUR-CODE.")
             return {"status": "unlinked"}
+        if command == "/pair" and argument:
+            limit_pairing_attempts(f"bot-device-confirm:{provider}:{payload.chat_id}")
+            code = db.execute(
+                "SELECT account_id, device_name, expires_at, consumed_at, confirmation_required, confirmed_at FROM pairing_codes WHERE code_hash = ? AND purpose = 'device'",
+                (token_digest(argument),),
+            ).fetchone()
+            if not code or code["account_id"] != chat["account_id"] or code["consumed_at"] or code["expires_at"] < now() or not code["confirmation_required"]:
+                await respond(provider, payload.chat_id, "Device code is invalid, expired, or was not requested by this account.")
+                return {"status": "invalid-device-pair"}
+            if code["confirmed_at"]:
+                await respond(provider, payload.chat_id, "That device code is already confirmed. Return to the desktop app to finish enrollment.")
+                return {"status": "device-pair-confirmed"}
+            db.execute("UPDATE pairing_codes SET confirmed_at = ? WHERE code_hash = ? AND confirmed_at IS NULL", (now(), token_digest(argument)))
+            await respond(provider, payload.chat_id, f"Device code confirmed for {code['device_name']}. Return to the AngysGuard desktop app to finish secure enrollment.")
+            return {"status": "device-pair-confirmed"}
         if command == "/devices":
             devices = db.execute(
                 "SELECT id, name FROM devices WHERE account_id = ? AND revoked_at IS NULL ORDER BY last_seen_at DESC",

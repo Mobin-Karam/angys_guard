@@ -12,7 +12,7 @@ SCHEMA = """
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS accounts (
   id TEXT PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL,
-  created_at INTEGER NOT NULL
+  created_at INTEGER NOT NULL, username TEXT UNIQUE
 );
 CREATE TABLE IF NOT EXISTS devices (
   id TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS devices (
 );
 CREATE TABLE IF NOT EXISTS pairing_codes (
   code_hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-  purpose TEXT NOT NULL, device_name TEXT, expires_at INTEGER NOT NULL, consumed_at INTEGER
+  purpose TEXT NOT NULL, device_name TEXT, expires_at INTEGER NOT NULL, consumed_at INTEGER,
+  confirmation_required INTEGER NOT NULL DEFAULT 0, confirmed_at INTEGER
 );
 CREATE TABLE IF NOT EXISTS bot_chats (
   provider TEXT NOT NULL, chat_id TEXT NOT NULL, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
@@ -78,6 +79,15 @@ def initialize(path: str) -> None:
         chat_columns = {row[1] for row in connection.execute("PRAGMA table_info(bot_chats)")}
         if "selected_device_id" not in chat_columns:
             connection.execute("ALTER TABLE bot_chats ADD COLUMN selected_device_id TEXT")
+        account_columns = {row[1] for row in connection.execute("PRAGMA table_info(accounts)")}
+        if "username" not in account_columns:
+            connection.execute("ALTER TABLE accounts ADD COLUMN username TEXT")
+        connection.execute("CREATE UNIQUE INDEX IF NOT EXISTS accounts_username_unique ON accounts(username) WHERE username IS NOT NULL")
+        pairing_columns = {row[1] for row in connection.execute("PRAGMA table_info(pairing_codes)")}
+        if "confirmation_required" not in pairing_columns:
+            connection.execute("ALTER TABLE pairing_codes ADD COLUMN confirmation_required INTEGER NOT NULL DEFAULT 0")
+        if "confirmed_at" not in pairing_columns:
+            connection.execute("ALTER TABLE pairing_codes ADD COLUMN confirmed_at INTEGER")
 
 
 def purge_expired_records(path: str, *, timestamp: int, command_audit_retention_seconds: int) -> None:

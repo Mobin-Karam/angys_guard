@@ -25,6 +25,9 @@ The project uses semantic-style versioning where practical:
 - Added a Persian-first Tauri v2 desktop enrollment client and an optional
   self-hosted managed-test service for account/device/bot linking and a small,
   auditable command queue.
+- Added private-chat managed-test account signup by username and a short-lived
+  bot-confirmed device-code flow. The bot accepts only a unique AngysGuard
+  account password, never a protected device's Windows/Linux password.
 - The queue permits only `status`, `arm`, `disarm`, and a locally opted-in
   session lock; it does not expose a remote shell, filesystem access, or OS
   password transport.

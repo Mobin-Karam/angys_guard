@@ -154,13 +154,22 @@ bot-management flow first. This repository intentionally cannot create provider
 accounts or invent provider tokens. The supplied registration helper never prints
 the token.
 
-The current test bot accepts only `/link CODE`, `/devices`, `/use DEVICE-ID`,
-`/status`, `/arm`, `/disarm`, `/lock`, `/events`, and `/revoke`. One chat is
-tied to one account. With multiple devices, `/devices` lists the account's
-short IDs and `/use DEVICE-ID` selects one; no action is queued until that
-selection is made. `/events` shows at most ten recent fixed command outcomes
-for that selected device using only redacted state labels; it never returns raw
-agent diagnostics, captured media, paths, or secrets.
+The current test bot accepts `/start`, `/signup USERNAME PASSWORD`, `/pair CODE`,
+`/link CODE`, `/devices`, `/use DEVICE-ID`, `/status`, `/arm`, `/disarm`,
+`/lock`, `/events`, and `/revoke`. One chat is tied to one account. A first-time
+user starts a **private** chat, runs `/signup` with a unique AngysGuard account
+password, and then signs in to the desktop app with that username. This password
+is never a Windows/Linux password and should not be reused; the bot asks the user
+to delete the signup message after account creation.
+
+In the desktop app, the user creates a device code, sends `/pair CODE` in that
+already-linked private bot chat, then presses **Finish enrollment** in the app.
+The service only issues the local device credential after the same account's bot
+chat has confirmed the short-lived code. With multiple devices, `/devices` lists
+the account's short IDs and `/use DEVICE-ID` selects one; no action is queued
+until that selection is made. `/events` shows at most ten recent fixed command
+outcomes for that selected device using only redacted state labels; it never
+returns raw agent diagnostics, captured media, paths, or secrets.
 `/revoke` requires a separate, single-use `/confirm-revoke CODE` reply within
 30 seconds. After the device completes a fixed action, the server sends its
 bounded result back to the same linked chat.

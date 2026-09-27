@@ -1,0 +1,12 @@
+# Local Linux Laptop Guard runtime dependencies. install.sh uses this file;
+# do not use it for the Runflare managed API deployment.
+requests>=2.32,<3
+httpx[socks]>=0.28,<1
+opencv-python>=4.13,<5
+pynput>=1.7,<2
+rich>=13.9
+psutil>=6,<8
+pyudev>=0.24,<1
+evdev>=1.7,<2
+Pillow>=10,<12
+py-persian-tts==3.0.2

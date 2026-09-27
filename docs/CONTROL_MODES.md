@@ -132,10 +132,10 @@ Issues #38, #39, #40 and #42 define the optional startup-hosted mode.
 A source-only, self-hosted test implementation is available for the initial
 small cohort at `server/` and `desktop/windows-tauri/`. Its deployment target is
 documented in `managed-test/DEPLOYMENT.md`. It supports account passwords hashed
-on the server, short-lived device/bot linking codes, hashed revocable device
-credentials, and a fixed device command queue. It is **not a production service
-or a Windows support claim** until its release gate and target-device validation
-are complete.
+on the server, private-chat username signup, short-lived bot-confirmed device
+codes, hashed revocable device credentials, and a fixed device command queue.
+It is **not a production service or a Windows support claim** until its release
+gate and target-device validation are complete.
 
 This mode is for users who do **not** want to create/maintain their own Bale or Telegram bot.
 
@@ -153,9 +153,11 @@ Install AngysGuard agent -> display one-time pairing code
        -> submit pairing code -> device becomes a scoped bot target
 ```
 
-This is the chosen architecture direction, not a statement that the official
-service is deployed. The current Linux local/self-hosted provider setup remains
-available until the managed path is implemented and validated.
+This is the chosen architecture direction. The repository contains a
+source-level managed-test implementation of this onboarding, but it must still
+be deployed, configured with official provider credentials, and validated with
+real Linux/Windows devices before it can be described as an available official
+service. The current Linux local/self-hosted provider setup remains available.
 
 The planned service may provide official AngysGuard Bale/Telegram bots and future Android/Linux/Windows app surfaces.
 

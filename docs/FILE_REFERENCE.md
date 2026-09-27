@@ -18,8 +18,9 @@ Generated caches, `.git`, `.venv`, local runtime data, and local
 | `.gitignore` | Excludes local environments, caches, credentials/secrets, media, logs, and runtime artifacts. |
 | `LICENSE` | MIT project licensing terms. |
 | `pyproject.toml` | Package metadata, version, root README source, Python requirement, runtime/test dependencies, console entry point, package discovery, media package data, keywords and project URLs. |
-| `requirements.txt` | Installer-compatible runtime dependency list. |
-| `install.sh` | Creates the virtual environment and installs dependencies. |
+| `requirements.txt` | Lightweight managed-API dependency list for the root Runflare entrypoint. |
+| `requirements.local.txt` | Full local Linux Laptop Guard runtime dependency list used by `install.sh`; never deploy it to Runflare. |
+| `install.sh` | Creates the virtual environment and installs local-protection dependencies. |
 | `run.sh` | Secure launcher; selects virtual-environment Python and delegates to the package CLI. |
 | `doctor.sh` | Convenience launcher for dependency/configuration readiness checks. |
 | `repair-opencv.sh` | Repairs conflicting OpenCV variants for person/HOG compatibility. |

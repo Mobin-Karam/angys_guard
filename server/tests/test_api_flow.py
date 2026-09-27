@@ -98,3 +98,51 @@ def test_bot_selects_one_of_multiple_devices_and_revocation_needs_confirmation(m
             assert update(f"/confirm-revoke {confirmation_code}").json() == {"status": "revoked"}
             assert update(f"/confirm-revoke {confirmation_code}").json() == {"status": "invalid-confirmation"}
             assert client.get("/v1/device/commands", headers={"Authorization": f"Device {devices[1]['device_token']}"}).status_code == 401
+
+
+def test_private_bot_signup_confirms_desktop_device_code_then_allows_login(monkeypatch):
+    with tempfile.TemporaryDirectory() as directory:
+        reply = AsyncMock()
+        monkeypatch.setattr("server.app.main.respond", reply)
+        monkeypatch.setenv("ANGYSGUARD_SERVER_SECRET", "x" * 32)
+        monkeypatch.setenv("ANGYSGUARD_DATABASE_PATH", os.path.join(directory, "guard.db"))
+        monkeypatch.setenv("ANGYSGUARD_TELEGRAM_WEBHOOK_SECRET", "telegram-webhook-secret")
+        with TestClient(app) as client:
+            headers = {"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"}
+            update = lambda text, chat_type="private": client.post(
+                "/v1/bots/telegram/updates",
+                headers=headers,
+                json={"message": {"chat": {"id": 12345, "type": chat_type}, "text": text}},
+            )
+            assert update("/start").json() == {"status": "started"}
+            assert update("/signup owner_01 a unique account password").json() == {"status": "registered"}
+            signed_in = client.post("/v1/sessions", json={"username": "owner_01", "password": "a unique account password"})
+            assert signed_in.status_code == 200
+            bearer = {"Authorization": f"Bearer {signed_in.json()['access_token']}"}
+            code = client.post(
+                "/v1/devices/pairing-codes",
+                headers=bearer,
+                json={"device_name": "Linux desktop", "require_bot_confirmation": True},
+            ).json()["pairing_code"]
+            assert client.post("/v1/devices/claim", headers=bearer, json={"pairing_code": code}).status_code == 409
+            assert update(f"/pair {code}").json() == {"status": "device-pair-confirmed"}
+            device = client.post("/v1/devices/claim", headers=bearer, json={"pairing_code": code})
+            assert device.status_code == 200
+            assert client.get("/v1/device/status", headers={"Authorization": f"Device {device.json()['device_token']}"}).json() == {"status": "connected"}
+
+
+def test_bot_signup_rejects_group_chats_and_never_creates_an_account(monkeypatch):
+    with tempfile.TemporaryDirectory() as directory:
+        reply = AsyncMock()
+        monkeypatch.setattr("server.app.main.respond", reply)
+        monkeypatch.setenv("ANGYSGUARD_SERVER_SECRET", "x" * 32)
+        monkeypatch.setenv("ANGYSGUARD_DATABASE_PATH", os.path.join(directory, "guard.db"))
+        monkeypatch.setenv("ANGYSGUARD_TELEGRAM_WEBHOOK_SECRET", "telegram-webhook-secret")
+        with TestClient(app) as client:
+            response = client.post(
+                "/v1/bots/telegram/updates",
+                headers={"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"},
+                json={"message": {"chat": {"id": 12345, "type": "group"}, "text": "/signup owner_01 a unique account password"}},
+            )
+            assert response.json() == {"status": "private-chat-required"}
+            assert client.post("/v1/sessions", json={"username": "owner_01", "password": "a unique account password"}).status_code == 401

@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 
 PYTHON="${PYTHON:-python3}"
 VENV_DIR="${VENV_DIR:-.venv}"
-REQUIREMENTS_FILE="${REQUIREMENTS_FILE:-requirements.txt}"
+REQUIREMENTS_FILE="${REQUIREMENTS_FILE:-requirements.local.txt}"
 OS_RELEASE_FILE="${ANGYSGUARD_OS_RELEASE_FILE:-/etc/os-release}"
 MIN_PYTHON_MAJOR=3
 MIN_PYTHON_MINOR=11

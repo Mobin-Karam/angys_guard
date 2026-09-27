@@ -43,3 +43,19 @@ def test_upgrade_invalidates_old_cleartext_pairing_codes():
             assert "code_hash" in {row[1] for row in db.execute("PRAGMA table_info(pairing_codes)")}
             assert db.execute("SELECT count(*) FROM pairing_codes").fetchone()[0] == 0
             db.execute("INSERT INTO pairing_codes(code_hash, account_id, purpose, expires_at) VALUES ('new-code-hash', 'account', 'device', 9999999)")
+
+
+def test_upgrade_adds_username_and_bot_confirmation_columns_without_losing_accounts():
+    with tempfile.TemporaryDirectory() as directory:
+        path = os.path.join(directory, "legacy-accounts.db")
+        with sqlite3.connect(path) as db:
+            db.execute("CREATE TABLE accounts (id TEXT PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, created_at INTEGER NOT NULL)")
+            db.execute("INSERT INTO accounts VALUES ('account', 'owner@example.test', 'hash', 1)")
+            db.execute("CREATE TABLE pairing_codes (code_hash TEXT PRIMARY KEY, account_id TEXT NOT NULL, purpose TEXT NOT NULL, device_name TEXT, expires_at INTEGER NOT NULL, consumed_at INTEGER)")
+
+        initialize(path)
+
+        with connection(path) as db:
+            assert db.execute("SELECT email, username FROM accounts WHERE id = 'account'").fetchone()["email"] == "owner@example.test"
+            pairing_columns = {row[1] for row in db.execute("PRAGMA table_info(pairing_codes)")}
+            assert {"confirmation_required", "confirmed_at"} <= pairing_columns

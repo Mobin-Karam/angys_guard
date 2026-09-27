@@ -19,7 +19,7 @@ def _prepare_install_tree(tmp_path: Path) -> tuple[Path, Path, dict[str, str]]:
     work.mkdir()
     fake_bin.mkdir()
     (work / "install.sh").write_text(INSTALLER.read_text(encoding="utf-8"), encoding="utf-8")
-    (work / "requirements.txt").write_text("requests>=2.32,<3\n", encoding="utf-8")
+    (work / "requirements.local.txt").write_text("requests>=2.32,<3\n", encoding="utf-8")
     os_release = tmp_path / "os-release"
     os_release.write_text('ID=ubuntu\nPRETTY_NAME="Ubuntu Test"\nVERSION_CODENAME=noble\n', encoding="utf-8")
     env = os.environ.copy()
