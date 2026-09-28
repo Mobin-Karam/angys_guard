@@ -2,6 +2,6 @@
 # to the managed API: protected-device dependencies belong in
 # requirements.local.txt and are installed only on the user's Linux machine.
 fastapi==0.115.12
-uvicorn[standard]==0.34.2
+uvicorn[standard]==0.53.0
 httpx==0.28.1
 email-validator==2.2.0
