@@ -1,0 +1,64 @@
+name: NPM package checks
+
+on:
+  push:
+    paths:
+      - "packages/**"
+      - ".github/workflows/npm-packages.yml"
+      - "pyproject.toml"
+      - "laptop_guard/**"
+  pull_request:
+    paths:
+      - "packages/**"
+      - ".github/workflows/npm-packages.yml"
+      - "pyproject.toml"
+      - "laptop_guard/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-install:
+    name: Linux npm install and CLI smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Pack the Linux package
+        working-directory: packages/linux-agent
+        run: npm pack
+      - name: Install the packed Linux package into an isolated prefix
+        shell: bash
+        run: |
+          set -euo pipefail
+          prefix="$RUNNER_TEMP/angysguard-npm"
+          npm install --prefix "$prefix" "$GITHUB_WORKSPACE/packages/linux-agent/angysguard-linux-agent-0.1.0.tgz"
+          "$prefix/node_modules/.bin/angysguard" --help
+
+  windows-install:
+    name: Windows npm install and fixed-command smoke
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Pack and install the Windows package into an isolated prefix
+        shell: pwsh
+        run: |
+          Push-Location packages/windows-agent
+          npm pack
+          Pop-Location
+          $prefix = Join-Path $env:RUNNER_TEMP "angysguard-npm"
+          $tarball = Join-Path $env:GITHUB_WORKSPACE "packages/windows-agent/angysguard-windows-agent-0.1.0.tgz"
+          npm install --prefix $prefix $tarball
+          & (Join-Path $prefix "node_modules/.bin/angysguard.cmd") status
+          & (Join-Path $prefix "node_modules/.bin/angysguard.cmd") doctor

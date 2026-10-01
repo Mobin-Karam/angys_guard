@@ -40,3 +40,5 @@ desktop/windows-tauri/src-tauri/gen/
 desktop/windows-tauri/src-tauri/binaries/
 .build/pyinstaller-work/
 .build/pyinstaller-spec/
+packages/linux-agent/runtime/
+packages/linux-agent/runtime-src/

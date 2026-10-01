@@ -94,6 +94,13 @@ The current release expects:
 
 X11 and Wayland are both part of the target, but compositor/privacy differences mean they cannot always provide identical capture/input behavior. AngysGuard does not bypass OS privacy boundaries to make them look identical.
 
+### Experimental npm terminal launcher
+
+The source tree includes a small Linux npm launcher for users who prefer an
+`angysguard` terminal command after installing the verified Python runtime. It
+is **not published to npm yet** and does not replace `./install.sh`, Python
+dependencies, or Linux target-device validation. See [NPM package guidance](docs/NPM_PACKAGES.md).
+
 ## How can I control AngysGuard?
 
 ### Available today

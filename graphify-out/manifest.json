@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1790879611.0008426,
-    "seen": 1790879637.551893,
-    "ast_hash": "cc99564c5bcdc19e5a8d70bbdf2975bf",
+    "mtime": 1790880379.0789394,
+    "seen": 1790880421.646447,
+    "ast_hash": "2837e4aee66c519de3e1affc10f237d2",
     "semantic_hash": ""
   },
   "docs/SECURITY.md": {
@@ -1272,9 +1272,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790879599.567752,
-    "seen": 1790879637.551854,
-    "ast_hash": "d4632f48362816935190d419bc925e78",
+    "mtime": 1790880408.244171,
+    "seen": 1790880421.6464162,
+    "ast_hash": "ea4f35862b09149d90db0e0be6b830c6",
     "semantic_hash": ""
   },
   "SECURITY.md": {
@@ -2175,6 +2175,90 @@
     "mtime": 1790879591.6166887,
     "seen": 1790879637.5518715,
     "ast_hash": "c6561be325bb4f2690f1200d045c69dc",
+    "semantic_hash": ""
+  },
+  "packages/linux-agent/bin/angysguard.cjs": {
+    "mtime": 1790880810.0103598,
+    "seen": 1790880929.2275965,
+    "ast_hash": "9598c67e0b65da6221398d1232f82ca2",
+    "semantic_hash": ""
+  },
+  "packages/linux-agent/package.json": {
+    "mtime": 1790880624.1838849,
+    "seen": 1790880929.2275982,
+    "ast_hash": "4538af6266756f47da8fec605beb99bf",
+    "semantic_hash": ""
+  },
+  "packages/windows-agent/bin/angysguard.cjs": {
+    "mtime": 1790880110.3428063,
+    "seen": 1790880421.6462204,
+    "ast_hash": "a9e47ed5e745bf32b8aaacf0cada266d",
+    "semantic_hash": ""
+  },
+  "packages/windows-agent/package.json": {
+    "mtime": 1790880459.2065754,
+    "seen": 1790880929.2276032,
+    "ast_hash": "7816e822a25f95a5bbd085db53dc9143",
+    "semantic_hash": ""
+  },
+  "tests/test_npm_agent_packages.py": {
+    "mtime": 1790880852.361696,
+    "seen": 1790880929.227649,
+    "ast_hash": "7fef467c4191c1bef967961e04f049dc",
+    "semantic_hash": ""
+  },
+  "docs/NPM_PACKAGES.md": {
+    "mtime": 1790880676.3382988,
+    "seen": 1790880929.2277746,
+    "ast_hash": "84a10797794b812552aa779b39a04bbe",
+    "semantic_hash": ""
+  },
+  "packages/README.md": {
+    "mtime": 1790880342.2346468,
+    "seen": 1790880421.6464703,
+    "ast_hash": "a48adcadb9a04df674c587c9343880e0",
+    "semantic_hash": ""
+  },
+  "packages/linux-agent/README.md": {
+    "mtime": 1790880624.1863601,
+    "seen": 1790880929.2278018,
+    "ast_hash": "3d9773f56b15fe643acab42bc22c6c54",
+    "semantic_hash": ""
+  },
+  "packages/windows-agent/README.md": {
+    "mtime": 1790880342.2346468,
+    "seen": 1790880421.646472,
+    "ast_hash": "5053042b1b9fdd25f8ba45978631521b",
+    "semantic_hash": ""
+  },
+  "packages/linux-agent/scripts/build-runtime.cjs": {
+    "mtime": 1790880897.2950528,
+    "seen": 1790880929.2275994,
+    "ast_hash": "8548abe9f69dced71870982e96895b0a",
+    "semantic_hash": ""
+  },
+  "packages/linux-agent/scripts/clean-runtime-source.cjs": {
+    "mtime": 1790880624.1863601,
+    "seen": 1790880929.2276003,
+    "ast_hash": "525ad0370a6e73b35993496b856fa4df",
+    "semantic_hash": ""
+  },
+  "packages/linux-agent/scripts/install-runtime.cjs": {
+    "mtime": 1790880852.361696,
+    "seen": 1790880929.227601,
+    "ast_hash": "047e3dc7fe36b8455b35b908a4243351",
+    "semantic_hash": ""
+  },
+  ".github/workflows/npm-packages.yml": {
+    "mtime": 1790880810.0123599,
+    "seen": 1790880929.2277474,
+    "ast_hash": "572daf86a15e714971c51b16c3e9a2bb",
+    "semantic_hash": ""
+  },
+  ".github/workflows/npm-publish.yml": {
+    "mtime": 1790880676.3382988,
+    "seen": 1790880929.2277484,
+    "ast_hash": "e59d7cae99d14a193bf339d3db254db5",
     "semantic_hash": ""
   }
 }

@@ -1,0 +1,48 @@
+name: Publish NPM packages
+
+on:
+  push:
+    tags: ["npm-v*"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish packages instead of only building tarballs
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: npm-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Confirm package versions and create tarballs
+        shell: bash
+        run: |
+          set -euo pipefail
+          linux_version="$(node -p "require('./packages/linux-agent/package.json').version")"
+          windows_version="$(node -p "require('./packages/windows-agent/package.json').version")"
+          test "$linux_version" = "$windows_version"
+          if [[ "$GITHUB_REF" == refs/tags/npm-v* ]]; then
+            test "${GITHUB_REF_NAME#npm-v}" = "$linux_version"
+          fi
+          (cd packages/linux-agent && npm pack)
+          (cd packages/windows-agent && npm pack)
+      - name: Publish with npm provenance
+        if: startsWith(github.ref, 'refs/tags/npm-v') || inputs.publish
+        run: |
+          npm publish ./packages/linux-agent --access public --provenance
+          npm publish ./packages/windows-agent --access public --provenance

@@ -21,6 +21,7 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | Compare Bale vs Telegram Bot API behavior | [Provider behavior](PROVIDERS.md) |
 | Request another operating system/platform | [Platform support](PLATFORM_SUPPORT.md#request-support-for-another-os) + Platform / OS request issue form |
 | Install/use current Linux release | [Root README quick start](../README.md#quick-start--linux-today) |
+| Review experimental npm terminal launchers | [NPM packages](NPM_PACKAGES.md) |
 | Deploy the limited Windows managed test | [Managed test deployment](managed-test/DEPLOYMENT.md) |
 | Navigate files/symbols/callers/tests with minimal context | [Graphify navigation](GRAPHIFY_NAVIGATION.md) |
 | Understand architecture | [Architecture](ARCHITECTURE.md) |

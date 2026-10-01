@@ -1,0 +1,14 @@
+{
+  "name": "@angysguard/windows-agent",
+  "version": "0.1.0",
+  "description": "Experimental Windows terminal agent for AngysGuard fixed local protection controls.",
+  "bin": { "angysguard": "bin/angysguard.cjs" },
+  "engines": { "node": ">=20" },
+  "os": ["win32"],
+  "files": ["bin", "README.md"],
+  "repository": "github:Mobin-Karam/angys_guard",
+  "bugs": "https://github.com/Mobin-Karam/angys_guard/issues",
+  "homepage": "https://github.com/Mobin-Karam/angys_guard#readme",
+  "publishConfig": { "access": "public", "provenance": true },
+  "license": "MIT"
+}
