@@ -1,20 +1,34 @@
 {
   "name": "@angysguard/linux-agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Linux npm installer and terminal launcher for AngysGuard.",
-  "bin": { "angysguard": "bin/angysguard.cjs" },
+  "bin": {
+    "angysguard": "bin/angysguard.cjs"
+  },
   "scripts": {
     "prepare": "node scripts/build-runtime.cjs",
     "prepack": "node scripts/build-runtime.cjs",
     "postpack": "node scripts/clean-runtime-source.cjs",
     "postinstall": "node scripts/install-runtime.cjs"
   },
-  "engines": { "node": ">=20" },
-  "os": ["linux"],
-  "files": ["bin", "scripts", "runtime-src", "README.md"],
+  "engines": {
+    "node": ">=20"
+  },
+  "os": [
+    "linux"
+  ],
+  "files": [
+    "bin",
+    "scripts",
+    "runtime-src",
+    "README.md"
+  ],
   "repository": "github:Mobin-Karam/angys_guard",
   "bugs": "https://github.com/Mobin-Karam/angys_guard/issues",
   "homepage": "https://github.com/Mobin-Karam/angys_guard#readme",
-  "publishConfig": { "access": "public", "provenance": true },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "license": "MIT"
 }
