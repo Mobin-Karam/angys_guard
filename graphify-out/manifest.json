@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1790880379.0789394,
-    "seen": 1790880421.646447,
-    "ast_hash": "2837e4aee66c519de3e1affc10f237d2",
+    "mtime": 1790881291.3841808,
+    "seen": 1790881344.1098757,
+    "ast_hash": "282d5d4160f5cb9a264bef71498dd473",
     "semantic_hash": ""
   },
   "docs/SECURITY.md": {
@@ -672,9 +672,9 @@
     "semantic_hash": ""
   },
   ".github/repository-profile.json": {
-    "mtime": 1789248204.0739872,
-    "seen": 1789922474.9258986,
-    "ast_hash": "c8211e5fec5d51161cb954cb923f822f",
+    "mtime": 1790881291.3821807,
+    "seen": 1790881344.1095138,
+    "ast_hash": "01e19be724592533bf8da480aca74a79",
     "semantic_hash": ""
   },
   ".github/scripts/bootstrap_repository_management.py": {
@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1790877285.243382,
-    "seen": 1790877297.1783338,
-    "ast_hash": "5ba2dcbd9234ea0cd69031213e1fad17",
+    "mtime": 1790881291.3841808,
+    "seen": 1790881344.1098363,
+    "ast_hash": "0a0bf073bcd51cfbf8b86d4f28e356d3",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1272,9 +1272,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790880408.244171,
-    "seen": 1790880421.6464162,
-    "ast_hash": "ea4f35862b09149d90db0e0be6b830c6",
+    "mtime": 1790881291.3831809,
+    "seen": 1790881344.10984,
+    "ast_hash": "eb173fe899c02498fa7703fc5c79b6ac",
     "semantic_hash": ""
   },
   "SECURITY.md": {
@@ -2184,9 +2184,9 @@
     "semantic_hash": ""
   },
   "packages/linux-agent/package.json": {
-    "mtime": 1790880624.1838849,
-    "seen": 1790880929.2275982,
-    "ast_hash": "4538af6266756f47da8fec605beb99bf",
+    "mtime": 1790881261.6009443,
+    "seen": 1790881344.1096177,
+    "ast_hash": "01150dd5b5a7783888c7e738a7a1d65a",
     "semantic_hash": ""
   },
   "packages/windows-agent/bin/angysguard.cjs": {
@@ -2196,9 +2196,9 @@
     "semantic_hash": ""
   },
   "packages/windows-agent/package.json": {
-    "mtime": 1790880459.2065754,
-    "seen": 1790880929.2276032,
-    "ast_hash": "7816e822a25f95a5bbd085db53dc9143",
+    "mtime": 1790881261.7199452,
+    "seen": 1790881344.109625,
+    "ast_hash": "6f86d01d8f9cd69ec5d6d7216d58fc33",
     "semantic_hash": ""
   },
   "tests/test_npm_agent_packages.py": {
@@ -2208,9 +2208,9 @@
     "semantic_hash": ""
   },
   "docs/NPM_PACKAGES.md": {
-    "mtime": 1790880676.3382988,
-    "seen": 1790880929.2277746,
-    "ast_hash": "84a10797794b812552aa779b39a04bbe",
+    "mtime": 1790881050.2262666,
+    "seen": 1790881344.109865,
+    "ast_hash": "5376ac649693d4a0787cb57d7197ad84",
     "semantic_hash": ""
   },
   "packages/README.md": {
@@ -2256,9 +2256,27 @@
     "semantic_hash": ""
   },
   ".github/workflows/npm-publish.yml": {
-    "mtime": 1790880676.3382988,
-    "seen": 1790880929.2277484,
-    "ast_hash": "e59d7cae99d14a193bf339d3db254db5",
+    "mtime": 1790881004.189901,
+    "seen": 1790881344.1098273,
+    "ast_hash": "77ad2215aaab86bc12fa0e2cf9a5add4",
+    "semantic_hash": ""
+  },
+  "tests/test_public_website.py": {
+    "mtime": 1790881312.7933507,
+    "seen": 1790881344.1097023,
+    "ast_hash": "0ac7d637f335711e22ede74e96fc9b0f",
+    "semantic_hash": ""
+  },
+  ".github/workflows/pages.yml": {
+    "mtime": 1790881291.3811808,
+    "seen": 1790881344.1098282,
+    "ast_hash": "af98c205009fc8b41e108a9806bf3bc8",
+    "semantic_hash": ""
+  },
+  "site/index.html": {
+    "mtime": 1790881291.3801808,
+    "seen": 1790881344.1099067,
+    "ast_hash": "48b3fc17d72cbc1f1b90610175d685e1",
     "semantic_hash": ""
   }
 }
