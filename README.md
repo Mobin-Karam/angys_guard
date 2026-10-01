@@ -17,6 +17,8 @@
 
 [Use today](#which-os-can-i-use-today) · [Install](#quick-start-linux-today) · [Bale / Telegram](#how-can-i-control-angysguard) · [Capabilities](#what-angysguard-can-do) · [Future apps](#future-platform-and-app-targets) · [Roadmap](#roadmap)
 
+**راهنمای فارسی / Persian guide:** [شروع، نصب و استفاده](docs/GETTING_STARTED_FA.md)
+
 </div>
 
 ---
@@ -114,12 +116,14 @@ The exact controls depend on configuration/provider, but current owner-facing ac
 
 ```text
 /menu       /status      /arm        /disarm
-/photo      /screen      /events     /listen
+/photo      /screen      /events     /incident  /listen
 /chat       /say         /lock       /unlock
 /stoppin    confirmation-gated power actions when explicitly enabled
 ```
 
-Authorization is checked before privileged behavior. Bot messages are **not** converted into arbitrary shell commands.
+Authorization is checked before privileged behavior. Privileged bot controls accept
+only a verified private owner chat, never a group/channel context. Bot messages are
+**not** converted into arbitrary shell commands.
 
 ## Self-hosted Bale / Telegram bot mode
 

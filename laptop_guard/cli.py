@@ -255,23 +255,23 @@ def _menu_status() -> tuple[str, str, str]:
 def _render_main_menu() -> None:
     setup_label, protection_label, provider_label = _menu_status()
     console.print()
-    console.rule("[bold cyan]Laptop Guard[/bold cyan]")
+    console.rule("[bold cyan]🛡 AngysGuard / Laptop Guard[/bold cyan]")
     console.print(
-        f"Setup: [bold]{setup_label}[/bold]  |  "
-        f"Protection: [bold]{protection_label}[/bold]  |  "
-        f"Provider: [bold]{provider_label}[/bold]"
+        f"راه‌اندازی / Setup: [bold]{setup_label}[/bold]  |  "
+        f"محافظت / Protection: [bold]{protection_label}[/bold]  |  "
+        f"ربات / Provider: [bold]{provider_label}[/bold]"
     )
     console.print()
-    console.print("  1. Setup / reconfigure")
-    console.print("  2. Start Guard")
-    console.print("  3. Arm protection")
-    console.print("  4. Disarm protection")
-    console.print("  5. Status")
-    console.print("  6. Test hardware")
-    console.print("  7. Doctor")
-    console.print("  8. Autostart")
-    console.print("  9. View events")
-    console.print("  0. Exit")
+    console.print("  1. راه‌اندازی / Setup or reconfigure")
+    console.print("  2. شروع Guard / Start protection")
+    console.print("  3. فعال‌سازی / Arm protection")
+    console.print("  4. غیرفعال‌سازی / Disarm protection")
+    console.print("  5. وضعیت زنده / Live status")
+    console.print("  6. تست سخت‌افزار / Test hardware")
+    console.print("  7. بررسی سلامت / Doctor")
+    console.print("  8. اجرای خودکار / Autostart")
+    console.print("  9. رخدادها / View events")
+    console.print("  0. خروج / Exit")
 
 
 def _read_menu_choice(prompt: str, valid: set[str]) -> str | None:
@@ -398,11 +398,11 @@ def run_main_menu() -> int:
     while True:
         _render_main_menu()
         choice = _read_menu_choice(
-            "Choose an action: ",
+            "انتخاب کنید / Choose an action: ",
             {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"},
         )
         if choice in {None, "0"}:
-            console.print("Goodbye.")
+            console.print("خدانگهدار / Goodbye.")
             return 0
 
         if choice == "1":

@@ -11,6 +11,7 @@ import secrets
 import subprocess
 import threading
 import time
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -20,15 +21,18 @@ import cv2
 from .audio_intercom import AudioIntercom, notify, play_audio, record_audio
 from .bale_api import BaleApiError
 from .chat_surface import SecurityChatManager
-from .config import CONFIG_DIR, MEDIA_DIR, AppConfig, get_bot_token, load_config
+from .config import CONFIG_DIR, DATA_DIR, MEDIA_DIR, AppConfig, get_bot_token, load_config, save_config
+from .profiles import PROFILE_LABELS, apply_profile
 from .events import EventLog
 from .persian_speech import PersianSpeechManager, SpeechResult, VOICE_NAMES
 from .screen_capture import ScreenCapture
 from .stop_auth import StopPinStore, read_secret_with_timeout
 from .runtime_api import RuntimeApi, build_runtime_api
+from .retention import cleanup_media
 from .runtime_state import GuardRuntimeState
-from .features import FailedLoginFeature, FeatureManager, SystemInfoFeature
+from .features import FailedLoginFeature, FeatureManager, IncidentFeature, SystemInfoFeature
 from .input_monitor import InputMonitor
+from .health import collect_health
 from .sound_detection import SoundDetectionMonitor
 from .warning_sequence import dismiss_warning, launch_warning
 from .runtime_recovery import (
@@ -67,11 +71,10 @@ def bounded_callback_int(data: str, default: int, minimum: int, maximum: int) ->
 
 MAIN_MENU = inline_keyboard(
     [
-        [("🛡 محافظت", "menu:security"), ("📷 دوربین", "menu:camera")],
-        [("🖥 صفحه", "menu:screen"), ("🎙 صدا", "menu:audio")],
-        [("💬 گفتگو", "menu:chat"), ("📜 رویدادها", "events:recent")],
-        [("💻 سیستم", "menu:system"), ("⚡ برق", "menu:power")],
-        [("🩺 وضعیت", "status:show")],
+        [("🏠 داشبورد", "menu:dashboard"), ("🛡 محافظت", "menu:security")],
+        [("🚨 رخدادها", "menu:incidents"), ("🎛 پروفایل", "menu:profiles")],
+        [("📷 شواهد", "menu:camera"), ("💻 سلامت دستگاه", "menu:system")],
+        [("🎙 صدا", "menu:audio"), ("⚙️ تنظیمات", "menu:settings")],
     ]
 )
 
@@ -88,11 +91,15 @@ class LaptopGuard:
         )
         self.features = FeatureManager()
         self.features.install(SystemInfoFeature(self))
+        self.features.install(IncidentFeature(self))
         self.features.install(FailedLoginFeature(self, self.config.monitors.failed_login_events))
         self.state = GuardRuntimeState()
         self.state_lock = threading.RLock()
         self.stop_event = threading.Event()
         self.events = EventLog()
+        retention = cleanup_media(MEDIA_DIR, self.config.retention)
+        if retention.removed_files:
+            self.events.add("retention_cleanup", f"removed={retention.removed_files}; bytes={retention.reclaimed_bytes}", "info")
         self.sound_detection = SoundDetectionMonitor(
             self.config.audio,
             is_active=self.state.active,
@@ -134,6 +141,7 @@ class LaptopGuard:
         self._lock_generation = 0
         self._offset: int | None = None
         self._send_lock = threading.Lock()
+        self._outbox_flush_lock = threading.Lock()
         self._watchdog_proc: subprocess.Popen | None = None
         self._exit_lock_requested = False
         self.stop_pin = StopPinStore()
@@ -213,7 +221,16 @@ class LaptopGuard:
         try:
             with self._send_lock:
                 self.api.send_message(chat_id, text, reply_markup=markup)
+            self._record_bot_connectivity(True)
+            self._flush_outbox_async()
         except Exception as exc:
+            self._record_bot_connectivity(False)
+            store = getattr(getattr(self, "events", None), "store", None)
+            if self.config.monitors.offline_queue and store is not None:
+                try:
+                    store.enqueue("message", text=str(text)[:4000], keyboard=markup or {})
+                except Exception:
+                    pass
             diagnostic = write_runtime_diagnostic("provider-send-message", exc)
             print("[bot] message send failed; provider recovery may be needed.")
             if diagnostic is not None:
@@ -221,6 +238,34 @@ class LaptopGuard:
 
     def _send_async(self, text: str, markup: dict | None = None) -> None:
         threading.Thread(target=self._send, args=(text, markup), daemon=True).start()
+
+    def _flush_outbox_async(self) -> None:
+        lock = getattr(self, "_outbox_flush_lock", None)
+        if lock is None or not lock.acquire(blocking=False):
+            return
+
+        def worker() -> None:
+            try:
+                store = getattr(getattr(self, "events", None), "store", None)
+                chat_id = self._owner_chat()
+                if store is None or chat_id is None:
+                    return
+                for item in store.pending(5):
+                    if item.attempts >= 5:
+                        continue
+                    try:
+                        markup = json.loads(item.keyboard_json) if item.keyboard_json else None
+                        self.api.send_message(chat_id, item.text, reply_markup=markup)
+                        store.mark_delivered(item.id)
+                        self._record_bot_connectivity(True)
+                    except Exception as exc:
+                        store.mark_failed(item.id, sanitize_diagnostic(str(exc)))
+                        self._record_bot_connectivity(False)
+                        break
+            finally:
+                lock.release()
+
+        threading.Thread(target=worker, daemon=True, name="outbox-flush").start()
 
     def _send_file_async(self, kind: str, path: Path, caption: str = "") -> None:
         chat_id = self._owner_chat()
@@ -352,13 +397,15 @@ class LaptopGuard:
 
         # Queue the owner notification immediately. Network I/O stays on its
         # own thread so it cannot delay VLC or the independent lock deadline.
-        self._send_async(
+        self.feature_notify_owner(
             f"🚨 فعالیت روی لپ‌تاپ شناسایی شد\n\nنوع: {kind}\nزمان: {stamp}\n"
             f"هشدار ویدیویی {countdown_seconds} ثانیه‌ای نمایش داده می‌شود و سپس سیستم قفل خواهد شد.",
             inline_keyboard([
                 [("🕐 اجازه ۵ دقیقه", "guard:allow:5"), ("🔒 قفل الآن", "guard:lock")],
                 [("⛔ غیرفعال", "guard:disarm"), ("📷 عکس", "camera:photo")],
             ]),
+            severity="high",
+            kind="input",
         )
 
         # Show the deterrent immediately. Evidence capture also runs
@@ -717,23 +764,235 @@ class LaptopGuard:
             self.state.refresh()
             armed = self.state.armed
             camera_ok = self.state.camera_ok
+            input_ok = self.state.input_ok
             last = self.state.last_input_kind or "—"
             grace_s = max(0, int(self.state.grace_until - time.time()))
+            bot_online = self.state.bot_online
+            last_bot_ok = self.state.last_bot_ok
+        bot_age = "—" if not last_bot_ok else f"{max(0, int(time.time() - last_bot_ok))}s ago"
+        store = self.events.store
+        pending_delivery = store.outbox_count() if store is not None else 0
+        retry_delivery = store.outbox_retry_count() if store is not None else 0
+        incident_count = len(store.recent_incidents(limit=10)) if store is not None else 0
+        health = collect_health()
+        battery = "—" if health.battery_percent is None else f"{health.battery_percent:.0f}%"
         return (
-            "🩺 وضعیت Laptop Guard\n\n"
+            f"🛡 Laptop Guard — {PROFILE_LABELS.get(self.config.profile, self.config.profile)}\n\n"
             f"🛡 محافظت: {'فعال' if armed else 'غیرفعال'}\n"
             f"📷 دوربین: {'خاموش' if not self.camera_enabled else ('آماده' if camera_ok else 'در حال اتصال/ناموجود')}\n"
+            f"⌨️ Input monitor: {'آماده' if input_ok else 'ناموجود/در حال اتصال'}\n"
+            f"🔋 Battery: {battery}\n"
             f"🎙 مکالمه صوتی: {'فعال' if self.intercom.active else 'خاموش'}\n"
             f"🗣 Persian TTS: {'آماده' if self.config.tts.enabled and self.tts.available else 'غیرفعال/ناموجود'} • {self.tts.default_voice}\n"
             f"💬 گفت‌وگوی محلی: {'باز' if self.chat.active else 'بسته'}\n"
             f"🕐 اجازه محلی: {grace_s // 60}:{grace_s % 60:02d}\n"
             f"⌨️ آخرین فعالیت: {last}\n"
+            f"🤖 Provider: {self.config.bot.provider} • {'online' if bot_online else 'unknown/offline'} • last OK: {bot_age}\n"
+            f"📤 Pending owner delivery: {pending_delivery}\n"
+            f"🔁 Retry state: {retry_delivery} queued retry\n"
+            f"🚨 Incidents: {incident_count}{'+' if incident_count == 10 else ''} recent\n"
             f"🔐 قفل هنگام خروج Guard: {'فعال' if self.config.security.lock_on_guard_exit else 'غیرفعال'}\n"
             f"🔑 Stop PIN: {'تنظیم شده' if self.stop_pin.configured else 'تنظیم نشده'}\n"
             f"🧷 توقف محافظت‌شده: {'فعال' if self.config.security.stop_auth_enabled else 'غیرفعال'}\n"
             f"🔓 Remote unlock: {'فعال' if self.config.security.allow_remote_unlock else 'غیرفعال'}\n"
             f"💻 سیستم: {platform.system()} {platform.release()}"
         )
+
+    def incident_summary_text(self) -> str:
+        """Return a compact owner-only timeline without exposing stored media."""
+        events = self.events.recent(20)
+        notable = [event for event in events if event.get("severity") in {"warning", "high", "critical"}]
+        selected = (notable or events)[-5:]
+        if not selected:
+            return "📋 Incident summary\n\nهنوز رویدادی ثبت نشده است."
+        lines = ["📋 Incident summary", ""]
+        for event in reversed(selected):
+            lines.append(
+                f"• {event.get('time', '—')} | {event.get('severity', 'info')} | "
+                f"{event.get('type', 'event')} | {event.get('detail', '')}"
+            )
+        return "\n".join(lines)
+
+    @staticmethod
+    def _incident_callback_id(value: str) -> int | None:
+        try:
+            event_id = int(value)
+        except (TypeError, ValueError):
+            return None
+        return event_id if event_id > 0 else None
+
+    def incident_menu(self, severity: str = "all") -> tuple[str, dict]:
+        filters = {
+            "all": ("هشدارها", ("warning", "high", "critical")),
+            "high": ("بالا", ("high", "critical")),
+            "critical": ("بحرانی", ("critical",)),
+        }
+        label, severities = filters.get(severity, filters["all"])
+        store = getattr(self.events, "store", None)
+        incidents = store.recent_incidents(severities) if store is not None else []
+        lines = [f"🚨 رخدادها / Incidents — {label}", ""]
+        if incidents:
+            for item in incidents:
+                detail = item.detail.replace("\n", " ").strip()[:160]
+                acknowledgement = "✓ تأیید" if item.acknowledged_at else "نیازمند بررسی"
+                lines.append(f"• #{item.id} | {item.severity} | {item.kind} | {acknowledgement}\n  {item.created_at} · {detail}")
+        else:
+            lines.append("رخداد قابل نمایش ثبت نشده است.")
+        rows = [[("همه", "incident:all"), ("بالا", "incident:high"), ("بحرانی", "incident:critical")]]
+        if incidents:
+            newest = incidents[0]
+            actions = [(f"✓ تأیید #{newest.id}", f"incident:ack:{newest.id}")]
+            if newest.media_path:
+                actions.append((f"📎 شاهد #{newest.id}", f"incident:evidence:{newest.id}"))
+            rows.append(actions)
+        rows.append([("⬅️ داشبورد", "menu:dashboard"), ("🏠 منوی اصلی", "menu:main")])
+        return "\n".join(lines), inline_keyboard(rows)
+
+    def acknowledge_incident(self, raw_event_id: str) -> tuple[str, dict]:
+        event_id = self._incident_callback_id(raw_event_id)
+        store = getattr(self.events, "store", None)
+        if event_id is None or store is None or not store.acknowledge_incident(event_id):
+            return "⚠️ این رخداد برای تأیید در دسترس نیست.", self.incident_menu()[1]
+        self.events.add("incident_acknowledged", f"event_id={event_id}; source=owner_bot", "info")
+        text, markup = self.incident_menu()
+        return f"✓ رخداد #{event_id} تأیید شد.\n\n{text}", markup
+
+    def open_incident_evidence(self, chat_id: int, raw_event_id: str) -> None:
+        event_id = self._incident_callback_id(raw_event_id)
+        store = getattr(self.events, "store", None)
+        row = store.get(event_id) if event_id is not None and store is not None else None
+        if row is None or not row[4]:
+            self._reply_to_chat(chat_id, "⚠️ شاهد ثبت‌شده‌ای برای این رخداد وجود ندارد.")
+            return
+        try:
+            recorded_path = Path(str(row[4]))
+            if recorded_path.is_symlink():
+                raise OSError("evidence symlink rejected")
+            path = recorded_path.resolve(strict=True)
+            media_root = MEDIA_DIR.resolve(strict=True)
+            if media_root not in path.parents or not path.is_file() or path.stat().st_size > 16 * 1024 * 1024:
+                raise OSError("evidence path rejected")
+        except OSError:
+            self._reply_to_chat(chat_id, "⚠️ این شاهد منقضی شده یا خارج از محدودهٔ امن است.")
+            return
+        try:
+            suffix = path.suffix.lower()
+            if suffix in {".jpg", ".jpeg", ".png", ".webp"}:
+                self.api.send_photo(chat_id, path, f"📎 شاهد رخداد #{event_id}")
+            elif suffix in {".mp4", ".webm", ".avi"}:
+                self.api.send_video(chat_id, path, f"📎 شاهد رخداد #{event_id}")
+            else:
+                self.api.send_document(chat_id, path, f"📎 شاهد رخداد #{event_id}")
+            self._record_bot_connectivity(True)
+            self.events.add("incident_evidence_opened", f"event_id={event_id}; source=owner_bot", "info")
+        except Exception as exc:
+            self._record_bot_connectivity(False)
+            write_runtime_diagnostic("incident-evidence-send", exc)
+            self._reply_to_chat(chat_id, "⚠️ ارسال شاهد ناموفق بود. ./run.sh test bot را اجرا کنید.")
+
+    def dashboard_menu(self) -> tuple[str, dict]:
+        return self.status_text(), inline_keyboard([
+            [("🛡 محافظت", "menu:security"), ("🔒 قفل الآن", "guard:lock")],
+            [("🚨 رخدادها", "menu:incidents"), ("💻 سلامت دستگاه", "menu:health")],
+            [("🎛 پروفایل", "menu:profiles"), ("⚙️ تنظیمات", "menu:settings")],
+        ])
+
+    def device_health_menu(self) -> tuple[str, dict]:
+        media_bytes = 0
+        try:
+            media_bytes = sum(item.stat().st_size for item in MEDIA_DIR.iterdir() if item.is_file())
+        except OSError:
+            pass
+        limit_bytes = max(16, int(self.config.retention.media_max_total_mb)) * 1024 * 1024
+        percent = min(100, int(media_bytes * 100 / limit_bytes)) if limit_bytes else 0
+        return (
+            "💻 سلامت دستگاه / Device health\n\n"
+            f"Provider: {self.config.bot.provider}\n"
+            f"Evidence storage: {percent}% ({media_bytes // (1024 * 1024)} MiB / {self.config.retention.media_max_total_mb} MiB)\n"
+            f"Retention: {'enabled' if self.config.retention.enabled else 'disabled'} • {self.config.retention.media_max_age_days} days\n"
+            "برای بررسی کامل محلی: ./run.sh doctor",
+            inline_keyboard([[("🩺 Doctor summary", "health:doctor"), ("📋 اطلاعات سیستم", "system:info")], [("⬅️ داشبورد", "menu:dashboard"), ("🏠 منوی اصلی", "menu:main")]]),
+        )
+
+    def doctor_summary_menu(self) -> tuple[str, dict]:
+        """Bounded, token-safe Doctor result for the owner console."""
+        try:
+            from .doctor import collect_checks
+            checks = collect_checks()
+        except Exception:
+            return (
+                "🩺 Doctor summary\n\nبررسی کامل در این نشست انجام نشد. محلی اجرا کنید: ./run.sh doctor",
+                inline_keyboard([[("⬅️ سلامت دستگاه", "menu:health"), ("🏠 داشبورد", "menu:dashboard")]]),
+            )
+        failed = [check for check in checks if not check.ok]
+        lines = [f"🩺 Doctor summary\n{len(checks) - len(failed)}/{len(checks)} checks passed", ""]
+        if not failed:
+            lines.append("✓ بررسی‌های محلی اصلی سالم هستند.")
+        else:
+            lines.append("نیازمند رسیدگی:")
+            for check in failed[:3]:
+                lines.append(f"• {check.name}: {check.action or check.detail}")
+            if len(failed) > 3:
+                lines.append(f"… و {len(failed) - 3} مورد دیگر؛ ./run.sh doctor را اجرا کنید.")
+        return "\n".join(lines), inline_keyboard([[("⬅️ سلامت دستگاه", "menu:health"), ("🏠 داشبورد", "menu:dashboard")]])
+
+    def profiles_menu(self) -> tuple[str, dict]:
+        return ("🎛 Profile\nپروفایل جدید فوراً اعمال و ذخیره می‌شود.", inline_keyboard([
+            [("🚪 Away", "profile:apply:away"), ("🏠 Home", "profile:apply:home")],
+            [("🌙 Night", "profile:apply:night"), ("🧪 Testing", "profile:apply:testing")],
+            [("⬅️ داشبورد", "menu:dashboard")],
+        ]))
+
+    def alerts_menu(self) -> tuple[str, dict]:
+        alerts = self.config.alerts
+        state = lambda value: "روشن" if value else "خاموش"
+        return (
+            "⚙️ تنظیمات اعلان / Alert rules\n\n"
+            f"Quiet hours: {state(alerts.quiet_hours_enabled)} ({alerts.quiet_start_hour}:00–{alerts.quiet_end_hour}:00)\n"
+            f"Minimum severity: {alerts.minimum_severity}\n"
+            f"Motion: {state(alerts.motion_enabled)} · Input: {state(alerts.input_enabled)} · Login: {state(alerts.failed_login_enabled)}\n\n"
+            "رخدادهای high و critical در Quiet hours هم ارسال می‌شوند.",
+            inline_keyboard([
+                [("🌙 Quiet hours", "alerts:quiet"), ("🎚 Severity", "alerts:minimum")],
+                [("📷 Motion", "alerts:toggle:motion"), ("⌨️ Input", "alerts:toggle:input")],
+                [("🔐 Failed login", "alerts:toggle:login"), ("🧰 Recovery", "menu:recovery")],
+                [("⬅️ داشبورد", "menu:dashboard"), ("🏠 منوی اصلی", "menu:main")],
+            ]),
+        )
+
+    def recovery_menu(self) -> tuple[str, dict]:
+        owner = "configured" if self.config.bot.chat_id is not None else "not paired"
+        return (
+            "🧰 بازیابی / Recovery\n\n"
+            f"Provider: {self.config.bot.provider}\nOwner binding: {owner}\n\n"
+            "برای re-pair یا revoke، فقط روی خود لپ‌تاپ اجرا کنید: ./run.sh reconfigure owner\n"
+            "این کار از تصاحب مالکیت از طریق چت جلوگیری می‌کند.",
+            inline_keyboard([[("📤 گزارش امن", "recovery:diagnostics"), ("🩺 Doctor", "health:doctor")], [("⬅️ داشبورد", "menu:dashboard"), ("🏠 منوی اصلی", "menu:main")]]),
+        )
+
+    def export_recovery_diagnostics(self, chat_id: int) -> None:
+        """Send a one-time redacted diagnostic, never config/secrets/evidence."""
+        store = getattr(self.events, "store", None)
+        payload = {
+            "product": "Laptop Guard",
+            "provider": self.config.bot.provider,
+            "owner_binding": bool(self.config.bot.chat_id is not None),
+            "outbox_pending": store.outbox_count() if store is not None else 0,
+            "outbox_retrying": store.outbox_retry_count() if store is not None else 0,
+            "platform": f"{platform.system()} {platform.release()}",
+        }
+        try:
+            with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".json", dir=DATA_DIR, delete=False) as fh:
+                json.dump(payload, fh, ensure_ascii=False, indent=2)
+                path = Path(fh.name)
+            try:
+                self.api.send_document(chat_id, path, "📤 Laptop Guard diagnostics (redacted)")
+                self._record_bot_connectivity(True)
+            finally:
+                path.unlink(missing_ok=True)
+        except Exception:
+            self._record_bot_connectivity(False)
+            self._reply_to_chat(chat_id, "⚠️ ارسال گزارش ناموفق بود. ./run.sh doctor را محلی اجرا کنید.")
 
     def security_menu(self) -> tuple[str, dict]:
         unlock_label = "🔓 Unlock" if self.config.security.allow_remote_unlock else "🔓 Unlock (OFF)"
@@ -875,11 +1134,26 @@ class LaptopGuard:
     def _reply_to_chat(self, chat_id: int, text: str, markup: dict | None = None) -> None:
         try:
             self.api.send_message(chat_id, text, reply_markup=markup)
+            self._record_bot_connectivity(True)
+            self._flush_outbox_async()
         except Exception as exc:
+            self._record_bot_connectivity(False)
             diagnostic = write_runtime_diagnostic("provider-reply", exc)
             print("[bot] reply failed; run ./run.sh test bot if the provider remains unavailable.")
             if diagnostic is not None:
                 print(f"[bot] diagnostic details: {diagnostic}")
+
+    def _record_bot_connectivity(self, online: bool) -> None:
+        state = getattr(self, "state", None)
+        if state is None:
+            return
+        try:
+            changes = {"bot_online": online}
+            if online:
+                changes["last_bot_ok"] = time.time()
+            state.mutate(**changes)
+        except Exception:
+            pass
 
     # Stable, deliberately small surface exposed to feature modules.
     def feature_reply(self, chat_id: int, text: str, markup: dict | None = None) -> None:
@@ -894,14 +1168,55 @@ class LaptopGuard:
     def feature_status(self) -> str:
         return self.status_text()
 
+    def feature_incident_summary(self) -> str:
+        return self.incident_summary_text()
+
+    def feature_incident_menu(self, severity: str) -> tuple[str, dict]:
+        return self.incident_menu(severity)
+
+    def feature_acknowledge_incident(self, event_id: str) -> tuple[str, dict]:
+        return self.acknowledge_incident(event_id)
+
+    def feature_open_incident_evidence(self, chat_id: int, event_id: str) -> None:
+        self.open_incident_evidence(chat_id, event_id)
+
+    def feature_edit_or_reply(
+        self, chat_id: int, message_id: int | None, text: str, markup: dict | None = None
+    ) -> None:
+        self._edit_or_reply(chat_id, message_id, text, markup)
+
     def feature_help(self) -> str:
         return self.help_text()
 
     def feature_event(self, kind: str, detail: str, severity: str = "info") -> None:
         self.events.add(kind, detail, severity)
 
-    def feature_notify_owner(self, text: str) -> None:
-        self._send_async(text)
+    def _notification_allowed(self, severity: str, kind: str) -> bool:
+        """Keep urgent alerts deliverable while honoring owner noise controls."""
+        alerts = self.config.alerts
+        ranks = {"info": 0, "warning": 1, "high": 2, "critical": 3}
+        rank = ranks.get(severity, 1)
+        if rank < ranks.get(alerts.minimum_severity, 1):
+            return False
+        if kind == "motion" and not alerts.motion_enabled:
+            return False
+        if kind == "input" and not alerts.input_enabled:
+            return False
+        if kind == "failed_login" and not alerts.failed_login_enabled:
+            return False
+        if rank >= ranks["high"] or not alerts.quiet_hours_enabled:
+            return True
+        hour = datetime.now().hour
+        start, end = int(alerts.quiet_start_hour) % 24, int(alerts.quiet_end_hour) % 24
+        return not ((start <= hour < end) if start < end else (hour >= start or hour < end))
+
+    def feature_notify_owner(
+        self, text: str, markup: dict | None = None, severity: str = "warning", kind: str = "generic"
+    ) -> None:
+        if self._notification_allowed(severity, kind):
+            self._send_async(text, markup)
+        else:
+            self.events.add("owner_notification_suppressed", f"kind={kind}; severity={severity}", "info")
 
     def _edit_or_reply(self, chat_id: int, message_id: int | None, text: str, markup: dict | None = None) -> None:
         if message_id is not None:
@@ -964,6 +1279,18 @@ class LaptopGuard:
             return
         if command in {"/start", "/menu"}:
             self._reply_to_chat(chat_id, "👋 به Laptop Guard خوش آمدید.\nیکی از بخش‌ها را انتخاب کنید:", MAIN_MENU)
+        elif command in {"/profile", "/mode"}:
+            profile = str(arg or "").strip().lower()
+            if not profile:
+                self._reply_to_chat(chat_id, f"Profile: {PROFILE_LABELS.get(self.config.profile, self.config.profile)}\nUse: /profile away|home|night|testing")
+            elif profile not in {"away", "home", "night", "testing"}:
+                self._reply_to_chat(chat_id, "Profile نامعتبر است. گزینه‌ها: away, home, night, testing")
+            else:
+                apply_profile(self.config, profile)
+                save_config(self.config)
+                self.camera_enabled = self.config.camera.enabled
+                self.events.add("profile_changed", f"profile={profile}; source=owner_bot", "info")
+                self._reply_to_chat(chat_id, f"✓ Profile applied: {PROFILE_LABELS[profile]}", MAIN_MENU)
         elif command == "/arm":
             self.arm(); self._reply_to_chat(chat_id, "🟢 محافظت فعال شد.", MAIN_MENU)
         elif command == "/disarm":
@@ -1173,6 +1500,49 @@ class LaptopGuard:
 
         if data == "menu:main":
             menu("🏠 منوی اصلی / Main menu", MAIN_MENU)
+        elif data == "menu:dashboard":
+            menu(*self.dashboard_menu())
+        elif data == "menu:incidents":
+            menu(*self.incident_menu())
+        elif data == "menu:health":
+            menu(*self.device_health_menu())
+        elif data == "health:doctor":
+            menu(*self.doctor_summary_menu())
+        elif data == "menu:profiles":
+            menu(*self.profiles_menu())
+        elif data == "menu:settings":
+            menu(*self.alerts_menu())
+        elif data == "menu:recovery":
+            menu(*self.recovery_menu())
+        elif data == "recovery:diagnostics":
+            self.export_recovery_diagnostics(chat_id)
+        elif data == "alerts:quiet":
+            self.config.alerts.quiet_hours_enabled = not self.config.alerts.quiet_hours_enabled
+            save_config(self.config)
+            menu(*self.alerts_menu())
+        elif data == "alerts:minimum":
+            levels = ["info", "warning", "high", "critical"]
+            current = self.config.alerts.minimum_severity
+            self.config.alerts.minimum_severity = levels[(levels.index(current) + 1) % len(levels)] if current in levels else "warning"
+            save_config(self.config)
+            menu(*self.alerts_menu())
+        elif data.startswith("alerts:toggle:"):
+            key = data.rsplit(":", 1)[1]
+            attr = {"motion": "motion_enabled", "input": "input_enabled", "login": "failed_login_enabled"}.get(key)
+            if attr is not None:
+                setattr(self.config.alerts, attr, not bool(getattr(self.config.alerts, attr)))
+                save_config(self.config)
+            menu(*self.alerts_menu())
+        elif data.startswith("profile:apply:"):
+            profile = data.rsplit(":", 1)[1]
+            if profile in {"away", "home", "night", "testing"}:
+                apply_profile(self.config, profile)
+                save_config(self.config)
+                self.camera_enabled = self.config.camera.enabled
+                self.events.add("profile_changed", f"profile={profile}; source=owner_bot", "info")
+                menu(f"✓ Profile applied: {PROFILE_LABELS[profile]}", self.dashboard_menu()[1])
+            else:
+                menu("Profile نامعتبر است.", self.dashboard_menu()[1])
         elif data == "menu:security":
             menu(*self.security_menu())
         elif data == "menu:camera":
@@ -1526,18 +1896,40 @@ class LaptopGuard:
             "/photo /cameravideo 8 /screen /screenvideo 8\n"
             "/say متن /ttsvoice man2 /ttsvoices /ttsmode on|off /ttstest\n"
             "/listen 8 /voicechat 30 /voicechat_stop\n"
-            "/chat پیام /chatclose /notify پیام /events\n"
+            "/chat پیام /chatclose /notify پیام /events /incident\n"
             "/stoppin /stopauth /suspend /reboot /shutdown /id\n\n"
             "وقتی Security Chat باز است، متن عادی بدون /chat مستقیماً به لپ‌تاپ فرستاده می‌شود."
+        )
+
+    @staticmethod
+    def _is_private_owner_surface(message: dict[str, Any], sender: Any) -> bool:
+        """Accept remote control only from an unambiguous private owner chat."""
+        chat = message.get("chat") if isinstance(message, dict) else None
+        if not isinstance(chat, dict) or not isinstance(sender, dict):
+            return False
+        chat_id = chat.get("id")
+        sender_id = sender.get("id")
+        return (
+            chat.get("type") == "private"
+            and chat_id is not None
+            and sender_id is not None
+            and str(chat_id) == str(sender_id)
         )
 
     def handle_update(self, update: dict[str, Any]) -> None:
         callback = update.get("callback_query")
         if isinstance(callback, dict):
+            callback_message = callback.get("message")
+            if not isinstance(callback_message, dict) or not self._is_private_owner_surface(
+                callback_message, callback.get("from")
+            ):
+                return
             self._handle_callback(callback)
             return
         message = update.get("message") or update.get("edited_message")
         if not isinstance(message, dict):
+            return
+        if not self._is_private_owner_surface(message, message.get("from")):
             return
         chat = message.get("chat") or {}
         try:

@@ -39,9 +39,15 @@ class PairingService:
 
     def consume(self, code: str, now: int | None = None) -> str:
         now = int(time.time()) if now is None else now
+        code_hash = self._hash(code)
         with self._connect() as db:
-            row = db.execute("SELECT device_id,expires_at,consumed_at FROM pairing_codes WHERE code_hash=?", (self._hash(code),)).fetchone()
-            if not row or row[1] < now or row[2] is not None:
+            row = db.execute("SELECT device_id FROM pairing_codes WHERE code_hash=? AND expires_at >= ? AND consumed_at IS NULL", (code_hash, now)).fetchone()
+            if not row:
                 raise PairingDenied("invalid or expired pairing code")
-            db.execute("UPDATE pairing_codes SET consumed_at=? WHERE code_hash=? AND consumed_at IS NULL", (now, self._hash(code)))
+            consumed = db.execute(
+                "UPDATE pairing_codes SET consumed_at=? WHERE code_hash=? AND expires_at >= ? AND consumed_at IS NULL",
+                (now, code_hash, now),
+            ).rowcount
+            if consumed != 1:
+                raise PairingDenied("invalid or expired pairing code")
         return str(row[0])

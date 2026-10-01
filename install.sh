@@ -328,9 +328,11 @@ main() {
   launch_first_run_ui
   printf '\nInstallation summary: PASS\n'
   printf 'The Python environment is usable.\n\n'
-  printf 'Next command:\n'
-  printf '  ./run.sh setup\n'
-  printf 'Then verify with:\n'
+  printf 'شروع سریع / Quick start:\n'
+  printf '  ./run.sh\n'
+  printf 'این دستور داشبورد فارسی/English را باز می‌کند؛ Setup را از همان‌جا انتخاب کنید.\n'
+  printf 'This opens the bilingual dashboard; choose Setup there.\n'
+  printf '\nبررسی سلامت / Health check:\n'
   printf '  ./run.sh doctor\n'
 }
 

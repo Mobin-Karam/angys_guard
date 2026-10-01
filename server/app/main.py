@@ -251,6 +251,7 @@ class RevokeResponse(BaseModel):
 
 class BotUpdate(BaseModel):
     chat_id: str = Field(min_length=1, max_length=128)
+    sender_id: str = Field(min_length=1, max_length=128)
     text: str = Field(min_length=1, max_length=300)
     chat_type: str | None = None
 
@@ -393,9 +394,16 @@ def claim_device(payload: PairClaimRequest, account_id: Annotated[str, Depends(c
             raise HTTPException(status_code=400, detail="pairing code is invalid, expired, or already used")
         if pending["confirmation_required"] and not pending["confirmed_at"]:
             raise HTTPException(status_code=409, detail="confirm this device code in your linked bot with /pair CODE")
+        consumed = db.execute(
+            "UPDATE pairing_codes SET consumed_at = ? WHERE code_hash = ? AND purpose = 'device' "
+            "AND account_id = ? AND consumed_at IS NULL AND expires_at >= ? "
+            "AND (confirmation_required = 0 OR confirmed_at IS NOT NULL)",
+            (now(), code_hash, account_id, now()),
+        ).rowcount
+        if consumed != 1:
+            raise HTTPException(status_code=400, detail="pairing code is invalid, expired, or already used")
         device_id, device_token = str(uuid.uuid4()), new_opaque_token()
         db.execute("INSERT INTO devices(id, account_id, name, credential_hash, created_at) VALUES (?, ?, ?, ?, ?)", (device_id, account_id, pending["device_name"], token_digest(device_token), now()))
-        db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code_hash = ?", (now(), code_hash))
     return DeviceResponse(device_id=device_id, device_token=device_token, account_id=account_id)
 
 
@@ -515,15 +523,20 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
     # the same shape; the flat form makes local webhook testing straightforward.
     candidate = raw_update.get("message", raw_update) if isinstance(raw_update, dict) else {}
     chat = candidate.get("chat", {}) if isinstance(candidate, dict) else {}
+    sender = candidate.get("from", {}) if isinstance(candidate, dict) else {}
     try:
         payload = BotUpdate(
             chat_id=str(candidate.get("chat_id", chat.get("id", ""))),
+            sender_id=str(candidate.get("sender_id", sender.get("id", ""))),
             text=str(candidate.get("text", "")),
             chat_type=str(candidate.get("chat_type", chat.get("type", ""))) or None,
         )
     except Exception as error:
         raise HTTPException(status_code=422, detail="unsupported bot update") from error
     configuration = require_settings()
+    if payload.chat_type != "private" or payload.sender_id != payload.chat_id:
+        await respond(provider, payload.chat_id, "For security, AngysGuard bot controls are available only in a private chat with the linked owner.")
+        return {"status": "private-chat-required"}
     parts = payload.text.strip().split(maxsplit=1)
     command = parts[0].lower().split("@", 1)[0]
     raw_argument = parts[1].strip() if len(parts) == 2 else ""
@@ -575,8 +588,15 @@ async def bot_update(provider: Literal["telegram", "bale"], request: Request) ->
             if not code or code["consumed_at"] or code["expires_at"] < now():
                 await respond(provider, payload.chat_id, "Pairing code is invalid or expired.")
                 return {"status": "ignored"}
+            consumed = db.execute(
+                "UPDATE pairing_codes SET consumed_at = ? WHERE code_hash = ? AND purpose = 'bot' "
+                "AND consumed_at IS NULL AND expires_at >= ?",
+                (now(), code_hash, now()),
+            ).rowcount
+            if consumed != 1:
+                await respond(provider, payload.chat_id, "Pairing code is invalid or expired.")
+                return {"status": "ignored"}
             db.execute("INSERT OR REPLACE INTO bot_chats(provider, chat_id, account_id, created_at) VALUES (?, ?, ?, ?)", (provider, payload.chat_id, code["account_id"], now()))
-            db.execute("UPDATE pairing_codes SET consumed_at = ? WHERE code_hash = ?", (now(), code_hash))
         await respond(provider, payload.chat_id, "Bot linked. Use /devices, /use DEVICE-ID, /status, /arm, /disarm, /lock, /events, or /revoke.")
         return {"status": "linked"}
     with connection(configuration.database_path) as db:

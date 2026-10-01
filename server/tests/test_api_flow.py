@@ -8,6 +8,16 @@ from server.app.main import app
 from server.app.security import sign_device_command, token_digest
 
 
+def bot_payload(text: str, *, chat_id: int = 12345, chat_type: str = "private", sender_id: int | None = None) -> dict:
+    return {
+        "message": {
+            "from": {"id": sender_id if sender_id is not None else chat_id},
+            "chat": {"id": chat_id, "type": chat_type},
+            "text": text,
+        }
+    }
+
+
 def test_missing_server_configuration_stays_alive_for_paas_diagnostics(monkeypatch):
     monkeypatch.delenv("ANGYSGUARD_SERVER_SECRET", raising=False)
     with TestClient(app) as client:
@@ -52,9 +62,9 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             assert client.get("/v1/device/status", headers=device_headers).json() == {"status": "connected"}
             bot_code = client.post("/v1/bot-pairing-codes", headers=bearer).json()["pairing_code"]
             headers = {"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"}
-            assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": f"/link {bot_code}"}}).json() == {"status": "linked"}
-            assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/status"}}).json() == {"status": "queued"}
-            assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/arm"}}).json() == {"status": "queued"}
+            assert client.post("/v1/bots/telegram/updates", headers=headers, json=bot_payload(f"/link {bot_code}")).json() == {"status": "linked"}
+            assert client.post("/v1/bots/telegram/updates", headers=headers, json=bot_payload("/status")).json() == {"status": "queued"}
+            assert client.post("/v1/bots/telegram/updates", headers=headers, json=bot_payload("/arm")).json() == {"status": "queued"}
             queued = client.get("/v1/device/commands", headers=device_headers).json()["commands"]
             assert len(queued) == 1 and queued[0]["action"] == "status"
             assert queued[0]["account_id"] == created.json()["account_id"]
@@ -74,12 +84,12 @@ def test_account_enrollment_bot_link_and_fixed_command_queue(monkeypatch):
             assert completed.status_code == 200
             reply.assert_awaited_with("telegram", "12345", "status: completed")
             assert client.get("/v1/device/commands", headers=device_headers).json()["commands"][0]["action"] == "arm"
-            assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/events"}}).json() == {"status": "events"}
+            assert client.post("/v1/bots/telegram/updates", headers=headers, json=bot_payload("/events")).json() == {"status": "events"}
             events = reply.await_args_list[-1].args[2]
             assert "status: completed" in events and "arm: pending" in events
             assert "online" not in events
             # A fixed allowlist is the remote-control boundary.
-            assert client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": "/powershell whoami"}}).json() == {"status": "unsupported"}
+            assert client.post("/v1/bots/telegram/updates", headers=headers, json=bot_payload("/powershell whoami")).json() == {"status": "unsupported"}
             assert client.post(f"/v1/devices/{device['device_id']}/revoke", headers=bearer).json() == {"status": "revoked"}
             assert client.get("/v1/device/status", headers=device_headers).status_code == 401
 
@@ -100,7 +110,7 @@ def test_bot_selects_one_of_multiple_devices_and_revocation_needs_confirmation(m
                 devices.append(client.post("/v1/devices/claim", headers=bearer, json={"pairing_code": code}).json())
             bot_code = client.post("/v1/bot-pairing-codes", headers=bearer).json()["pairing_code"]
             headers = {"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"}
-            update = lambda text: client.post("/v1/bots/telegram/updates", headers=headers, json={"message": {"chat": {"id": 12345}, "text": text}})
+            update = lambda text: client.post("/v1/bots/telegram/updates", headers=headers, json=bot_payload(text))
             assert update(f"/link {bot_code}").json() == {"status": "linked"}
             assert update("/status").json() == {"status": "ambiguous"}
             assert update(f"/use {devices[1]['device_id'][:8]}").json() == {"status": "selected"}
@@ -125,9 +135,7 @@ def test_private_bot_signup_confirms_desktop_device_code_then_allows_login(monke
         with TestClient(app) as client:
             headers = {"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"}
             update = lambda text, chat_type="private": client.post(
-                "/v1/bots/telegram/updates",
-                headers=headers,
-                json={"message": {"chat": {"id": 12345, "type": chat_type}, "text": text}},
+                "/v1/bots/telegram/updates", headers=headers, json=bot_payload(text, chat_type=chat_type)
             )
             assert update("/start").json() == {"status": "started"}
             assert update("/signup owner_01 a unique account password").json() == {"status": "registered"}
@@ -157,7 +165,26 @@ def test_bot_signup_rejects_group_chats_and_never_creates_an_account(monkeypatch
             response = client.post(
                 "/v1/bots/telegram/updates",
                 headers={"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"},
-                json={"message": {"chat": {"id": 12345, "type": "group"}, "text": "/signup owner_01 a unique account password"}},
+                json=bot_payload("/signup owner_01 a unique account password", chat_type="group"),
             )
             assert response.json() == {"status": "private-chat-required"}
             assert client.post("/v1/sessions", json={"username": "owner_01", "password": "a unique account password"}).status_code == 401
+
+
+def test_bot_rejects_group_chats_and_sender_chat_mismatches_for_all_controls(monkeypatch):
+    with tempfile.TemporaryDirectory() as directory:
+        reply = AsyncMock()
+        monkeypatch.setattr("server.app.main.respond", reply)
+        monkeypatch.setenv("ANGYSGUARD_SERVER_SECRET", "x" * 32)
+        monkeypatch.setenv("ANGYSGUARD_DATABASE_PATH", os.path.join(directory, "guard.db"))
+        monkeypatch.setenv("ANGYSGUARD_TELEGRAM_WEBHOOK_SECRET", "telegram-webhook-secret")
+        headers = {"X-Telegram-Bot-Api-Secret-Token": "telegram-webhook-secret"}
+        with TestClient(app) as client:
+            grouped = client.post(
+                "/v1/bots/telegram/updates", headers=headers, json=bot_payload("/status", chat_type="group")
+            )
+            mismatched = client.post(
+                "/v1/bots/telegram/updates", headers=headers, json=bot_payload("/status", sender_id=54321)
+            )
+        assert grouped.json() == {"status": "private-chat-required"}
+        assert mismatched.json() == {"status": "private-chat-required"}

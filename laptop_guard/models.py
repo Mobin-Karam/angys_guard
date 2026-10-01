@@ -240,6 +240,28 @@ class MonitorConfig:
 
 
 @dataclass
+class RetentionConfig:
+    """Local evidence retention; never a remote-owner deletion capability."""
+
+    enabled: bool = True
+    media_max_age_days: int = 30
+    media_max_total_mb: int = 1024
+
+
+@dataclass
+class AlertConfig:
+    """Owner notification policy; critical events always bypass quiet hours."""
+
+    quiet_hours_enabled: bool = False
+    quiet_start_hour: int = 23
+    quiet_end_hour: int = 7
+    minimum_severity: str = "warning"  # info|warning|high|critical
+    motion_enabled: bool = True
+    input_enabled: bool = True
+    failed_login_enabled: bool = True
+
+
+@dataclass
 class StartupConfig:
     enabled: bool = False
     # Written only after the desktop app shows its local privacy consent. It is
@@ -264,4 +286,6 @@ class AppConfig:
     api: ApiConfig = field(default_factory=ApiConfig)
     health: HealthConfig = field(default_factory=HealthConfig)
     monitors: MonitorConfig = field(default_factory=MonitorConfig)
+    retention: RetentionConfig = field(default_factory=RetentionConfig)
+    alerts: AlertConfig = field(default_factory=AlertConfig)
     startup: StartupConfig = field(default_factory=StartupConfig)

@@ -302,7 +302,7 @@ def save_config(cfg: AppConfig) -> None:
 
     for name in (
         "bot", "camera", "audio", "security", "communication", "chat", "tts",
-        "screen", "apps", "api", "health", "monitors", "startup",
+        "screen", "apps", "api", "health", "monitors", "retention", "alerts", "startup",
     ):
         section = getattr(cfg, name)
         lines.append(f"[{name}]")
@@ -505,7 +505,7 @@ def load_config() -> AppConfig:
 
     for name in (
         "bot", "camera", "audio", "security", "communication", "chat", "tts",
-        "screen", "apps", "api", "health", "monitors", "startup",
+        "screen", "apps", "api", "health", "monitors", "retention", "alerts", "startup",
     ):
         section_data = raw.get(name, {}) if isinstance(raw, dict) else {}
         _apply_section(getattr(cfg, name), section_data)

@@ -20,6 +20,17 @@ class OutboxItem:
     attempts: int
 
 
+@dataclass(frozen=True)
+class IncidentItem:
+    id: int
+    created_at: str
+    kind: str
+    detail: str
+    media_path: str
+    severity: str
+    acknowledged_at: str | None
+
+
 class EventStore:
     def __init__(self, path: Path = EVENT_DB_PATH) -> None:
         ensure_dirs()
@@ -67,6 +78,15 @@ class EventStore:
                 )
                 """
             )
+            db.execute(
+                """
+                CREATE TABLE IF NOT EXISTS incident_acknowledgements (
+                    event_id INTEGER PRIMARY KEY,
+                    acknowledged_at TEXT NOT NULL,
+                    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
+                )
+                """
+            )
 
     def add(
         self,
@@ -106,6 +126,35 @@ class EventStore:
                 (event_id,),
             ).fetchone()
 
+    def recent_incidents(self, severities: tuple[str, ...] = (), limit: int = 5) -> list[IncidentItem]:
+        """Return a bounded incident view without mutating the original event."""
+        allowed = {"warning", "high", "critical"}
+        selected = tuple(value for value in severities if value in allowed) or tuple(sorted(allowed))
+        safe_limit = max(1, min(int(limit), 10))
+        placeholders = ", ".join("?" for _ in selected)
+        query = (
+            "SELECT events.id, events.created_at, events.kind, events.detail, events.media_path, "
+            "events.severity, incident_acknowledgements.acknowledged_at "
+            "FROM events LEFT JOIN incident_acknowledgements "
+            "ON incident_acknowledgements.event_id = events.id "
+            f"WHERE events.severity IN ({placeholders}) ORDER BY events.id DESC LIMIT ?"
+        )
+        with self._connect() as db:
+            rows = db.execute(query, (*selected, safe_limit)).fetchall()
+        return [IncidentItem(*row) for row in rows]
+
+    def acknowledge_incident(self, event_id: int) -> bool:
+        if event_id <= 0:
+            return False
+        with self._connect() as db:
+            if db.execute("SELECT 1 FROM events WHERE id=?", (event_id,)).fetchone() is None:
+                return False
+            db.execute(
+                "INSERT OR IGNORE INTO incident_acknowledgements(event_id, acknowledged_at) VALUES (?, ?)",
+                (event_id, datetime.now().isoformat(timespec="seconds")),
+            )
+        return True
+
     def enqueue(
         self,
         kind: str,
@@ -114,7 +163,12 @@ class EventStore:
         caption: str = "",
         keyboard=None,
     ) -> int:
+        """Queue a small owner text notification, retaining at most 100 items."""
         with self._connect() as db:
+            db.execute(
+                "DELETE FROM outbox WHERE id IN (SELECT id FROM outbox ORDER BY id ASC LIMIT "
+                "(SELECT MAX(COUNT(*) - 99, 0) FROM outbox))"
+            )
             cur = db.execute(
                 "INSERT INTO outbox(created_at, kind, text, media_path, caption, keyboard_json) VALUES (?, ?, ?, ?, ?, ?)",
                 (
@@ -139,6 +193,17 @@ class EventStore:
     def outbox_count(self) -> int:
         with self._connect() as db:
             return int(db.execute("SELECT COUNT(*) FROM outbox").fetchone()[0])
+
+    def outbox_retry_count(self) -> int:
+        with self._connect() as db:
+            return int(db.execute("SELECT COUNT(*) FROM outbox WHERE attempts > 0").fetchone()[0])
+
+    def latest_outbox_error(self) -> str:
+        with self._connect() as db:
+            row = db.execute(
+                "SELECT last_error FROM outbox WHERE last_error != '' ORDER BY id DESC LIMIT 1"
+            ).fetchone()
+        return str(row[0]) if row is not None else ""
 
     def mark_delivered(self, item_id: int) -> None:
         with self._connect() as db:

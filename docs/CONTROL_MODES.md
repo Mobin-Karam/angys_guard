@@ -56,13 +56,18 @@ Examples:
 /photo
 /screen
 /events
+/incident
 /chat
 /say
 /lock
 /unlock
 ```
 
-The runtime must verify the authorized owner before privileged behavior. High-risk operations can require extra confirmation or local policy.
+The runtime must verify the authorized owner in a **private chat whose sender and
+chat identity match** before privileged behavior. Group/channel messages and
+ambiguous provider updates fail closed. High-risk operations can require extra
+confirmation or local policy. `/incident` provides a short owner-only summary of
+recent warning/high/critical events without attaching stored evidence media.
 
 AngysGuard deliberately does not translate arbitrary chat messages into Bash, PowerShell, Python, `eval`, `exec` or filesystem-control operations.
 

@@ -9,8 +9,8 @@ class FakeHost:
     def feature_event(self, kind, detail, severity="info"):
         self.events.append((kind, detail, severity))
 
-    def feature_notify_owner(self, text):
-        self.messages.append(text)
+    def feature_notify_owner(self, text, severity="warning", kind="generic"):
+        self.messages.append((text, severity, kind))
 
 
 def test_parses_gdm_authentication_failure_without_password_content():
@@ -42,4 +42,5 @@ def test_notifies_owner_and_deduplicates_burst():
     feature._notify(event)
     assert len(host.events) == 1
     assert len(host.messages) == 1
-    assert "alice" in host.messages[0]
+    assert "alice" in host.messages[0][0]
+    assert host.messages[0][1:] == ("critical", "failed_login")

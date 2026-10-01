@@ -1,5 +1,17 @@
 # Configuration
 
+## Local evidence retention
+
+The non-secret `[retention]` section bounds only locally generated files under
+the Guard media directory. Defaults are `media_max_age_days = 30` and
+`media_max_total_mb = 1024`; cleanup runs when Guard starts, removes expired
+regular files, then evicts the oldest remaining files if necessary. Set
+`enabled = false` only when an owner-managed cleanup policy is in place.
+
+Retention is deliberately not a Telegram/Bale command and never deletes bundled
+assets, configuration, secrets, event databases, or files outside the media
+directory.
+
 ## Storage
 
 Laptop Guard creates these user-scoped paths:

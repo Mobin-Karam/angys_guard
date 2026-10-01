@@ -143,4 +143,4 @@ class FailedLoginFeature:
         )
         if event.address:
             message += f"\nAddress: {event.address}"
-        self.host.feature_notify_owner(message)
+        self.host.feature_notify_owner(message, severity="critical", kind="failed_login")

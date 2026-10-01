@@ -16,6 +16,8 @@ def test_v4_config_sections_roundtrip(tmp_path: Path, monkeypatch):
     cfg.camera.tamper_enabled = True
     cfg.monitors.offline_queue = True
     cfg.health.low_battery_percent = 25
+    cfg.alerts.quiet_hours_enabled = True
+    cfg.alerts.minimum_severity = "high"
     config.save_config(cfg)
 
     loaded = config.load_config()
@@ -25,3 +27,5 @@ def test_v4_config_sections_roundtrip(tmp_path: Path, monkeypatch):
     assert loaded.camera.tamper_enabled is True
     assert loaded.monitors.offline_queue is True
     assert loaded.health.low_battery_percent == 25
+    assert loaded.alerts.quiet_hours_enabled is True
+    assert loaded.alerts.minimum_severity == "high"

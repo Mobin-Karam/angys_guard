@@ -8,6 +8,7 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 
 | Goal | Read first |
 |---|---|
+| نصب و استفادهٔ فارسی / Persian installation and daily use | [راهنمای شروع فارسی](GETTING_STARTED_FA.md) |
 | Understand AngysGuard quickly | [Root README](../README.md) |
 | Understand Platform v2 multi-client architecture | [Platform v2 architecture foundation](PLATFORM_V2_ARCHITECTURE.md) |
 | See product direction and future apps | [AngysGuard product vision](ANGYSGUARD_PRODUCT_VISION.md) |

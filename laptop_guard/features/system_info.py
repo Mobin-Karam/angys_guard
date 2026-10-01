@@ -13,6 +13,7 @@ class SystemInfoFeature:
     def register(self, manager: FeatureManager) -> None:
         manager.add_command(self.name, ("/status",), self._status)
         manager.add_command(self.name, ("/sysinfo", "/device"), self._system_info)
+        manager.add_command(self.name, ("/incident", "/timeline"), self._incident_summary)
         manager.add_command(self.name, ("/help",), self._help)
 
     def start(self) -> None:
@@ -26,6 +27,9 @@ class SystemInfoFeature:
 
     def _system_info(self, chat_id: int, _argument: str) -> None:
         self.host.feature_reply(chat_id, self.host.feature_system_info(), self.host.feature_main_menu())
+
+    def _incident_summary(self, chat_id: int, _argument: str) -> None:
+        self.host.feature_reply(chat_id, self.host.feature_incident_summary(), self.host.feature_main_menu())
 
     def _help(self, chat_id: int, _argument: str) -> None:
         self.host.feature_reply(chat_id, self.host.feature_help())

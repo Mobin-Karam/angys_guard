@@ -80,8 +80,8 @@ exit 99
     assert result.returncode == 0
     assert (work / ".venv" / "bin" / "python").exists()
     assert "Installation summary: PASS" in result.stdout
-    assert "Next command:\n  ./run.sh setup" in result.stdout
-    assert "Then verify with:\n  ./run.sh doctor" in result.stdout
+    assert "شروع سریع / Quick start:\n  ./run.sh" in result.stdout
+    assert "بررسی سلامت / Health check:\n  ./run.sh doctor" in result.stdout
 
 
 def test_missing_venv_reports_exact_ubuntu_package_and_mirror_help(tmp_path: Path) -> None:

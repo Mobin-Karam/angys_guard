@@ -10,6 +10,21 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Bot control hardening and incident visibility
+
+- Restricted self-hosted and managed Telegram/Bale controls to verified private
+  owner chats; group/channel updates and sender/chat mismatches now fail closed.
+- Made provider/device pairing-code consumption conditional and single-use even
+  under concurrent requests.
+- Added owner-only `/incident` (alias `/timeline`) to the Linux bot. It returns
+  a compact, severity-prioritized recent-event summary without exposing evidence
+  media paths.
+- Added local startup retention for generated evidence media: the non-secret
+  `[retention]` policy defaults to 30 days and 1 GiB, then evicts oldest files
+  when the quota is exceeded. It has no remote deletion command.
+- Expanded `/status` with provider connectivity, last successful owner delivery,
+  and pending delivery count for actionable Telegram/Bale recovery.
+
 ### Managed desktop test path
 
 - Added a consent-required Linux desktop preparation flow for the managed-test
