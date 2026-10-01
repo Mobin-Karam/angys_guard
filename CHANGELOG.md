@@ -10,6 +10,13 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Public website
+
+- Added a bilingual English/Persian static product and documentation website
+  for GitHub Pages, with semantic SEO/AEO metadata, structured FAQ answers,
+  truthful platform-status guidance, Linux setup instructions and security
+  boundaries.
+
 ### Bot control hardening and incident visibility
 
 - Restricted self-hosted and managed Telegram/Bale controls to verified private
