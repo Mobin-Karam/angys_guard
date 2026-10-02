@@ -50,7 +50,7 @@ jobs:
             desktop/windows-tauri/src-tauri/target/release/bundle/msi/*.msi
       - name: Create GitHub prerelease for a version tag
         if: startsWith(github.ref, 'refs/tags/windows-v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           prerelease: true
           generate_release_notes: true
@@ -107,7 +107,7 @@ jobs:
             desktop/windows-tauri/src-tauri/target/release/bundle/deb/*.deb
       - name: Create GitHub prerelease for a Linux version tag
         if: startsWith(github.ref, 'refs/tags/linux-v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           prerelease: true
           generate_release_notes: true
