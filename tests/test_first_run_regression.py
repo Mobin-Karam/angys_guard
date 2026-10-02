@@ -124,6 +124,8 @@ def test_provider_setup_uses_fake_validation_without_network_or_token_output(
     def prompt_ask(prompt: str, **kwargs):
         if prompt == "Notification provider":
             return "bale"
+        if prompt == "Bale bot username (without @)":
+            return "mock_guard_bot"
         return kwargs.get("default", "")
 
     monkeypatch.setattr(setup_wizard.Prompt, "ask", prompt_ask)
@@ -145,6 +147,7 @@ def test_provider_setup_uses_fake_validation_without_network_or_token_output(
     setup_wizard._configure_provider(cfg, console)
 
     assert cfg.bot.provider == "bale"
+    assert cfg.bot.username == "mock_guard_bot"
     assert validated_tokens == [FAKE_BOT_TOKEN]
     assert saved_tokens == [FAKE_BOT_TOKEN]
     assert FAKE_BOT_TOKEN not in "\n".join(console.lines)

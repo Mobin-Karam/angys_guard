@@ -11,6 +11,14 @@ const app = document.querySelector<HTMLDivElement>("#app")!;
 let session: Session | null = null;
 let locale: Locale = localStorage.getItem("locale") === "en" ? "en" : "fa";
 let pendingDeviceCode: string | null = null;
+let theme: "light" | "dark" = localStorage.getItem("theme") === "light" ? "light" : "dark";
+let activeScreen: "welcome" | "home" | "managed-login" | "managed-enrollment" | "self-hosted" | "self-hosted-dashboard" = "home";
+
+const selfHostedCopy = {
+  fa: { title: "راه‌اندازی ربات شخصی", intro: "نام کاربری و token ربات فقط روی همین دستگاه بررسی و ذخیره می‌شوند.", provider: "ارائه‌دهنده", username: "نام کاربری ربات", token: "توکن ربات", api: "نشانی API", proxy: "نشانی Proxy (اختیاری)", connect: "بررسی و ذخیره اتصال", terminal: "ادامه در ترمینال", dashboard: "داشبورد", choose: "روش ادامه را انتخاب کنید", saved: "اتصال ربات با موفقیت و به‌صورت محلی ذخیره شد.", theme: "حالت روشن" },
+  en: { title: "Set up your own bot", intro: "Your bot username and token are verified and stored only on this device.", provider: "Provider", username: "Bot username", token: "Bot token", api: "API base URL", proxy: "Proxy URL (optional)", connect: "Verify and save connection", terminal: "Continue in terminal", dashboard: "Dashboard", choose: "Choose how to continue", saved: "Bot connection was verified and saved locally.", theme: "Light mode" },
+} as const;
+function sh(key: keyof typeof selfHostedCopy.fa) { return selfHostedCopy[locale][key]; }
 
 const copy = {
   fa: {
@@ -24,8 +32,9 @@ const copy = {
 function t(key: keyof typeof copy.fa) { return copy[locale][key]; }
 function escape(value: string) { return value.replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]!); }
 function applyLocale() { document.documentElement.lang = locale === "fa" ? "fa" : "en"; document.documentElement.dir = locale === "fa" ? "rtl" : "ltr"; localStorage.setItem("locale", locale); }
+function applyTheme() { document.documentElement.dataset.theme = theme; localStorage.setItem("theme", theme); }
 function message(text: string, problem = false) { const target = document.querySelector("#message"); if (target) { target.textContent = text; target.className = problem ? "error" : "success"; } }
-function switchLocale() { locale = locale === "fa" ? "en" : "fa"; applyLocale(); session ? enrollmentScreen() : loginScreen(); }
+function switchLocale() { locale = locale === "fa" ? "en" : "fa"; applyLocale(); ({ welcome: welcomeScreen, home: homeScreen, "managed-login": loginScreen, "managed-enrollment": enrollmentScreen, "self-hosted": selfHostedScreen, "self-hosted-dashboard": selfHostedDashboard }[activeScreen])(); }
 async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const base = (document.querySelector<HTMLInputElement>("#server")?.value || localStorage.getItem("server") || "https://api.mahakaram.ir").replace(/\/$/, "");
   if (!base.startsWith("https://") && !base.startsWith("http://localhost")) throw new Error(t("https"));
@@ -35,9 +44,11 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   return response.status === 204 ? undefined as T : response.json();
 }
 function languageButton() { return `<button id="language" class="secondary language" type="button" aria-label="${t("language")}">${t("language")}</button>`; }
+function themeButton() { return `<button id="theme" class="secondary language" type="button">${sh("theme")}</button>`; }
 function protectionText(status: LocalProtectionStatus) { return `${status.service_active ? t("protectionRunning") : t("protectionStopped")} · ${status.armed ? t("protectionArmed") : t("protectionDisarmed")}`; }
 function connectionText(status: ManagedConnectionStatus) { return status.state === "connected" ? t("connectionConnected") : status.state === "revoked" ? t("connectionRevoked") : status.state === "offline" ? t("connectionOffline") : t("connectionNotEnrolled"); }
 function loginScreen() {
+  activeScreen = "managed-login";
   applyLocale();
   app.innerHTML = `<section><header><h1>${t("title")}</h1>${languageButton()}</header><p>${t("intro")}</p><label>${t("server")}<input id="server" value="${escape(localStorage.getItem("server") || "https://api.mahakaram.ir")}" autocomplete="url"></label><label>${t("email")}<input id="identity" autocomplete="username"></label><label>${t("password")}<input id="password" type="password" minlength="12" autocomplete="current-password"></label><div class="row"><button id="register">${t("register")}</button><button id="login" class="secondary">${t("login")}</button></div><p id="message" role="status"></p></section>`;
   const authenticate = async (path: string) => { try { const identity = document.querySelector<HTMLInputElement>("#identity")!.value.trim(); session = await api<Session>(path, { method: "POST", body: JSON.stringify({ ...(identity.includes("@") ? { email: identity } : { username: identity }), password: document.querySelector<HTMLInputElement>("#password")!.value }) }); enrollmentScreen(); } catch (error) { message(error instanceof Error ? error.message : t("error"), true); } };
@@ -45,7 +56,52 @@ function loginScreen() {
   document.querySelector("#register")!.addEventListener("click", () => authenticate("/v1/accounts"));
   document.querySelector("#login")!.addEventListener("click", () => authenticate("/v1/sessions"));
 }
+function welcomeScreen() {
+  activeScreen = "welcome";
+  applyLocale(); applyTheme();
+  const isFa = locale === "fa";
+  app.innerHTML = `<section class="welcome"><div class="eyebrow">AngysGuard</div><h1>${isFa ? "خوش آمدید" : "Welcome"}</h1><p>${isFa ? "برای شروع، زبان و ظاهر برنامه را انتخاب کنید. هر زمان از بالای داشبورد قابل تغییر است." : "Choose your language and appearance. You can change both later from the dashboard."}</p><div class="choice-grid"><button id="choose-fa" class="${isFa ? "selected" : "secondary"}">فارسی</button><button id="choose-en" class="${!isFa ? "selected" : "secondary"}">English</button></div><fieldset><legend>${isFa ? "ظاهر" : "Appearance"}</legend><label class="toggle"><input id="dark-theme" type="checkbox" ${theme === "dark" ? "checked" : ""}> ${isFa ? "حالت تیره" : "Dark mode"}</label></fieldset><button id="continue">${isFa ? "ادامه" : "Continue"}</button></section>`;
+  document.querySelector("#choose-fa")!.addEventListener("click", () => { locale = "fa"; welcomeScreen(); });
+  document.querySelector("#choose-en")!.addEventListener("click", () => { locale = "en"; welcomeScreen(); });
+  document.querySelector("#dark-theme")!.addEventListener("change", event => { theme = (event.target as HTMLInputElement).checked ? "dark" : "light"; welcomeScreen(); });
+  document.querySelector("#continue")!.addEventListener("click", () => { localStorage.setItem("angysguard.preferences.complete", "true"); homeScreen(); });
+}
+function homeScreen() {
+  activeScreen = "home";
+  applyLocale(); applyTheme();
+  app.innerHTML = `<section><header><div><div class="eyebrow">LOCAL-FIRST SECURITY</div><h1>AngysGuard</h1></div><div class="row">${themeButton()}${languageButton()}</div></header><p>${locale === "fa" ? "کنترل محلی، راه‌اندازی ربات و وضعیت محافظت—بدون ورود به حساب یا سرور مدیریت‌شده." : "Local control, bot setup, and protection status—without an account login or managed server."}</p><div class="status-card"><strong id="home-status">${locale === "fa" ? "در حال بررسی وضعیت…" : "Checking local status…"}</strong><p>${locale === "fa" ? "تنظیمات ربات و کلیدهای آن فقط روی همین دستگاه می‌مانند." : "Bot settings and credentials remain on this device."}</p></div><div class="row"><button id="open-dashboard">${locale === "fa" ? "باز کردن داشبورد" : "Open dashboard"}</button><button id="configure-bot" class="secondary">${locale === "fa" ? "تنظیم یا تغییر ربات" : "Set up or change bot"}</button></div><p id="message" role="status"></p></section>`;
+  document.querySelector("#language")!.addEventListener("click", switchLocale);
+  document.querySelector("#theme")!.addEventListener("click", () => { theme = theme === "dark" ? "light" : "dark"; homeScreen(); });
+  document.querySelector("#configure-bot")!.addEventListener("click", selfHostedScreen);
+  document.querySelector("#open-dashboard")!.addEventListener("click", async () => { const status = await invoke<{ configured: boolean; provider?: string; username?: string }>("self_hosted_provider_status"); status.configured ? selfHostedDashboard(status) : selfHostedScreen(); });
+  invoke<{ configured: boolean; provider?: string; username?: string }>("self_hosted_provider_status").then(status => { document.querySelector("#home-status")!.textContent = status.configured ? `${status.provider} @${status.username}` : (locale === "fa" ? "ربات هنوز تنظیم نشده است" : "Bot is not configured yet"); }).catch(() => undefined);
+}
+function selfHostedScreen() {
+  activeScreen = "self-hosted";
+  applyLocale(); applyTheme();
+  const defaults = { telegram: "https://api.telegram.org", bale: "https://tapi.bale.ai" };
+  app.innerHTML = `<section><header><div><div class="eyebrow">STEP 1 OF 2</div><h1>${sh("title")}</h1></div><div class="row">${themeButton()}${languageButton()}</div></header><p>${sh("intro")}</p><label>${sh("provider")}<select id="provider"><option value="telegram">Telegram</option><option value="bale">Bale</option></select></label><label>${sh("username")}<input id="bot-username" autocomplete="off" maxlength="64" placeholder="my_guard_bot" aria-describedby="username-hint"><small id="username-hint">${locale === "fa" ? "نام ربات باید با bot تمام شود؛ @ را وارد نکنید." : "Bot names must end in bot; do not include @."}</small></label><label>${sh("token")}<input id="bot-token" type="password" autocomplete="off" maxlength="512"></label><label>${sh("api")}<input id="api-base" value="${defaults.telegram}" autocomplete="url"></label><label>${sh("proxy")}<input id="proxy" autocomplete="url" placeholder="http://127.0.0.1:12334"></label><button id="save-provider">${sh("connect")}</button><p id="message" role="status"></p></section>`;
+  document.querySelector("#language")!.addEventListener("click", switchLocale);
+  document.querySelector("#theme")!.addEventListener("click", () => { theme = theme === "dark" ? "light" : "dark"; selfHostedScreen(); });
+  document.querySelector<HTMLSelectElement>("#provider")!.addEventListener("change", event => { document.querySelector<HTMLInputElement>("#api-base")!.value = defaults[(event.target as HTMLSelectElement).value as "telegram" | "bale"]; });
+  const username = document.querySelector<HTMLInputElement>("#bot-username")!;
+  username.addEventListener("blur", () => { const value = username.value.trim().replace(/^@/, ""); username.value = value && !value.toLowerCase().endsWith("bot") ? `${value}bot` : value; });
+  document.querySelector("#save-provider")!.addEventListener("click", async () => { try { username.dispatchEvent(new Event("blur")); const status = await invoke<{ configured: boolean; provider?: string; username?: string }>("configure_self_hosted_provider", { provider: document.querySelector<HTMLSelectElement>("#provider")!.value, username: username.value, token: document.querySelector<HTMLInputElement>("#bot-token")!.value, apiBase: document.querySelector<HTMLInputElement>("#api-base")!.value, proxy: document.querySelector<HTMLInputElement>("#proxy")!.value }); selfHostedDashboard(status); } catch (error) { message(error instanceof Error ? error.message : t("error"), true); } });
+}
+function selfHostedDashboard(status?: { configured: boolean; provider?: string; username?: string }) {
+  activeScreen = "self-hosted-dashboard";
+  applyLocale(); applyTheme();
+  app.innerHTML = `<section><header><div><div class="eyebrow">LOCAL DASHBOARD</div><h1>AngysGuard</h1></div><div class="row">${themeButton()}${languageButton()}</div></header><div class="status-card"><strong>${status?.provider || ""} @${status?.username || ""}</strong><p>${locale === "fa" ? "ربات با موفقیت بررسی شد. در گفت‌وگوی خصوصی ربات، /start را بفرستید تا آماده دریافت راهنمای pairing شوید." : "Your bot was verified. Send /start in its private chat to begin owner pairing guidance."}</p></div><hr><h2>${locale === "fa" ? "محافظت محلی" : "Local protection"}</h2><p>${locale === "fa" ? "قابلیت‌های خصوصی مانند دوربین، میکروفون و ضبط صفحه در این پروفایل فعال نمی‌شوند." : "Private capabilities such as camera, microphone, and screen recording are not enabled by this profile."}</p><label>${locale === "fa" ? "نام دستگاه" : "Device name"}<input id="device-name" value="${escape(navigator.userAgent.includes("Windows") ? "Windows PC" : "Linux Desktop")}" maxlength="80"></label><label class="toggle"><input id="local-consent" type="checkbox"> ${locale === "fa" ? "با راه‌اندازی محافظت محلی و محدودیت‌های آن موافقم." : "I consent to local protection and its stated limits."}</label><div class="row"><button id="start-protection">${locale === "fa" ? "راه‌اندازی و شروع" : "Set up and start"}</button><button id="stop-protection" class="secondary">${locale === "fa" ? "توقف" : "Stop"}</button><button id="refresh-protection" class="secondary">${locale === "fa" ? "به‌روزرسانی وضعیت" : "Refresh status"}</button></div><p id="protection-status" role="status"></p><hr><div class="row"><button id="enable-autostart" class="secondary">${locale === "fa" ? "اجرای خودکار" : "Enable autostart"}</button><button id="back" class="secondary">${locale === "fa" ? "تغییر ربات" : "Change bot"}</button></div><p id="message" role="status"></p></section>`;
+  document.querySelector("#language")!.addEventListener("click", switchLocale); document.querySelector("#theme")!.addEventListener("click", () => { theme = theme === "dark" ? "light" : "dark"; selfHostedDashboard(status); }); document.querySelector("#back")!.addEventListener("click", selfHostedScreen);
+  const showProtection = async () => { const protection = await invoke<LocalProtectionStatus>("local_protection_status"); document.querySelector("#protection-status")!.textContent = protectionText(protection); };
+  document.querySelector("#start-protection")!.addEventListener("click", async () => { try { const protection = await invoke<LocalProtectionStatus>("prepare_local_protection", { deviceName: document.querySelector<HTMLInputElement>("#device-name")!.value, consent: document.querySelector<HTMLInputElement>("#local-consent")!.checked }); document.querySelector("#protection-status")!.textContent = protectionText(protection); } catch (error) { message(error instanceof Error ? error.message : t("error"), true); } });
+  document.querySelector("#stop-protection")!.addEventListener("click", async () => { try { const protection = await invoke<LocalProtectionStatus>("stop_local_protection"); document.querySelector("#protection-status")!.textContent = protectionText(protection); } catch (error) { message(error instanceof Error ? error.message : t("error"), true); } });
+  document.querySelector("#refresh-protection")!.addEventListener("click", () => { showProtection().catch(error => message(error instanceof Error ? error.message : t("error"), true)); });
+  document.querySelector("#enable-autostart")!.addEventListener("click", () => { enableAutostart().then(() => message(locale === "fa" ? "اجرای خودکار فعال شد." : "Autostart enabled.")).catch(error => message(error instanceof Error ? error.message : t("error"), true)); });
+  showProtection().catch(() => { document.querySelector("#protection-status")!.textContent = locale === "fa" ? "محافظت هنوز راه‌اندازی نشده است." : "Protection has not been set up yet."; });
+}
 function enrollmentScreen() {
+  activeScreen = "managed-enrollment";
   applyLocale();
   app.innerHTML = `<section><header><h1>${t("enrollTitle")}</h1>${languageButton()}</header><p>${t("enrollIntro")}</p><label>${t("deviceName")}<input id="device-name" value="${escape(navigator.userAgent.includes("Windows") ? "Windows PC" : "Linux Desktop")}" maxlength="80"></label><label class="toggle"><input id="autostart" type="checkbox" checked> ${t("autostart")}</label><button id="make-device">${t("pair")}</button><p id="pair-code" class="code"></p><p id="pair-bot-intro"></p><button id="finish-device" class="secondary">${t("finishPair")}</button><label class="toggle"><input id="remote-lock" type="checkbox"> ${t("lock")}</label><hr><h2>${t("connectionDivider")}</h2><button id="refresh-connection" class="secondary">${t("refreshConnection")}</button><p id="managed-connection-status" role="status"></p><hr><h2>${t("protectDivider")}</h2><p>${t("protectIntro")}</p><label class="toggle"><input id="local-consent" type="checkbox"> ${t("consent")}</label><div class="row"><button id="start-protection">${t("startProtection")}</button><button id="stop-protection" class="secondary">${t("stopProtection")}</button><button id="refresh-protection" class="secondary">${t("refreshProtection")}</button></div><p id="protection-status" role="status"></p><hr><h2>${t("divider")}</h2><p>${t("botIntro")}</p><p id="message" role="status"></p></section>`;
   document.querySelector("#language")!.addEventListener("click", switchLocale);
@@ -61,4 +117,5 @@ function enrollmentScreen() {
   document.querySelector("#refresh-protection")!.addEventListener("click", async () => { try { await showProtectionStatus(); } catch (error) { message(error instanceof Error ? error.message : t("error"), true); } });
 }
 applyLocale();
-loginScreen();
+applyTheme();
+localStorage.getItem("angysguard.preferences.complete") ? homeScreen() : welcomeScreen();

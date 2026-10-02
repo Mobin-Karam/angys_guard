@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import time
 from types import SimpleNamespace
@@ -9,7 +10,15 @@ from types import SimpleNamespace
 from rich.console import Console
 from rich.table import Table
 
-from .config import CONFIG_PATH, load_config, save_config, setup_is_complete
+from .config import (
+    CONFIG_PATH,
+    load_config,
+    load_setup_progress,
+    save_config,
+    save_setup_progress,
+    set_bot_token,
+    setup_is_complete,
+)
 from .profiles import PROFILE_LABELS, apply_profile
 from .state import RuntimeStateStore
 from .storage import EventStore
@@ -34,6 +43,61 @@ def cmd_onboarding(args):
     from .onboarding_window import show_onboarding
 
     show_onboarding(getattr(args, "provider", "telegram"))
+    return 0
+
+
+def cmd_dashboard_provider(_):
+    """Accept one self-hosted provider setup payload over stdin only.
+
+    This command is an intentionally narrow bridge for the local desktop
+    dashboard. Secrets are never accepted through command-line arguments and
+    are written only after the provider validates the selected public bot
+    username.
+    """
+    try:
+        body = json.load(sys.stdin)
+    except (json.JSONDecodeError, OSError, ValueError):
+        console.print("[red]Dashboard provider setup payload is invalid.[/red]")
+        return 2
+    if not isinstance(body, dict):
+        console.print("[red]Dashboard provider setup payload is invalid.[/red]")
+        return 2
+
+    provider = str(body.get("provider") or "").strip().lower()
+    username = str(body.get("username") or "").strip().lstrip("@")
+    token = str(body.get("token") or "").strip()
+    api_base = str(body.get("api_base") or "").strip()
+    proxy = str(body.get("proxy") or "").strip()
+    if provider not in {"telegram", "bale"}:
+        console.print("[red]Choose Telegram or Bale.[/red]")
+        return 2
+    if not re.fullmatch(r"[A-Za-z0-9_]{1,64}", username):
+        console.print("[red]Bot username is invalid.[/red]")
+        return 2
+    if not token or len(token) > 512 or len(api_base) > 512 or len(proxy) > 512:
+        console.print("[red]Provider setup values are invalid.[/red]")
+        return 2
+
+    from .config import default_api_base
+    from .doctor import check_bot_connectivity_detailed
+
+    cfg = load_config()
+    cfg.bot.provider = provider
+    cfg.bot.username = username
+    cfg.bot.api_base = api_base or default_api_base(provider)
+    cfg.bot.proxy = proxy
+    ok, detail, _kind = check_bot_connectivity_detailed(cfg, token)
+    if not ok:
+        console.print(f"[red]{detail}[/red]")
+        return 2
+
+    set_bot_token(token, provider)
+    cfg.setup_complete = False
+    save_config(cfg)
+    completed = load_setup_progress()
+    completed.difference_update({"provider", "owner"})
+    save_setup_progress(completed)
+    console.print(json.dumps({"ok": True, "provider": provider, "username": username}))
     return 0
 
 
@@ -438,6 +502,7 @@ def build_parser():
     onboarding = sub.add_parser("onboarding", help="open the Persian guided onboarding window")
     onboarding.add_argument("--provider", choices=["telegram", "bale"], default="telegram")
     onboarding.set_defaults(func=cmd_onboarding)
+    sub.add_parser("dashboard-provider", help="configure a validated self-hosted provider from local dashboard stdin").set_defaults(func=cmd_dashboard_provider)
     desktop_setup = sub.add_parser("desktop-setup", help="prepare the consented managed desktop profile")
     desktop_setup.add_argument("--device-name", required=True)
     desktop_setup.add_argument("--consent", action="store_true", help="record local privacy consent")

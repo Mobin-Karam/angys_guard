@@ -126,7 +126,15 @@ def check_bot_connectivity_detailed(
         )
         if bot is None:
             return False, "Configured bot provider is not supported.", "unsupported"
-        bot.get_me()
+        bot_identity = bot.get_me()
+        configured_username = str(cfg.bot.username or "").strip().lstrip("@").casefold()
+        actual_username = str(bot_identity.get("username") or "").strip().lstrip("@").casefold()
+        if configured_username and configured_username != actual_username:
+            return (
+                False,
+                f"{provider_label} connected, but the token belongs to a different bot username.",
+                "identity",
+            )
         return True, f"{provider_label} bot connection is working.", "ok"
     except ProviderAuthError:
         return False, f"{provider_label} rejected the bot credential.", "auth"

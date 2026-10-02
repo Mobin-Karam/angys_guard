@@ -21,6 +21,9 @@ def test_public_website_has_bilingual_seo_aeo_and_safety_content() -> None:
     assert "No generic remote shell" in page
     assert "./install.sh" in page
     assert "./run.sh doctor" in page
+    assert "npm install -g @angysguard/linux-agent" in page
+    assert 'data-copy="npm-install-command"' in page
+    assert "navigator.clipboard.writeText" in page
 
 
 def test_pages_workflow_deploys_only_the_single_html_site() -> None:

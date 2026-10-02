@@ -10,6 +10,23 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Local-first dashboard prerelease and npm terminal packages 1.0.1
+
+- Prepared matching `@angysguard/linux-agent` and
+  `@angysguard/windows-agent` wrapper versions for `1.0.1`.
+- Added root release commands that validate both npm package tarballs and then
+  publish both packages through npm's interactive MFA flow.
+- The Linux launcher now offers an interactive choice between an already
+  installed local dashboard and the terminal flow. `angysguard app` and
+  `angysguard terminal` make the choice explicit; npm never installs the
+  optional `.deb` dashboard automatically.
+- Prepared the local-first Linux dashboard as a `.deb` prerelease artifact.
+  AppImage output is intentionally not published because its current bundling
+  path is not reproducibly validated. Windows remains experimental and is not
+  a supported release claim.
+- Kept the Windows package explicitly experimental; its npm version is not a
+  Windows protection-release or target-device-validation claim.
+
 ### Public website
 
 - Added a bilingual English/Persian static product and documentation website

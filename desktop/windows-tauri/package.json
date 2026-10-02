@@ -1,13 +1,17 @@
 {
   "name": "angysguard-desktop",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "package-runtime": "python3 ../../scripts/build_linux_desktop_runtime.py",
-    "tauri": "tauri"
+    "package-runtime": "node scripts/package-linux-runtime.cjs",
+    "tauri": "tauri",
+    "bundle:linux": "tauri build --bundles deb",
+    "bundle:linux:deb": "tauri build --bundles deb",
+    "bundle:linux:appimage": "env APPIMAGE_EXTRACT_AND_RUN=1 tauri build --bundles appimage",
+    "bundle:windows": "tauri build --bundles nsis,msi"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.5.0",

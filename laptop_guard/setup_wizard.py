@@ -173,6 +173,11 @@ def _ensure_provider_token(cfg: AppConfig, console: Console) -> str:
             console.print(
                 "The stored credential was not displayed and will be replaced only after validation."
             )
+        elif kind == "identity":
+            console.print(f"[yellow]{detail}[/yellow]")
+            raise SetupSectionDeferred(
+                "The configured bot username does not match this token. Rerun setup and correct the username or token."
+            )
         else:
             console.print(f"[yellow]{detail}[/yellow]")
             console.print(
@@ -214,6 +219,11 @@ def _ensure_provider_token(cfg: AppConfig, console: Console) -> str:
         if kind == "auth":
             console.print("Enter a new token. The rejected token will not be saved.")
             continue
+
+        if kind == "identity":
+            raise SetupSectionDeferred(
+                "The configured bot username does not match this token. Rerun setup and correct the username or token."
+            )
 
         console.print(
             "The entered token was not saved because validation could not reach/verify the provider, "
@@ -260,9 +270,20 @@ def _configure_provider(cfg: AppConfig, console: Console) -> None:
 
     if provider == "local":
         cfg.bot.api_base = ""
+        cfg.bot.username = ""
         cfg.bot.chat_id = None
         cfg.bot.proxy = ""
         return
+
+    while True:
+        username = Prompt.ask(
+            f"{provider.title()} bot username (without @)",
+            default=cfg.bot.username,
+        ).strip().lstrip("@")
+        if username and len(username) <= 64 and username.replace("_", "").isalnum():
+            cfg.bot.username = username
+            break
+        console.print("[red]Enter the bot username using letters, numbers, or underscores.[/red]")
 
     cfg.bot.proxy = Prompt.ask(
         "Proxy URL (blank = direct)",

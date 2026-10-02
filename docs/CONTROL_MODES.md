@@ -91,10 +91,10 @@ The goal is that a user who wants full provider ownership can create their own B
 3. Create your own bot using that provider's official bot-management flow
              |
              v
-4. Enter the bot token locally into AngysGuard setup/app
+4. Enter the bot username and token locally into AngysGuard setup/app
              |
              v
-5. AngysGuard validates the token and generates a short-lived pairing code
+5. AngysGuard validates the token, checks that it belongs to the entered bot username, and generates a short-lived pairing code
              |
              v
 6. Open your bot and submit/confirm that pairing code as the owner
@@ -106,6 +106,12 @@ The goal is that a user who wants full provider ownership can create their own B
 ### Where the token belongs
 
 The bot token is a secret and should be stored **only on the protected device** in AngysGuard's protected secret store.
+
+The bot username is public identity metadata, not a credential. AngysGuard uses
+it during first-run validation to prevent a token for one bot from silently
+being configured as another bot. After a successful setup, normal startup reuses
+the saved provider configuration; use `reconfigure provider` only when changing
+the bot, token, proxy, or API base.
 
 Do not:
 

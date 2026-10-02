@@ -1,0 +1,13 @@
+{
+  "name": "angysguard-release-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local release commands for the AngysGuard npm terminal packages.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "release:npm:check": "node scripts/publish-npm-packages.cjs --check",
+    "release:npm:publish": "node scripts/publish-npm-packages.cjs"
+  }
+}

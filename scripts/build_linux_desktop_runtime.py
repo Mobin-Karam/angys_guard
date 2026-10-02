@@ -59,6 +59,9 @@ def main() -> int:
     if not executable.is_file():
         raise SystemExit("PyInstaller did not produce the expected Linux runtime executable.")
     executable.chmod(executable.stat().st_mode | 0o111)
+    # PyInstaller clears its dist directory. Keep the tracked placeholder so a
+    # local release build does not leave an accidental deletion in Git.
+    (BINARIES / RUNTIME_NAME / ".gitkeep").write_text("\n", encoding="utf-8")
     return 0
 
 

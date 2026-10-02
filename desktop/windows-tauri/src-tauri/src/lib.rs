@@ -13,6 +13,7 @@ use tokio::sync::Mutex;
 
 const KEYRING_SERVICE: &str = "com.angysguard.desktop";
 const KEYRING_ACCOUNT: &str = "enrolled-device";
+const SELF_HOSTED_PROVIDER_ACCOUNT: &str = "self-hosted-provider";
 #[cfg(target_os = "linux")]
 const BUNDLED_RUNTIME_DIRECTORY: &str = "binaries/laptop-guard-runtime";
 #[cfg(target_os = "linux")]
@@ -27,6 +28,22 @@ struct EnrolledDevice {
     device_token: String,
     account_id: String,
     remote_lock_enabled: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+struct SelfHostedProvider {
+    provider: String,
+    username: String,
+    token: String,
+    api_base: String,
+    proxy: String,
+}
+
+#[derive(Debug, Serialize)]
+struct SelfHostedProviderStatus {
+    configured: bool,
+    provider: Option<String>,
+    username: Option<String>,
 }
 
 #[derive(Clone)]
@@ -71,6 +88,16 @@ struct ConsumedCommand {
 fn credential_entry() -> Result<Entry, String> {
     Entry::new(KEYRING_SERVICE, KEYRING_ACCOUNT)
         .map_err(|error| format!("The operating-system credential store is unavailable: {error}"))
+}
+
+fn self_hosted_provider_entry() -> Result<Entry, String> {
+    Entry::new(KEYRING_SERVICE, SELF_HOSTED_PROVIDER_ACCOUNT)
+        .map_err(|_| "The operating-system credential store is unavailable".to_string())
+}
+
+fn load_self_hosted_provider() -> Option<SelfHostedProvider> {
+    let secret = self_hosted_provider_entry().ok()?.get_password().ok()?;
+    serde_json::from_str(&secret).ok()
 }
 
 fn load_device() -> Option<EnrolledDevice> {
@@ -431,6 +458,135 @@ async fn poll_forever(state: AgentState, app: AppHandle) {
     }
 }
 
+fn valid_bot_username(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 64
+        && value.to_ascii_lowercase().ends_with("bot")
+        && value
+            .bytes()
+            .all(|character| character.is_ascii_alphanumeric() || character == b'_')
+}
+
+async fn validate_self_hosted_provider(provider: &SelfHostedProvider) -> Result<(), String> {
+    let mut builder = Client::builder()
+        .timeout(std::time::Duration::from_secs(15))
+        .no_proxy();
+    if !provider.proxy.is_empty() {
+        builder = builder.proxy(
+            reqwest::Proxy::all(&provider.proxy)
+                .map_err(|_| "The proxy URL is invalid".to_string())?,
+        );
+    }
+    let client = builder
+        .build()
+        .map_err(|_| "The provider connection could not be initialized".to_string())?;
+    let response = client
+        .post(format!("{}/bot{}/getMe", provider.api_base.trim_end_matches('/'), provider.token))
+        .send()
+        .await
+        .map_err(|_| "Could not reach the bot provider. Check internet, proxy, and API base.".to_string())?;
+    if !response.status().is_success() {
+        return Err("The provider rejected the bot credential or returned an invalid response".into());
+    }
+    let payload: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|_| "The provider returned an invalid response".to_string())?;
+    let actual_username = payload
+        .get("result")
+        .and_then(|result| result.get("username"))
+        .and_then(serde_json::Value::as_str)
+        .unwrap_or("")
+        .trim_start_matches('@');
+    if !payload.get("ok").and_then(serde_json::Value::as_bool).unwrap_or(false)
+        || !actual_username.eq_ignore_ascii_case(&provider.username)
+    {
+        return Err("The token does not belong to the selected bot username".into());
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+async fn save_provider_to_linux_guard(app: &AppHandle, provider: &SelfHostedProvider) -> Result<(), String> {
+    let runtime = provision_runtime(app)?;
+    let payload = serde_json::to_vec(provider)
+        .map_err(|_| "Provider setup could not be serialized".to_string())?;
+    let mut command = tokio::process::Command::new(runtime);
+    command
+        .arg("dashboard-provider")
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null());
+    let mut child = command
+        .spawn()
+        .map_err(|_| "The local AngysGuard runtime could not be started".to_string())?;
+    if let Some(mut input) = child.stdin.take() {
+        use tokio::io::AsyncWriteExt;
+        input
+            .write_all(&payload)
+            .await
+            .map_err(|_| "The local AngysGuard runtime could not receive setup data".to_string())?;
+    }
+    let status = tokio::time::timeout(std::time::Duration::from_secs(30), child.wait())
+        .await
+        .map_err(|_| "The local AngysGuard provider setup timed out".to_string())?
+        .map_err(|_| "The local AngysGuard provider setup failed".to_string())?;
+    if !status.success() {
+        return Err("The local AngysGuard provider setup was rejected".into());
+    }
+    Ok(())
+}
+
+#[tauri::command]
+async fn self_hosted_provider_status() -> Result<SelfHostedProviderStatus, String> {
+    let Some(provider) = load_self_hosted_provider() else {
+        return Ok(SelfHostedProviderStatus { configured: false, provider: None, username: None });
+    };
+    Ok(SelfHostedProviderStatus {
+        configured: true,
+        provider: Some(provider.provider),
+        username: Some(provider.username),
+    })
+}
+
+#[tauri::command]
+async fn configure_self_hosted_provider(
+    app: AppHandle,
+    provider: String,
+    username: String,
+    token: String,
+    api_base: String,
+    proxy: String,
+) -> Result<SelfHostedProviderStatus, String> {
+    let provider_name = provider.trim().to_ascii_lowercase();
+    if !matches!(provider_name.as_str(), "telegram" | "bale") {
+        return Err("Choose Telegram or Bale".into());
+    }
+    let candidate = SelfHostedProvider {
+        provider: provider_name.clone(),
+        username: username.trim().trim_start_matches('@').to_string(),
+        token: token.trim().to_string(),
+        api_base: api_base.trim().trim_end_matches('/').to_string(),
+        proxy: proxy.trim().to_string(),
+    };
+    if !valid_bot_username(&candidate.username)
+        || candidate.token.is_empty()
+        || candidate.token.len() > 512
+        || candidate.api_base.is_empty()
+        || candidate.api_base.len() > 512
+        || candidate.proxy.len() > 512
+    {
+        return Err("Provider setup values are invalid".into());
+    }
+    validate_self_hosted_provider(&candidate).await?;
+    #[cfg(target_os = "linux")]
+    save_provider_to_linux_guard(&app, &candidate).await?;
+    self_hosted_provider_entry()?
+        .set_password(&serde_json::to_string(&candidate).map_err(|_| "Provider setup could not be stored".to_string())?)
+        .map_err(|_| "Unable to store the provider credential in the operating-system credential store".to_string())?;
+    Ok(SelfHostedProviderStatus { configured: true, provider: Some(provider_name), username: Some(candidate.username) })
+}
+
 #[tauri::command]
 async fn managed_connection_status(
     state: State<'_, AgentState>,
@@ -610,6 +766,8 @@ pub fn run() {
             stop_local_protection,
             local_protection_status,
             managed_connection_status,
+            self_hosted_provider_status,
+            configure_self_hosted_provider,
         ])
         .setup(move |app| {
             let agent_state = app.state::<AgentState>().inner().clone();

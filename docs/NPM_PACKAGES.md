@@ -22,6 +22,12 @@ It requires Linux, Node.js 20+, Python 3.11+ with `venv`, and access to PyPI for
 Python dependencies. It never calls `sudo`; optional Linux packages and
 hardware/session readiness are reported by `angysguard doctor`.
 
+When the optional AngysGuard dashboard `.deb` is already installed, an
+interactive `angysguard` launch offers **Open dashboard** or **Continue in
+terminal**. `angysguard app` opens the installed dashboard explicitly and
+`angysguard terminal` always uses the terminal flow. The npm package does not
+bundle the desktop application and does not silently install a system package.
+
 ## Windows foundation
 
 `packages/windows-agent` provides a deliberately narrow terminal foundation:
@@ -30,6 +36,20 @@ protection agent or a supported Windows release. See
 [PLATFORM_SUPPORT.md](PLATFORM_SUPPORT.md) for the current support boundary.
 
 ## Publishing gate
+
+The Linux and Windows wrappers are released together using the same npm version.
+From the repository root, run the deterministic package check first, then the
+interactive npm release command:
+
+```bash
+npm run release:npm:check
+npm run release:npm:publish
+```
+
+`release:npm:publish` uses `npm publish --access public --provenance=false` for
+a maintainer's local 2FA session. It never reads an npm token from the project.
+The GitHub `npm-publish.yml` workflow remains the preferred trusted-publishing
+path when its npm environment is configured.
 
 Before publishing either package to npm, maintainers must:
 

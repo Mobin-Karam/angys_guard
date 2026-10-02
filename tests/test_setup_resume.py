@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import stat
 from types import SimpleNamespace
 
@@ -187,6 +188,34 @@ def test_cli_accepts_targeted_reconfigure_section():
     assert args.func is cli.cmd_reconfigure
 
 
+def test_dashboard_provider_accepts_token_only_over_stdin_after_validation(monkeypatch, capsys):
+    cfg = AppConfig(setup_complete=True)
+    saved_tokens: list[tuple[str, str]] = []
+    saved_progress: list[set[str]] = []
+    payload = {
+        "provider": "telegram",
+        "username": "owner_guard_bot",
+        "token": "test-only-dashboard-token",
+        "api_base": "https://api.telegram.org",
+        "proxy": "",
+    }
+
+    monkeypatch.setattr(cli, "load_config", lambda: cfg)
+    monkeypatch.setattr(cli, "save_config", lambda _cfg: None)
+    monkeypatch.setattr(cli, "load_setup_progress", lambda: {"provider", "owner", "identity"})
+    monkeypatch.setattr(cli, "save_setup_progress", lambda value: saved_progress.append(set(value)))
+    monkeypatch.setattr(cli, "set_bot_token", lambda token, provider: saved_tokens.append((token, provider)))
+    monkeypatch.setattr("laptop_guard.doctor.check_bot_connectivity_detailed", lambda _cfg, _token: (True, "ok", "ok"))
+    monkeypatch.setattr(cli.sys, "stdin", io.StringIO(__import__("json").dumps(payload)))
+
+    assert cli.cmd_dashboard_provider(None) == 0
+    assert cfg.bot.username == "owner_guard_bot"
+    assert cfg.setup_complete is False
+    assert saved_tokens == [("test-only-dashboard-token", "telegram")]
+    assert saved_progress == [{"identity"}]
+    assert payload["token"] not in capsys.readouterr().out
+
+
 
 def test_stored_provider_token_is_preserved_on_network_failure(monkeypatch):
     cfg = AppConfig()
@@ -226,6 +255,31 @@ def test_stored_provider_token_is_preserved_on_network_failure(monkeypatch):
         raise AssertionError("network failure should defer the provider section")
 
     assert saved == []
+
+
+def test_provider_identity_mismatch_is_not_treated_as_an_invalid_token(monkeypatch):
+    cfg = AppConfig()
+    cfg.bot.provider = "telegram"
+    token = "test-only-existing-token"
+
+    monkeypatch.setattr(setup_wizard, "get_bot_token", lambda _provider: token)
+    monkeypatch.setattr(
+        setup_wizard,
+        "_check_provider_token",
+        lambda _cfg, _candidate: (False, "Connected to a different bot.", "identity"),
+    )
+    monkeypatch.setattr(
+        setup_wizard.getpass,
+        "getpass",
+        lambda _prompt: (_ for _ in ()).throw(AssertionError("existing token must not be replaced")),
+    )
+
+    try:
+        setup_wizard._ensure_provider_token(cfg, setup_wizard.Console())
+    except setup_wizard.SetupSectionDeferred:
+        pass
+    else:
+        raise AssertionError("identity mismatch should defer the provider section")
 
 
 def test_new_provider_token_network_failure_does_not_loop(monkeypatch):

@@ -15,6 +15,9 @@ class BotConfig:
     # Bale is the primary channel in the current Guard runtime.
     provider: ProviderName = "bale"
     api_base: str = "https://tapi.bale.ai"
+    # Non-secret public bot identity. It is checked against getMe during setup
+    # so a pasted token cannot silently connect the owner to a different bot.
+    username: str = ""
     chat_id: int | None = None
     proxy: str = ""
     poll_timeout: int = 25

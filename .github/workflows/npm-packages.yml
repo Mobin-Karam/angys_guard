@@ -39,7 +39,9 @@ jobs:
         run: |
           set -euo pipefail
           prefix="$RUNNER_TEMP/angysguard-npm"
-          npm install --prefix "$prefix" "$GITHUB_WORKSPACE/packages/linux-agent/angysguard-linux-agent-0.1.0.tgz"
+          tarball="$(find "$GITHUB_WORKSPACE/packages/linux-agent" -maxdepth 1 -name 'angysguard-linux-agent-*.tgz' -print -quit)"
+          test -n "$tarball"
+          npm install --prefix "$prefix" "$tarball"
           "$prefix/node_modules/.bin/angysguard" --help
 
   windows-install:
@@ -58,7 +60,8 @@ jobs:
           npm pack
           Pop-Location
           $prefix = Join-Path $env:RUNNER_TEMP "angysguard-npm"
-          $tarball = Join-Path $env:GITHUB_WORKSPACE "packages/windows-agent/angysguard-windows-agent-0.1.0.tgz"
-          npm install --prefix $prefix $tarball
+          $tarball = Get-ChildItem (Join-Path $env:GITHUB_WORKSPACE "packages/windows-agent") -Filter "angysguard-windows-agent-*.tgz" | Select-Object -First 1
+          if ($null -eq $tarball) { throw "Windows package tarball was not created." }
+          npm install --prefix $prefix $tarball.FullName
           & (Join-Path $prefix "node_modules/.bin/angysguard.cmd") status
           & (Join-Path $prefix "node_modules/.bin/angysguard.cmd") doctor

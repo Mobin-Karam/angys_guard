@@ -36,6 +36,7 @@ The repository-level landing page is [`../README.md`](../README.md). This file i
 | Security/trust/privacy rules | [Product security](SECURITY.md) |
 | Testing/manual platform validation | [Testing](TESTING.md) |
 | Qualify a production release | [Release checklist](RELEASE_CHECKLIST.md) |
+| Prepare an accurate social launch | [Release social kit](RELEASE_SOCIAL_KIT.md) |
 | Use AI agents/skills/prompts | [AI agent workflow](AI_AGENT_WORKFLOW.md) |
 | See file ownership | [File reference](FILE_REFERENCE.md) |
 | See current + future roadmap | [Roadmap](ROADMAP.md) |

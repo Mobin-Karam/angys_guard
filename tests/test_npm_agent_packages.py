@@ -26,6 +26,7 @@ def test_npm_agent_package_has_an_explicit_platform_and_cli(
     manifest = json.loads((ROOT / "packages" / package_dir / "package.json").read_text())
 
     assert manifest["name"] == package_name
+    assert manifest["version"] == "1.0.1"
     assert manifest["bin"] == {"angysguard": "bin/angysguard.cjs"}
     assert manifest["os"] == [platform]
     assert manifest["engines"]["node"] == ">=20"
@@ -36,8 +37,11 @@ def test_npm_agent_package_has_an_explicit_platform_and_cli(
 def test_linux_npm_agent_packages_its_runtime_installer() -> None:
     manifest = json.loads((ROOT / "packages" / "linux-agent" / "package.json").read_text())
     installer = (ROOT / "packages" / "linux-agent" / "scripts" / "install-runtime.cjs").read_text()
+    readme = (ROOT / "packages" / "linux-agent" / "README.md").read_text()
 
     assert manifest["scripts"]["postinstall"] == "node scripts/install-runtime.cjs"
+    assert "README.md" in manifest["files"]
+    assert "npm install -g @angysguard/linux-agent" in readme
     assert "python3" in installer
     assert '"-m", "venv"' in installer
     assert '"-m", "pip", "check"' in installer
@@ -59,7 +63,21 @@ def test_npm_agent_launchers_keep_a_narrow_local_command_boundary() -> None:
     windows = (ROOT / "packages" / "windows-agent" / "bin" / "angysguard.cjs").read_text()
 
     assert all(fragment in linux for fragment in ("realpathSync", "runtime", ".venv", "bin", "laptop-guard"))
-    assert "spawnSync(executable, process.argv.slice(2)" in linux
+    assert "spawnSync(executable, runtimeArgs" in linux
+    assert "angysguard-desktop" in linux
     assert "shell:" not in linux
     assert 'execFileSync("rundll32.exe", ["user32.dll,LockWorkStation"]' in windows
     assert "powershell" not in windows.lower()
+
+
+def test_root_npm_release_scripts_keep_package_versions_in_lockstep() -> None:
+    root_manifest = json.loads((ROOT / "package.json").read_text())
+    release_script = (ROOT / "scripts" / "publish-npm-packages.cjs").read_text()
+
+    assert root_manifest["private"] is True
+    assert root_manifest["scripts"]["release:npm:check"] == "node scripts/publish-npm-packages.cjs --check"
+    assert root_manifest["scripts"]["release:npm:publish"] == "node scripts/publish-npm-packages.cjs"
+    assert '"linux-agent", "windows-agent"' in release_script
+    assert "Linux and Windows package versions must match" in release_script
+    assert '"--provenance=false"' in release_script
+    assert "shell:" not in release_script

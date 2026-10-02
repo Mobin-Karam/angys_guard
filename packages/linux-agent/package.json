@@ -1,6 +1,6 @@
 {
   "name": "@angysguard/linux-agent",
-  "version": "0.1.1",
+  "version": "1.0.1",
   "description": "Linux npm installer and terminal launcher for AngysGuard.",
   "bin": {
     "angysguard": "bin/angysguard.cjs"
