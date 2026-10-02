@@ -42,7 +42,7 @@ jobs:
       - name: Build installable Windows artifacts
         run: npm run bundle:windows
       - name: Upload installer artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: AngysGuard-Windows-installers
           path: |
@@ -89,7 +89,7 @@ jobs:
       - name: Build installable Linux .deb artifact
         run: npm run bundle:linux:deb
       - name: Upload Linux installer artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: AngysGuard-Linux-deb
           path: |
