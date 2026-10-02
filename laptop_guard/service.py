@@ -10,6 +10,24 @@ SERVICE_DIR = Path.home() / ".config" / "systemd" / "user"
 SERVICE_PATH = SERVICE_DIR / "laptop-guard.service"
 
 
+def _disarm_before_intentional_stop() -> bool:
+    """Persist a local owner's stop decision before signalling the service.
+
+    The Guard intentionally locks on an unexpected SIGTERM while armed. A
+    service stop initiated through the local CLI/dashboard is different: it is
+    an explicit owner action, so persist the disarmed state first. If that write
+    fails, leave the service running rather than turning an active Guard into an
+    ambiguous shutdown.
+    """
+    from .state import RuntimeStateStore
+
+    try:
+        RuntimeStateStore().mutate(armed=False, grace_until=0.0, arm_ready_at=0.0)
+    except OSError:
+        return False
+    return True
+
+
 def _service_exec_start() -> str:
     """Return the fixed local runtime command for the systemd user service.
 
@@ -55,6 +73,8 @@ def set_autostart(enabled: bool, *, start_now: bool = True) -> bool:
             action.append("--now")
         action.append("laptop-guard.service")
     else:
+        if start_now and not _disarm_before_intentional_stop():
+            return False
         action = ["systemctl", "--user", "disable"]
         if start_now:
             action.append("--now")
@@ -97,6 +117,8 @@ def start_service() -> bool:
 
 def stop_service() -> bool:
     """Stop the user service without deleting the owner's configuration."""
+    if not _disarm_before_intentional_stop():
+        return False
     return subprocess.run(
         ["systemctl", "--user", "stop", "laptop-guard.service"],
         check=False,
@@ -104,6 +126,8 @@ def stop_service() -> bool:
 
 
 def uninstall_service() -> bool:
+    if not _disarm_before_intentional_stop():
+        return False
     disable_result = subprocess.run(["systemctl", "--user", "disable", "--now", "laptop-guard.service"], check=False)
     SERVICE_PATH.unlink(missing_ok=True)
     reload_result = subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)

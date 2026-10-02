@@ -22,11 +22,21 @@ It requires Linux, Node.js 20+, Python 3.11+ with `venv`, and access to PyPI for
 Python dependencies. It never calls `sudo`; optional Linux packages and
 hardware/session readiness are reported by `angysguard doctor`.
 
+New local configurations use a warning-only input response. The explicit Away
+and Night profiles use warning-then-lock; arm those profiles only when leaving
+the device. Use `angysguard disarm` before normal local use or before stopping
+the service.
+
 When the optional AngysGuard dashboard `.deb` is already installed, an
 interactive `angysguard` launch offers **Open dashboard** or **Continue in
 terminal**. `angysguard app` opens the installed dashboard explicitly and
 `angysguard terminal` always uses the terminal flow. The npm package does not
 bundle the desktop application and does not silently install a system package.
+
+When stopping the installed user service from the dashboard or terminal,
+AngysGuard persists a disarmed state before requesting the `systemd` stop. This
+prevents a deliberate local stop from being classified as an unexpected armed
+exit.
 
 ## Windows foundation
 

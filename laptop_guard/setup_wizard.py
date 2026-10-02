@@ -461,7 +461,7 @@ def _configure_security(cfg: AppConfig, console: Console) -> None:
         default=(
             cfg.security.input_action
             if cfg.security.input_action in {"warning_lock", "warning", "notify"}
-            else "warning_lock"
+            else "warning"
         ),
     )
     cfg.security.lock_on_input = False

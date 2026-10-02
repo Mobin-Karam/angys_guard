@@ -6,7 +6,8 @@ def test_default_warning_sequence_is_five_seconds(monkeypatch):
     monkeypatch.delenv("WARNING_VIDEO", raising=False)
     cfg = AppConfig()
     assert cfg.security.warning_seconds == 5
-    assert cfg.security.lock_after_warning is True
+    assert cfg.security.input_action == "warning"
+    assert cfg.security.lock_after_warning is False
     assert cfg.security.warning_video is True
 
 

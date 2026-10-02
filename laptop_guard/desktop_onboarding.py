@@ -67,6 +67,8 @@ def configure_managed_local_profile(*, device_name: str, consent: bool) -> Deskt
         cfg.security.input_screen_video_seconds = 0
         cfg.security.intrusion_photo_background = False
         cfg.security.warning_video = False
+        cfg.security.input_action = "notify"
+        cfg.security.lock_after_countdown = False
         cfg.security.allow_remote_unlock = False
         cfg.security.allow_remote_power = False
         cfg.apps.enabled = False

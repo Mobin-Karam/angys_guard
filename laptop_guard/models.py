@@ -92,9 +92,12 @@ class SecurityConfig:
     arm_delay: float = 3.0
     input_cooldown: float = 30.0
     mouse_move_threshold: float = 12.0
-    input_action: InputAction = "warning_lock"
+    # New installations should never turn the first normal pointer movement
+    # into an automatic lock. The explicit Away/Night profiles retain the
+    # warning+lock posture for an owner who intentionally arms that profile.
+    input_action: InputAction = "warning"
     warning_seconds: int = 5
-    lock_after_countdown: bool = True
+    lock_after_countdown: bool = False
     input_screen_snapshot: bool = True
     input_screen_video_seconds: int = 5
     intrusion_photo_background: bool = True

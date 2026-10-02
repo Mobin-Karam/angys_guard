@@ -450,8 +450,6 @@ def import_legacy_env_secrets() -> bool:
 
 
 def _migrate(cfg: AppConfig, raw: dict[str, Any]) -> AppConfig:
-    # Historical v6 safety migration: the old warning-only/20-second defaults
-    # became the fixed five-second warning+lock behavior.
     security_raw = raw.get("security") if isinstance(raw, dict) else None
     if isinstance(security_raw, dict):
         # v3.3 used lock_on_input=true for an immediate lock. Migrate it to
@@ -461,10 +459,10 @@ def _migrate(cfg: AppConfig, raw: dict[str, Any]) -> AppConfig:
             cfg.security.lock_on_input = False
             cfg.security.lock_after_countdown = True
             cfg.security.warning_seconds = 5
+        # A historical migration silently changed a warning-only setup into
+        # warning+lock. Keep the owner's selected warning mode intact.
         if security_raw.get("input_action") == "warning" and cfg.security.warning_seconds == 20:
-            cfg.security.input_action = "warning_lock"
-            cfg.security.warning_seconds = 5
-            cfg.security.lock_after_countdown = True
+            cfg.security.lock_after_countdown = False
 
     if cfg.communication.surface == "text_editor":
         cfg.communication.surface = "live_notepad"

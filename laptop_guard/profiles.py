@@ -39,6 +39,7 @@ def apply_profile(cfg: AppConfig, profile: ProfileName) -> AppConfig:
         cfg.camera.event_clip_seconds = min(max(cfg.camera.event_clip_seconds, 5), 10)
         cfg.camera.pre_event_seconds = min(max(cfg.camera.pre_event_seconds, 2), 5)
         cfg.security.input_action = "warning"
+        cfg.security.lock_after_countdown = False
         cfg.security.input_snapshot = True
         cfg.security.lock_on_input = False
     elif profile == "night":
@@ -61,6 +62,7 @@ def apply_profile(cfg: AppConfig, profile: ProfileName) -> AppConfig:
         cfg.camera.pre_event_seconds = 0
         cfg.camera.tamper_enabled = False
         cfg.security.input_action = "notify"
+        cfg.security.lock_after_countdown = False
         cfg.security.input_snapshot = False
         cfg.security.lock_on_input = False
         cfg.monitors.usb_events = False

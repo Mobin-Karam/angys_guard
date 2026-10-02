@@ -29,7 +29,7 @@
 
 AngysGuard is the future-facing product identity for the project currently released as Laptop Guard. The name means **Angel of System Guard**.
 
-It is a security agent for devices you own or are explicitly authorized to administer. The current implementation is **Linux-first** and combines local monitoring, bounded evidence capture, visible warning/lock response, owner notifications, event history, guided setup/diagnostics, and a constrained remote-control surface.
+It is a security agent for devices you own or are explicitly authorized to administer. The current implementation is **Linux-first** and combines local monitoring, bounded evidence capture, visible policy-controlled response, owner notifications, event history, guided setup/diagnostics, and a constrained remote-control surface.
 
 A typical security flow is:
 
@@ -98,10 +98,10 @@ X11 and Wayland are both part of the target, but compositor/privacy differences 
 
 ### Experimental npm terminal launcher
 
-The source tree includes a small Linux npm launcher for users who prefer an
-`angysguard` terminal command after installing the verified Python runtime. It
-is **not published to npm yet** and does not replace `./install.sh`, Python
-dependencies, or Linux target-device validation. See [NPM package guidance](docs/NPM_PACKAGES.md).
+The public `@angysguard/linux-agent` npm launcher provides an `angysguard`
+terminal command and creates its own package-managed Python runtime. It remains
+experimental and does not replace Linux target-device validation. See
+[NPM package guidance](docs/NPM_PACKAGES.md).
 
 ## How can I control AngysGuard?
 
@@ -113,7 +113,7 @@ dependencies, or Linux target-device validation. See [NPM package guidance](docs
 | **Bale bot** | Available in current product/provider paths | Iranian users who want a Telegram-style bot UI |
 | **Telegram-style bot provider** | Available in current provider architecture; exact live parity should be release-validated | Telegram/bot-style owner control |
 | **Visible local chat/UI surfaces** | Available for current supported flows | Local interaction/communication |
-| **Full Linux desktop management app** | Planned (#32) | Non-technical daily use without terminal commands |
+| **Local Linux desktop dashboard** | Experimental prerelease | Local setup/status/service controls; validate on your device before relying on it |
 | **Android app** | Planned (#35) | Mobile device dashboard/control |
 | **Windows desktop app** | Planned (#34) | Native Windows security + management |
 
@@ -211,7 +211,7 @@ Linux can use a deliberately designed local service/policy boundary; Windows sho
 | **Input activity monitoring** | Detects activity through Linux input backends without retaining typed key contents. |
 | **Camera monitoring** | Camera discovery plus motion/person/tamper-oriented monitoring with fallback behavior. |
 | **Evidence capture** | Bounded camera/screen evidence for security events. |
-| **Visible warning response** | Packaged five-second fullscreen warning media before configured lock/response actions. |
+| **Visible warning response** | The selected input policy is honored: notify-only, warning-only, or an explicit warning-then-lock response. New local configurations default to warning-only. |
 | **Desktop protection** | Lock and selected system actions through fixed OS control paths. |
 | **Owner notifications** | Security events and selected evidence can be delivered through the configured owner transport. |
 | **Owner controls** | Status, arm/disarm, evidence, events, chat, voice/TTS, lock/unlock and confirmation-gated actions. |
@@ -220,7 +220,7 @@ Linux can use a deliberately designed local service/policy boundary; Windows sho
 | **Secure state/config** | Protected local configuration/secrets; a tracked project `.env` is not required. |
 | **Audio + communication** | Recording/playback, one-way owner voice, TTS, intercom-style communication and visible chat/notepad surfaces. Optional armed-mode sound-triggered clips are experimental and require target microphone validation. |
 | **RTL/LTR support** | Persian/RTL-aware rendering alongside LTR text. |
-| **Service/autostart** | systemd user-service support with startup and automatic arming as separate decisions. |
+| **Service/autostart** | systemd user-service support with startup and automatic arming as separate decisions; an intentional local stop persists disarmed state before stopping. |
 | **Local control API** | Optional authenticated loopback-only fixed-action API. |
 | **Health / USB / auth signals** | Health, USB events and readable Linux authentication failures can feed monitoring/notifications. |
 

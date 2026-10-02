@@ -205,10 +205,13 @@ GNOME Wayland results for the v12.0 primary Ubuntu target.
 ./run.sh test input
 ```
 
-Also validate an armed intrusion, fullscreen player visibility/focus, actual OS
-lock, Ctrl+C PIN plus owner approval, rejection/timeout behavior, abrupt-process
-watchdog locking, Bale media upload/download, Persian speech playback, and the
-systemd service after login when the changed area depends on them.
+Also validate an armed intrusion for each selected input policy (`notify`,
+`warning`, and explicit `warning_lock`), fullscreen player visibility/focus,
+actual OS lock, a dashboard/CLI service stop while armed (it must disarm before
+SIGTERM), Ctrl+C PIN plus owner approval, rejection/timeout behavior,
+abrupt-process watchdog locking, Bale media upload/download, Persian speech
+playback, and the systemd service after login when the changed area depends on
+them.
 
 These surfaces depend on the desktop session, hardware, permissions, and external
 provider services and are not proven by unit tests.

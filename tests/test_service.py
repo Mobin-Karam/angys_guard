@@ -162,6 +162,12 @@ def test_start_and_stop_service_use_fixed_systemctl_actions(tmp_path: Path, monk
     service_path = tmp_path / "laptop-guard.service"
     service_path.write_text("[Service]\n", encoding="utf-8")
     calls: list[list[str]] = []
+    state_changes: list[dict[str, object]] = []
+    monkeypatch.setattr(
+        service,
+        "_disarm_before_intentional_stop",
+        lambda: state_changes.append({"armed": False, "grace_until": 0.0, "arm_ready_at": 0.0}) or True,
+    )
     monkeypatch.setattr(service, "SERVICE_PATH", service_path)
     monkeypatch.setattr(
         service.subprocess,
@@ -175,3 +181,4 @@ def test_start_and_stop_service_use_fixed_systemctl_actions(tmp_path: Path, monk
         ["systemctl", "--user", "start", "laptop-guard.service"],
         ["systemctl", "--user", "stop", "laptop-guard.service"],
     ]
+    assert state_changes == [{"armed": False, "grace_until": 0.0, "arm_ready_at": 0.0}]

@@ -10,6 +10,23 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Safety patch: input response and intentional service stops
+
+- Fixed the input-response policy so `notify`, `warning`, and `warning_lock`
+  now do exactly what the local setup screen says. Only the explicit
+  `warning_lock` mode can schedule an automatic desktop lock.
+- Changed the default for new local configurations to visible warning-only;
+  owners can select the Away or Night profile when they deliberately want the
+  five-second warning followed by a lock.
+- Fixed Home and Testing profiles so they cannot retain a stale
+  `lock_after_countdown` value from a previous stricter profile.
+- Made the consented local dashboard profile notification-only with private
+  capture disabled.
+- Fixed local dashboard/CLI service stop, autostart disable, and uninstall to
+  persist a disarmed state before `systemd` sends SIGTERM. An explicit local
+  stop is no longer treated as a hostile exit that locks an already-disarmed
+  device.
+
 ### Local-first dashboard prerelease and npm terminal packages 1.0.1
 
 - Prepared matching `@angysguard/linux-agent` and

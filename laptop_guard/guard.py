@@ -390,16 +390,23 @@ class LaptopGuard:
             self.state.last_input_kind = kind
         stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.events.add("input", f"{kind} at {stamp}", "high")
+        action = self.config.security.input_action
+        if action not in {"warning_lock", "warning", "notify"}:
+            action = "warning"
         self._lock_generation += 1
         generation = self._lock_generation
-        # Mouse/keyboard intrusion always gets the exact bundled 5-second MP4.
-        countdown_seconds = 5
+        countdown_seconds = max(3, min(int(self.config.security.warning_seconds), 300))
+        action_label = {
+            "warning_lock": "هشدار نمایش داده می‌شود و سپس سیستم قفل خواهد شد.",
+            "warning": "هشدار نمایش داده می‌شود؛ سیستم به‌صورت خودکار قفل نخواهد شد.",
+            "notify": "فقط برای مالک اعلان ارسال می‌شود؛ سیستم به‌صورت خودکار قفل نخواهد شد.",
+        }[action]
 
         # Queue the owner notification immediately. Network I/O stays on its
         # own thread so it cannot delay VLC or the independent lock deadline.
         self.feature_notify_owner(
             f"🚨 فعالیت روی لپ‌تاپ شناسایی شد\n\nنوع: {kind}\nزمان: {stamp}\n"
-            f"هشدار ویدیویی {countdown_seconds} ثانیه‌ای نمایش داده می‌شود و سپس سیستم قفل خواهد شد.",
+            f"{action_label}",
             inline_keyboard([
                 [("🕐 اجازه ۵ دقیقه", "guard:allow:5"), ("🔒 قفل الآن", "guard:lock")],
                 [("⛔ غیرفعال", "guard:disarm"), ("📷 عکس", "camera:photo")],
@@ -408,15 +415,19 @@ class LaptopGuard:
             kind="input",
         )
 
-        # Show the deterrent immediately. Evidence capture also runs
-        # asynchronously and cannot extend the five-second deadline.
-        if self.config.security.warning_video:
+        # Notify-only is intentionally non-disruptive. Warning modes show the
+        # local deterrent; evidence capture remains asynchronous.
+        if action == "notify":
+            pass
+        elif self.config.security.warning_video:
             self.warning_proc = launch_warning(countdown_seconds)
         else:
-            notify(f"هشدار امنیتی: {kind}; قفل در {countdown_seconds} ثانیه")
+            notify(f"هشدار امنیتی: {kind}; {action_label}")
         threading.Thread(target=self._capture_input_evidence, args=(stamp,), daemon=True).start()
 
         def countdown_lock() -> None:
+            if action != "warning_lock":
+                return
             if self.stop_event.wait(countdown_seconds):
                 return
             if generation != self._lock_generation:
@@ -2133,6 +2144,12 @@ class LaptopGuard:
             return
         if not self.config.security.lock_on_guard_exit or self._exit_lock_requested:
             return
+        # A locally requested service stop persists a disarmed state before
+        # systemd delivers SIGTERM. It must not be reclassified as a hostile
+        # exit solely because the process receives that signal afterwards.
+        with self.state_lock:
+            if not self.state.active():
+                return
         self._exit_lock_requested = True
         self.events.add("guard_exit_lock", reason, "critical")
         # Use a short-lived thread so signal handling itself stays lightweight.

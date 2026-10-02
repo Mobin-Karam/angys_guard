@@ -36,6 +36,8 @@ def test_managed_desktop_profile_disables_private_or_broad_capabilities(monkeypa
     assert cfg.screen.screen_video_enabled is False
     assert cfg.security.input_snapshot is False
     assert cfg.security.input_screen_snapshot is False
+    assert cfg.security.input_action == "notify"
+    assert cfg.security.lock_after_countdown is False
     assert cfg.security.allow_remote_unlock is False
     assert cfg.security.allow_remote_power is False
     assert cfg.apps.enabled is False

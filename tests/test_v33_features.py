@@ -7,11 +7,11 @@ from laptop_guard.warning import WarningScreenManager
 
 def test_v33_safe_defaults():
     cfg = AppConfig()
-    assert cfg.security.input_action == "warning_lock"
+    assert cfg.security.input_action == "warning"
     assert cfg.security.lock_on_input is False
     assert cfg.security.input_snapshot is True
     assert cfg.security.warning_seconds == 5
-    assert cfg.security.lock_after_countdown is True
+    assert cfg.security.lock_after_countdown is False
     assert cfg.security.input_screen_snapshot is True
     assert cfg.audio.play_remote_voice is True
     assert cfg.camera.enabled is True

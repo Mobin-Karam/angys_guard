@@ -27,13 +27,14 @@ warning_seconds = 20
     cfg = config_module.load_config()
     assert cfg.communication.surface == "live_notepad"
     assert cfg.communication.open_text_editor_mirror is False
-    assert cfg.security.input_action == "warning_lock"
-    assert cfg.security.warning_seconds == 5
+    assert cfg.security.input_action == "warning"
+    assert cfg.security.warning_seconds == 20
+    assert cfg.security.lock_after_countdown is False
 
 
 def test_v6_default_input_evidence_settings():
     cfg = config_module.AppConfig()
-    assert cfg.security.input_action == "warning_lock"
+    assert cfg.security.input_action == "warning"
     assert cfg.security.input_screen_snapshot is True
     assert cfg.security.input_screen_video_seconds == 5
     assert cfg.security.intrusion_photo_background is True

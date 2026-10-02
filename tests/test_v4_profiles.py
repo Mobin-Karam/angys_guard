@@ -17,5 +17,6 @@ def test_testing_profile_reduces_noise():
     apply_profile(cfg, "testing")
     assert cfg.profile == "testing"
     assert cfg.security.input_action == "notify"
+    assert cfg.security.lock_after_countdown is False
     assert cfg.camera.event_clip_seconds == 0
     assert cfg.monitors.usb_events is False
