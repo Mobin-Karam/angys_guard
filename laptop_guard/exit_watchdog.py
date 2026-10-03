@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import time
 from pathlib import Path
@@ -38,11 +39,34 @@ def _authorized_safe_exit(path: str, token: str) -> bool:
     return ok
 
 
+def _state_is_active(path: str) -> bool:
+    """Return whether the persisted guard state still requires exit locking.
+
+    The watchdog is intentionally separate from the parent process, but it
+    must not lock a desktop merely because a not-yet-armed startup exits or is
+    restarted. Invalid/unreadable state fails closed and is treated as active.
+    """
+    if not path:
+        return True
+    try:
+        raw = json.loads(Path(path).read_text(encoding="utf-8"))
+        if not isinstance(raw, dict):
+            return True
+        return (
+            bool(raw.get("armed", False))
+            and time.time() >= float(raw.get("arm_ready_at", 0.0))
+            and time.time() >= float(raw.get("grace_until", 0.0))
+        )
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return True
+
+
 def watch(
     parent_pid: int,
     interval: float = 0.25,
     safe_exit_file: str = "",
     safe_exit_token: str = "",
+    state_path: str = "",
 ) -> int:
     """Lock when the guard disappears unless it completed owner-authorized exit.
 
@@ -60,6 +84,9 @@ def watch(
     if _authorized_safe_exit(safe_exit_file, safe_exit_token):
         return 0
 
+    if not _state_is_active(state_path):
+        return 0
+
     lock_screen()
     return 0
 
@@ -70,12 +97,14 @@ def main() -> int:
     parser.add_argument("--interval", type=float, default=0.25)
     parser.add_argument("--safe-exit-file", default="")
     parser.add_argument("--safe-exit-token", default="")
+    parser.add_argument("--state-path", default="")
     args = parser.parse_args()
     return watch(
         args.parent_pid,
         args.interval,
         args.safe_exit_file,
         args.safe_exit_token,
+        args.state_path,
     )
 
 

@@ -9,6 +9,7 @@ def test_startup_and_arming_are_separate_defaults():
     cfg = AppConfig()
     assert cfg.startup.enabled is False
     assert cfg.security.auto_arm is False
+    assert cfg.startup.auto_arm_grace_seconds == 90
 
 
 def test_enabling_for_next_login_does_not_start_immediately(tmp_path, monkeypatch):

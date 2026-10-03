@@ -8,10 +8,10 @@ turning npm into a hidden installer for security-sensitive native components.
 | `@angysguard/linux-agent` | Linux | Starts the installed Python `laptop-guard` runtime | Experimental launcher; Linux runtime remains Linux-first |
 | `@angysguard/windows-agent` | Windows | Fixed local `status`, `doctor`, and `lock` commands | Experimental foundation; no supported Windows protection release |
 
-The packages have a shared `1.0.1` wrapper release line. The Linux package
+The packages have a shared `1.0.2` wrapper release line. The Linux package
 installs the bundled Linux runtime and can open the separately installed local
 dashboard; the Windows wrapper remains experimental even when its npm package
-version is `1.0.1`.
+version is `1.0.2`.
 
 Maintainers can validate and publish both package directories together from the
 repository root:

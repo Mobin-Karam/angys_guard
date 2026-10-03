@@ -220,7 +220,7 @@ Linux can use a deliberately designed local service/policy boundary; Windows sho
 | **Secure state/config** | Protected local configuration/secrets; a tracked project `.env` is not required. |
 | **Audio + communication** | Recording/playback, one-way owner voice, TTS, intercom-style communication and visible chat/notepad surfaces. Optional armed-mode sound-triggered clips are experimental and require target microphone validation. |
 | **RTL/LTR support** | Persian/RTL-aware rendering alongside LTR text. |
-| **Service/autostart** | systemd user-service support with startup and automatic arming as separate decisions; an intentional local stop persists disarmed state before stopping. |
+| **Service/autostart** | systemd user-service support with startup and automatic arming as separate decisions. Automatic arming waits for a verified provider polling round plus a boot grace period; an intentional local stop persists disarmed state before stopping. |
 | **Local control API** | Optional authenticated loopback-only fixed-action API. |
 | **Health / USB / auth signals** | Health, USB events and readable Linux authentication failures can feed monitoring/notifications. |
 

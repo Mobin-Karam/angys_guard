@@ -26,7 +26,7 @@ def test_npm_agent_package_has_an_explicit_platform_and_cli(
     manifest = json.loads((ROOT / "packages" / package_dir / "package.json").read_text())
 
     assert manifest["name"] == package_name
-    assert manifest["version"] == "1.0.1"
+    assert manifest["version"] == "1.0.2"
     assert manifest["bin"] == {"angysguard": "bin/angysguard.cjs"}
     assert manifest["os"] == [platform]
     assert manifest["engines"]["node"] == ">=20"

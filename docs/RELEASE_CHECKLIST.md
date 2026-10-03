@@ -286,6 +286,9 @@ Then log out and back in.
 
 - [ ] User service starts in the graphical session.
 - [ ] Service uses the same saved configuration without interactive prompts.
+- [ ] With automatic arming enabled, reboot verifies that the service remains
+  disarmed until provider polling succeeds and the local boot-grace countdown
+  expires; `/disarm` must work during that window.
 - [ ] Required display/audio/session environment is available.
 - [ ] `./run.sh autostart off` disables startup.
 - [ ] `./run.sh autostart on` re-enables startup.

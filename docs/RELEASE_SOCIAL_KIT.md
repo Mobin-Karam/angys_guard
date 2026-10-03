@@ -1,6 +1,6 @@
 # AngysGuard local-first dashboard prerelease — social kit
 
-Use this kit after the GitHub prerelease and npm `1.0.1` packages are publicly
+Use this kit after the GitHub prerelease and npm `1.0.2` packages are publicly
 visible. Replace the bracketed release URL before publishing. Do not claim that
 Windows is supported or that the dashboard has completed full hardware/provider
 qualification.
@@ -8,7 +8,7 @@ qualification.
 ## Shared facts
 
 - Linux-first, owner-controlled device protection tooling.
-- `@angysguard/linux-agent@1.0.1` provides `angysguard` in the terminal.
+- `@angysguard/linux-agent@1.0.2` provides `angysguard` in the terminal.
 - When the optional Linux dashboard `.deb` is installed, `angysguard` lets the
   owner choose dashboard or terminal.
 - Bot credentials remain local; fixed bot actions are not a remote shell.

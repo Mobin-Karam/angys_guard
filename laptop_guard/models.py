@@ -270,6 +270,11 @@ class AlertConfig:
 @dataclass
 class StartupConfig:
     enabled: bool = False
+    # When automatic arming is enabled, wait for a verified provider polling
+    # round and then give the local owner time to disarm after login/reboot.
+    # This prevents a boot-time input event from locking the desktop before the
+    # owner can reach the paired bot.
+    auto_arm_grace_seconds: int = 90
     # Written only after the desktop app shows its local privacy consent. It is
     # not a remote authorization grant and does not enable capture.
     managed_desktop_consent: bool = False

@@ -1,6 +1,6 @@
 [package]
 name = "angysguard-desktop"
-version = "0.1.2"
+version = "0.1.3"
 description = "AngysGuard desktop enrollment agent"
 edition = "2021"
 

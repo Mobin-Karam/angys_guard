@@ -367,6 +367,7 @@ def _apply_legacy_env(cfg: AppConfig) -> None:
     mapping: list[tuple[str, Any, str]] = [
         ("AUTO_ARM", cfg.security, "auto_arm"),
         ("ARM_DELAY", cfg.security, "arm_delay"),
+        ("STARTUP_AUTO_ARM_GRACE_SECONDS", cfg.startup, "auto_arm_grace_seconds"),
         ("WARNING_SECONDS", cfg.security, "warning_seconds"),
         ("INPUT_COOLDOWN", cfg.security, "input_cooldown"),
         ("MOUSE_MOVE_THRESHOLD", cfg.security, "mouse_move_threshold"),

@@ -455,6 +455,17 @@ def _configure_security(cfg: AppConfig, console: Console) -> None:
         "Arm automatically when service starts?",
         default=cfg.security.auto_arm,
     )
+    if cfg.security.auto_arm:
+        cfg.startup.auto_arm_grace_seconds = max(
+            30,
+            min(
+                IntPrompt.ask(
+                    "Boot grace period after bot connectivity (seconds)",
+                    default=cfg.startup.auto_arm_grace_seconds,
+                ),
+                900,
+            ),
+        )
     cfg.security.input_action = Prompt.ask(
         "Unexpected keyboard/mouse response",
         choices=["warning_lock", "warning", "notify"],

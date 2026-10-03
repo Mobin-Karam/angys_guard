@@ -10,6 +10,15 @@ The project uses semantic-style versioning where practical:
 
 ## Unreleased
 
+### Boot-safe autostart patch (npm 1.0.2 / Linux desktop 0.1.3)
+
+- Deferred automatic arming after a restart until a successful provider polling
+  round proves bot control is available, followed by a configurable 90-second
+  local grace period.
+- Prevented the independent exit watchdog from locking when a startup exits
+  before protection has become active; active-protection abnormal exits still
+  request a lock.
+
 ### Safety patch: input response and intentional service stops
 
 - Fixed the input-response policy so `notify`, `warning`, and `warning_lock`

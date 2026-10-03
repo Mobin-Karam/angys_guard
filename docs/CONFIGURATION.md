@@ -82,7 +82,8 @@ Important security defaults are:
 |---|---:|---|
 | `warning_seconds` | `5` | Intrusion warning duration |
 | `mouse_move_threshold` | `12` | Distance for later pynput events; the first movement always triggers |
-| `lock_after_countdown` | `true` | Lock after warning flow |
+| `input_action` | `warning` | New local configurations warn without locking; `warning_lock` is explicit |
+| `lock_after_countdown` | `false` | Compatibility flag; only explicit `warning_lock` schedules a lock |
 | `warning_video` | `true` | Use bundled MP4 when a player exists |
 | `lock_on_guard_exit` | `true` | Watchdog requests lock after unsafe exit |
 | `stop_auth_enabled` | `true` | Protect Ctrl+C with two factors |
@@ -91,7 +92,8 @@ Important security defaults are:
 | `allow_remote_unlock` | `false` | Remote unlock is opt-in |
 | `allow_remote_power` | `false` | Suspend/reboot/shutdown are opt-in; each owner request needs a fresh, single-use confirmation that expires after 30 seconds. A powered-off device cannot turn itself back on; that needs separately configured hardware/network wake support. |
 | `startup.enabled` | `false` | Start after graphical login |
-| `security.auto_arm` | `false` | Arm immediately when the service starts |
+| `security.auto_arm` | `false` | Arm only after the provider proves it is polling successfully |
+| `startup.auto_arm_grace_seconds` | `90` | Grace period after provider readiness before automatic protection becomes active |
 | `monitors.failed_login_events` | `true` | Alert on readable Linux authentication failures |
 | `chat.direction` | `auto` | Direction from first strong character |
 | `chat.seconds` | `120` | Default local security-chat session duration |
@@ -118,6 +120,10 @@ Autostart can be changed independently of automatic arming:
 
 This is intentionally a systemd user service that starts with the graphical
 session; the capture, notification, input, and lock backends need that session.
+When automatic arming is enabled, startup stays disarmed until one provider
+polling round succeeds, then waits the configured boot grace period. This gives
+the local owner time to use `/disarm` after a reboot and avoids a lock loop when
+the provider is unavailable.
 
 Run `./run.sh setup` to review persisted settings. Do not delete the user config
 directory unless intentionally resetting credentials and pairing. Never commit

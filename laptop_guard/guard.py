@@ -21,7 +21,7 @@ import cv2
 from .audio_intercom import AudioIntercom, notify, play_audio, record_audio
 from .bale_api import BaleApiError
 from .chat_surface import SecurityChatManager
-from .config import CONFIG_DIR, DATA_DIR, MEDIA_DIR, AppConfig, get_bot_token, load_config, save_config
+from .config import CONFIG_DIR, DATA_DIR, MEDIA_DIR, STATE_PATH, AppConfig, get_bot_token, load_config, save_config
 from .profiles import PROFILE_LABELS, apply_profile
 from .events import EventLog
 from .persian_speech import PersianSpeechManager, SpeechResult, VOICE_NAMES
@@ -153,6 +153,7 @@ class LaptopGuard:
         self._stop_owner_decision: bool | None = None
         self._stop_remote_deny = threading.Event()
         self._authorized_exit = False
+        self._startup_auto_arm_pending = False
         self._safe_exit_file: Path | None = None
         self._safe_exit_token = ""
         # Power actions are destructive and must be explicitly approved by the
@@ -322,15 +323,44 @@ class LaptopGuard:
 
     # --------------------------- guard state
 
-    def arm(self) -> None:
+    def arm(self, *, ready_delay: float | None = None) -> None:
         with self.state_lock:
             self.state.mutate(
                 armed=True,
                 grace_until=0.0,
-                arm_ready_at=time.time() + self.config.security.arm_delay,
+                arm_ready_at=time.time() + (
+                    self.config.security.arm_delay if ready_delay is None else ready_delay
+                ),
             )
             self.mouse_anchor = None
         self.events.add("arm", "Guard armed")
+
+    def _defer_startup_auto_arm(self) -> None:
+        """Keep boot safe until provider polling proves owner control is live."""
+        self._startup_auto_arm_pending = bool(self.config.security.auto_arm)
+        if not self._startup_auto_arm_pending:
+            with self.state_lock:
+                self.state.mutate(armed=False, grace_until=0.0, arm_ready_at=0.0)
+            return
+
+        # A previous boot may have persisted an armed state. Never carry that
+        # state through a reboot before the owner can use the paired bot.
+        with self.state_lock:
+            self.state.mutate(armed=False, grace_until=0.0, arm_ready_at=0.0)
+        self.events.add("startup_auto_arm_pending", "Waiting for provider readiness before arming")
+
+    def _complete_startup_auto_arm(self) -> None:
+        if not self._startup_auto_arm_pending:
+            return
+        self._startup_auto_arm_pending = False
+        grace = max(30, min(int(self.config.startup.auto_arm_grace_seconds), 900))
+        self.arm(ready_delay=max(float(self.config.security.arm_delay), float(grace)))
+        self.events.add("startup_auto_arm", f"Provider ready; guard activates after {grace}s boot grace")
+        self._send_async(
+            f"⏳ اتصال ربات تأیید شد. محافظت خودکار پس از {grace} ثانیه فعال می‌شود. "
+            "برای لغو، /disarm را ارسال کنید.",
+            MAIN_MENU,
+        )
 
     def _cancel_pending_lock(self) -> None:
         self._lock_generation += 1
@@ -2197,6 +2227,8 @@ class LaptopGuard:
             str(self._safe_exit_file),
             "--safe-exit-token",
             self._safe_exit_token,
+            "--state-path",
+            str(STATE_PATH),
         ]
         kwargs: dict[str, Any] = {
             "stdin": subprocess.DEVNULL,
@@ -2285,13 +2317,7 @@ class LaptopGuard:
                 f"⚠️ Input monitoring unavailable. {message}\nNext: {action}"
             )
         self.sound_detection.start()
-        if self.config.security.auto_arm:
-            self.arm()
-        else:
-            # A previous persisted armed state must not override the explicit
-            # "arm automatically" setting after a restart or reboot.
-            with self.state_lock:
-                self.state.mutate(armed=False, grace_until=0.0, arm_ready_at=0.0)
+        self._defer_startup_auto_arm()
 
     def stop(self) -> None:
         if not self._authorized_exit:
@@ -2319,15 +2345,16 @@ class LaptopGuard:
                     signal.signal(sig, self._signal_handler)
                 except (ValueError, OSError):
                     pass
-        self._start_exit_watchdog()
         self.features.start()
         self.start_monitors()
+        self._start_exit_watchdog()
         if self._owner_chat() is not None:
             self._send_async("✅ Laptop Guard شروع شد.\n" + self.status_text(), MAIN_MENU)
         try:
             while not self.stop_event.is_set():
                 try:
                     updates = self.api.get_updates(self._offset, self.config.bot.poll_timeout)
+                    self._complete_startup_auto_arm()
                     for update in updates:
                         uid = update.get("update_id")
                         if isinstance(uid, int):
